@@ -13,7 +13,9 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from scipy.stats import norm
+import matplotlib.pyplot as plt
 import yfinance as yf
+import os
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -406,6 +408,128 @@ class BlackLittermanOptimizer:
                 'metrics': equal_metrics
             }
         }
+
+    def run_tau_sensitivity(self, views_dict, confidence_levels=None, 
+                            tau_values=[0.01, 0.03, 0.05, 0.1, 0.2], 
+                            max_weight=None, min_weight=0.05, save_dir="results"):
+        """
+        Run a robustness analysis to track Black-Litterman model sensitivity to Tau (τ).
+        
+        Parameters:
+        -----------
+        views_dict : dict
+            Investor views.
+        confidence_levels : dict
+            Confidence in views.
+        tau_values : list
+            Array of uncertainty scalar constants to iterate across.
+        max_weight : float
+            Maximum allocation weight per asset.
+        min_weight : float
+            Minimum allocation weight per asset.
+        save_dir : str
+            Directory to save the tau sensitivity plot.
+            
+        Returns:
+        --------
+        pd.DataFrame : Results of the tau sensitivity analysis.
+        """
+        print("\n" + "="*60)
+        print("RUNNING TAU (τ) SENSITIVITY ANALYSIS")
+        print("="*60)
+        
+        results_list = []
+        original_tau = self.tau
+        
+        if max_weight is None:
+            n_assets = len(self.ticker_list)
+            max_weight = min(1.0, max(0.3, 2.0 / n_assets))
+            
+        for t in tau_values:
+            # Overwrite the intrinsic param
+            self.tau = t
+            print(f"Processing τ = {t:.3f} ...")
+            
+            # Recalculate Posteriors and re-optimize purely off new tau assumption
+            bl_returns = self.apply_black_litterman(views_dict, confidence_levels)
+            bl_weights = self.optimize_portfolio(bl_returns, min_weight=min_weight, max_weight=max_weight)
+            bl_metrics = self.get_portfolio_metrics(bl_weights, bl_returns)
+            
+            # Record core metrics
+            record = {
+                'Tau': t,
+                'Expected Return': bl_metrics['Expected Return'],
+                'Volatility': bl_metrics['Volatility'],
+                'Sharpe Ratio': bl_metrics['Sharpe Ratio']
+            }
+            
+            # Extract distinct asset weights
+            for ticker, weight in zip(self.ticker_list, bl_weights):
+                record[f'Weight_{ticker}'] = weight
+                
+            results_list.append(record)
+            
+        # Restore standard optimizer tau condition
+        self.tau = original_tau
+        
+        # Convert the iteration records to a clean dataframe
+        df = pd.DataFrame(results_list)
+        df.set_index('Tau', inplace=True)
+        
+        # Build the visualization payload
+        os.makedirs(save_dir, exist_ok=True)
+        self._plot_tau_sensitivity(df, save_dir)
+        
+        return df
+        
+    def _plot_tau_sensitivity(self, df, save_dir):
+        """Helper to generate and export the 3-panel Matplotlib graphic for Tau Sensitivity."""
+        fig = plt.figure(figsize=(15, 12))
+        
+        # Subplot 1: Tau vs Sharpe Ratio
+        plt.subplot(3, 1, 1)
+        plt.plot(df.index, df['Sharpe Ratio'], marker='o', color='green', linewidth=2)
+        plt.title('Tau (τ) vs Sharpe Ratio', fontsize=14, fontweight='bold')
+        plt.ylabel('Sharpe Ratio', fontsize=12)
+        plt.grid(True, alpha=0.3)
+        
+        # Subplot 2: Tau vs Volatility vs Expected Return
+        plt.subplot(3, 1, 2)
+        ax1 = plt.gca()
+        ax2 = ax1.twinx()
+        
+        line1 = ax1.plot(df.index, df['Volatility'] * 100, marker='s', color='orange', label='Volatility')
+        line2 = ax2.plot(df.index, df['Expected Return'] * 100, marker='^', color='blue', label='Expected Return')
+        
+        ax1.set_ylabel('Volatility (%)', fontsize=12, color='orange')
+        ax2.set_ylabel('Expected Return (%)', fontsize=12, color='blue')
+        plt.title('Tau (τ) vs Expected Return & Volatility', fontsize=14, fontweight='bold')
+        ax1.grid(True, alpha=0.3)
+        
+        # Add merged legend
+        lines = line1 + line2
+        labels = [l.get_label() for l in lines]
+        ax1.legend(lines, labels, loc='upper left')
+        
+        # Subplot 3: Portfolio Weight Drift Mapping
+        plt.subplot(3, 1, 3)
+        weight_cols = [c for c in df.columns if c.startswith('Weight_')]
+        weights_data = df[weight_cols]
+        # Clean labels for charting
+        labels = [c.replace('Weight_', '') for c in weight_cols]
+        
+        plt.stackplot(df.index, weights_data.T * 100, labels=labels, alpha=0.8)
+        plt.title('Portfolio Weight Distribution vs Tau (τ)', fontsize=14, fontweight='bold')
+        plt.xlabel('Tau (τ)', fontsize=12)
+        plt.ylabel('Allocation (%)', fontsize=12)
+        plt.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
+        plt.grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        save_path = os.path.join(save_dir, 'tau_sensitivity.png')
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"\nSaved Tau Sensitivity plot to: {save_path}")
+        plt.close()
 
 
 def main():
