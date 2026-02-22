@@ -200,23 +200,23 @@ class PortfolioBacktester:
             eq_daily = test_window.dot(equal_weights)
             
             # Copy to Net and systematically deduct the rebalance cost from the FIRST DAY of the window
-            mw_daily_net = mw_daily.copy()
-            bl_daily_net = bl_daily.copy()
-            eq_daily_net = eq_daily.copy()
+            mw_window_net = mw_daily.copy()
+            bl_window_net = bl_daily.copy()
+            eq_window_net = eq_daily.copy()
             
-            mw_daily_net.iloc[0] -= mw_cost
-            bl_daily_net.iloc[0] -= bl_cost
-            eq_daily_net.iloc[0] -= eq_cost
+            mw_window_net.iloc[0] -= mw_cost
+            bl_window_net.iloc[0] -= bl_cost
+            eq_window_net.iloc[0] -= eq_cost
             
             # Append pandas Series maintaining index dates
             markowitz_daily_gross = pd.concat([markowitz_daily_gross, mw_daily])
-            markowitz_daily_net = pd.concat([markowitz_daily_net, mw_daily_net])
+            markowitz_daily_net = pd.concat([markowitz_daily_net, mw_window_net])
             
             bl_daily_gross = pd.concat([bl_daily_gross, bl_daily])
-            bl_daily_net = pd.concat([bl_daily_net, bl_daily_net])
+            bl_daily_net = pd.concat([bl_daily_net, bl_window_net])
             
             equal_daily_gross = pd.concat([equal_daily_gross, eq_daily])
-            equal_daily_net = pd.concat([equal_daily_net, eq_daily_net])
+            equal_daily_net = pd.concat([equal_daily_net, eq_window_net])
             
             test_dates.append(test_window.index[-1])
             rebalance_dates.append(test_window.index[0])

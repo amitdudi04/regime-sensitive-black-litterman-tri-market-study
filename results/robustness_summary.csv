@@ -1,10 +1,8 @@
-Category,Metric,Black-Litterman,Markowitz,S&P 500
-Tau Sensitivity (τ),Expected Return Shift (0.01 -> 0.20),61.34%,N/A (Static),N/A
-Tau Sensitivity (τ),Sharpe Ratio Shift (0.01 -> 0.20),1.948,N/A (Static),N/A
-Lambda Sensitivity (λ),Volatility Shift (1.5 -> 4.0),-0.00%,N/A (Static),N/A
-Lambda Sensitivity (λ),Expected Return Drop (1.5 -> 4.0),23.27%,N/A (Static),N/A
-Rolling Backtest (2018-2024),Net Annualized Return,54.80%,45.67%,5.89%
-Rolling Backtest (2018-2024),Maximum Drawdown,-14.10%,-43.51%,-25.43%
-Rolling Backtest (2018-2024),Annual Cost Drag (Fees),-2071.7 bps,47.5 bps,0.0 bps
-2008 Shock Simulator,Crisis Max Drawdown (%),-43.34%,-43.74%,-53.25%
-2008 Shock Simulator,Longest Submerged Period,470 days,472 days,502 days
+Category,Metric,Base Value,Stressed Value
+Tau Sensitivity,Expected Return (Max Certainty vs Min Certainty),0.02739544343665446,0.6509555219942221
+Tau Sensitivity,Sharpe Ratio Decay,-0.008595662916739608,2.0518096543340043
+Risk Aversion (Lambda),Volatility Collapse,0.3027330999558693,0.3027270864373956
+2008 Crash Simulation,Crisis Total Return,0.036437997023242685,-0.22163408514538419
+2008 Crash Simulation,Maximum Geometric Drawdown,-0.6296136108348251,-0.5325119452456686
+2008 Crash Simulation,Volatility Spike Multiple,1.7816443224721805,2.81620423031315
+2008 Crash Simulation,Daily 95% CVaR,-0.05936062176677259,-0.053149581500939486

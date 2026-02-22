@@ -114,8 +114,8 @@ class PortfolioVisualizer:
         
         plt.tight_layout()
         plt.savefig('efficient_frontier.png', dpi=300, bbox_inches='tight')
-        print("✓ Saved: efficient_frontier.png")
-        plt.show()
+        print("[OK] Saved: efficient_frontier.png")
+        
     
     def plot_weight_comparison(self, figsize=(14, 6)):
         """Plot portfolio weights comparison across models."""
@@ -150,8 +150,8 @@ class PortfolioVisualizer:
         fig.suptitle('Portfolio Weights Comparison', fontsize=14, fontweight='bold', y=1.02)
         plt.tight_layout()
         plt.savefig('weight_comparison.png', dpi=300, bbox_inches='tight')
-        print("✓ Saved: weight_comparison.png")
-        plt.show()
+        print("[OK] Saved: weight_comparison.png")
+        
     
     def plot_cumulative_returns(self, figsize=(12, 7)):
         """Plot cumulative returns for optimized portfolios."""
@@ -194,8 +194,8 @@ class PortfolioVisualizer:
         
         plt.tight_layout()
         plt.savefig('cumulative_returns.png', dpi=300, bbox_inches='tight')
-        print("✓ Saved: cumulative_returns.png")
-        plt.show()
+        print("[OK] Saved: cumulative_returns.png")
+        
     
     def plot_drawdown(self, figsize=(12, 7)):
         """Plot maximum drawdown analysis."""
@@ -233,8 +233,8 @@ class PortfolioVisualizer:
         
         plt.tight_layout()
         plt.savefig('drawdown.png', dpi=300, bbox_inches='tight')
-        print("✓ Saved: drawdown.png")
-        plt.show()
+        print("[OK] Saved: drawdown.png")
+        
     
     def plot_risk_metrics_comparison(self, figsize=(14, 8)):
         """Plot comprehensive risk metrics comparison."""
@@ -278,8 +278,8 @@ class PortfolioVisualizer:
         fig.suptitle('Risk Metrics Comparison', fontsize=14, fontweight='bold', y=0.995)
         plt.tight_layout()
         plt.savefig('risk_metrics.png', dpi=300, bbox_inches='tight')
-        print("✓ Saved: risk_metrics.png")
-        plt.show()
+        print("[OK] Saved: risk_metrics.png")
+        
     
     def plot_correlation_heatmap(self, figsize=(10, 8)):
         """Plot correlation matrix heatmap."""
@@ -296,8 +296,8 @@ class PortfolioVisualizer:
         
         plt.tight_layout()
         plt.savefig('correlation_matrix.png', dpi=300, bbox_inches='tight')
-        print("✓ Saved: correlation_matrix.png")
-        plt.show()
+        print("[OK] Saved: correlation_matrix.png")
+        
     
     def generate_all_visualizations(self):
         """Generate all visualizations."""
@@ -313,10 +313,303 @@ class PortfolioVisualizer:
         self.plot_drawdown()
         self.plot_risk_metrics_comparison()
         
-        print("\n✓ All visualizations generated successfully!")
+        print("\n[OK] All base visualizations generated successfully!")
 
 
 def create_visualizations(optimizer, results):
     """Convenience function to create all visualizations."""
     visualizer = PortfolioVisualizer(optimizer, results)
     visualizer.generate_all_visualizations()
+
+# ---------------------------------------------------------
+# Robustness & Dashboard Visualizations
+# ---------------------------------------------------------
+
+def plot_tau_sensitivity(df, save_dir="results"):
+    """Plot the 3-panel Matplotlib graphic for Tau Sensitivity."""
+    import os
+    fig = plt.figure(figsize=(15, 12))
+    plt.style.use('seaborn-v0_8-darkgrid')
+    
+    # Subplot 1: Tau vs Sharpe Ratio
+    plt.subplot(3, 1, 1)
+    plt.plot(df.index, df['Sharpe Ratio'], marker='o', color='green', linewidth=2)
+    plt.title('Tau (τ) vs Sharpe Ratio', fontsize=14, fontweight='bold')
+    plt.ylabel('Sharpe Ratio', fontsize=12)
+    plt.grid(True, alpha=0.3)
+    
+    # Subplot 2: Tau vs Volatility vs Expected Return
+    plt.subplot(3, 1, 2)
+    ax1 = plt.gca()
+    ax2 = ax1.twinx()
+    
+    line1 = ax1.plot(df.index, df['Volatility'] * 100, marker='s', color='orange', label='Volatility')
+    line2 = ax2.plot(df.index, df['Expected Return'] * 100, marker='^', color='blue', label='Expected Return')
+    
+    ax1.set_ylabel('Volatility (%)', fontsize=12, color='orange')
+    ax2.set_ylabel('Expected Return (%)', fontsize=12, color='blue')
+    plt.title('Tau (τ) vs Expected Return & Volatility', fontsize=14, fontweight='bold')
+    ax1.grid(True, alpha=0.3)
+    
+    lines = line1 + line2
+    labels = [l.get_label() for l in lines]
+    ax1.legend(lines, labels, loc='upper left')
+    
+    # Subplot 3: Portfolio Weight Drift Mapping
+    plt.subplot(3, 1, 3)
+    weight_cols = [c for c in df.columns if c.startswith('Weight_')]
+    weights_data = df[weight_cols]
+    labels = [c.replace('Weight_', '') for c in weight_cols]
+    
+    plt.stackplot(df.index, weights_data.T * 100, labels=labels, alpha=0.8)
+    plt.title('Portfolio Weight Distribution vs Tau (τ)', fontsize=14, fontweight='bold')
+    plt.xlabel('Tau (τ)', fontsize=12)
+    plt.ylabel('Allocation (%)', fontsize=12)
+    plt.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
+    plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    os.makedirs(save_dir, exist_ok=True)
+    save_path = os.path.join(save_dir, 'tau_sensitivity.png')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+def plot_lambda_sensitivity(df, save_dir="results"):
+    """Plot the 2-panel Matplotlib graphic for Lambda Sensitivity."""
+    import os
+    fig = plt.figure(figsize=(15, 10))
+    plt.style.use('seaborn-v0_8-darkgrid')
+    
+    # Subplot 1: Lambda vs Sharpe Ratio
+    plt.subplot(2, 1, 1)
+    plt.plot(df.index, df['Sharpe Ratio'], marker='o', color='purple', linewidth=2)
+    plt.title('Risk Aversion (λ) vs Sharpe Ratio', fontsize=14, fontweight='bold')
+    plt.ylabel('Sharpe Ratio', fontsize=12)
+    plt.grid(True, alpha=0.3)
+    plt.xticks(df.index)
+    
+    # Subplot 2: Lambda vs Expected Return
+    plt.subplot(2, 1, 2)
+    plt.plot(df.index, df['Expected Return'] * 100, marker='^', color='teal', linewidth=2)
+    plt.title('Risk Aversion (λ) vs Expected Return', fontsize=14, fontweight='bold')
+    plt.xlabel('Risk Aversion Coef (λ)', fontsize=12)
+    plt.ylabel('Expected Return (%)', fontsize=12)
+    plt.grid(True, alpha=0.3)
+    plt.xticks(df.index)
+    
+    plt.tight_layout()
+    os.makedirs(save_dir, exist_ok=True)
+    save_path = os.path.join(save_dir, 'lambda_sensitivity.png')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+def plot_stress_test(tester_results, save_dir="results"):
+    """Generate 2-panel rendering tracking cumulative falls and drawdown vectors."""
+    import os
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), gridspec_kw={'height_ratios': [2, 1]}, sharex=True)
+    plt.style.use('seaborn-v0_8-darkgrid')
+    
+    colors = {
+        'black_litterman': '#1E88E5',
+        'markowitz': '#E53935',
+        'equal_weight': '#8E24AA',
+        'benchmark': '#43A047'
+    }
+    
+    display_names = {
+        'black_litterman': 'Black-Litterman Allocation',
+        'markowitz': 'Markowitz Mean-Variance',
+        'equal_weight': 'Equal Weight Portfolio',
+        'benchmark': 'S&P 500 (^GSPC)'
+    }
+    
+    for name, metrics in tester_results.items():
+        cum_rets = metrics['cumulative_series']
+        val_series = cum_rets * 100
+        
+        ls = '-' if name != 'benchmark' else '--'
+        lw = 2.5 if name == 'black_litterman' else 1.5
+        alpha = 1.0 if name == 'black_litterman' else 0.8
+        
+        ax1.plot(val_series.index, val_series, label=display_names[name], 
+                 color=colors[name], linestyle=ls, linewidth=lw, alpha=alpha)
+        
+    ax1.set_title('2008 Financial Crisis Simulation: Cumulative Trajectories', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Portfolio Value (Baseline %)', fontsize=12)
+    ax1.legend(loc='best')
+    ax1.grid(True, alpha=0.3)
+    
+    for name, metrics in tester_results.items():
+        dd_series = metrics['drawdown_series'] * 100
+        
+        ls = '-' if name != 'benchmark' else '--'
+        lw = 2.0 if name == 'black_litterman' else 1.0
+        alpha = 0.9 if name == 'black_litterman' else 0.5
+        
+        if name == 'black_litterman':
+            ax2.fill_between(dd_series.index, dd_series, 0, color=colors[name], alpha=0.2)
+            
+        ax2.plot(dd_series.index, dd_series, color=colors[name], linestyle=ls, linewidth=lw, alpha=alpha)
+        
+    ax2.set_title('Geometric Drawdown Depths (%)', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Drawdown (%)', fontsize=12)
+    ax2.set_xlabel('Date', fontsize=12)
+    ax2.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    os.makedirs(save_dir, exist_ok=True)
+    save_path = os.path.join(save_dir, 'stress_test_2008.png')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+def plot_final_research_dashboard(backtest_results, stress_results, save_dir="results"):
+    """
+    Generate the Master Output Dashboard containing:
+    - Cumulative Return Comparison
+    - Gross vs Net BL Performance
+    - Benchmark comparison
+    - Stress Test Depth
+    """
+    import os
+    fig = plt.figure(figsize=(20, 14))
+    plt.style.use('seaborn-v0_8-darkgrid')
+    
+    # 1. Cumulative Out of Sample Returns
+    ax1 = plt.subplot(2, 2, 1)
+    bl_net = backtest_results['black_litterman']['net']
+    mw_net = backtest_results['markowitz']['net']
+    sp500 = backtest_results['sp500']
+    
+    ax1.plot(bl_net.index, (1 + bl_net).cumprod() * 100, label='Black-Litterman (Net)', color='#1E88E5', lw=2)
+    ax1.plot(mw_net.index, (1 + mw_net).cumprod() * 100, label='Markowitz (Net)', color='#E53935', lw=1.5)
+    ax1.plot(sp500.index, (1 + sp500).cumprod() * 100, label='S&P 500', color='#43A047', ls='--', lw=1.5)
+    ax1.set_title('Out-of-Sample Cumulative Returns', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Portfolio Value (%)')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # 2. Gross vs Net Returns
+    ax2 = plt.subplot(2, 2, 2)
+    bl_gross = backtest_results['black_litterman']['gross']
+    ax2.plot(bl_gross.index, (1 + bl_gross).cumprod() * 100, label='BL Gross', color='#8E24AA', lw=2)
+    ax2.plot(bl_net.index, (1 + bl_net).cumprod() * 100, label='BL Net (After Costs)', color='#1E88E5', lw=2)
+    ax2.fill_between(bl_net.index, (1 + bl_gross).cumprod() * 100, (1 + bl_net).cumprod() * 100, color='red', alpha=0.1, label='Friction Drag')
+    ax2.set_title('Impact of Transaction Costs & Slippage', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Portfolio Value (%)')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    
+    # 3. Rolling Drawdowns (Backtest)
+    ax3 = plt.subplot(2, 2, 3)
+    bl_cum = (1 + bl_net).cumprod()
+    sp_cum = (1 + sp500).cumprod()
+    bl_dd = (bl_cum - bl_cum.cummax()) / bl_cum.cummax() * 100
+    sp_dd = (sp_cum - sp_cum.cummax()) / sp_cum.cummax() * 100
+    ax3.plot(bl_dd.index, bl_dd, label='BL Drawdown', color='#1E88E5')
+    ax3.plot(sp_dd.index, sp_dd, label='S&P 500 Drawdown', color='#43A047', ls='--')
+    ax3.fill_between(bl_dd.index, bl_dd, 0, alpha=0.2, color='#1E88E5')
+    ax3.set_title('Rolling Drawdown Trajectory', fontsize=14, fontweight='bold')
+    ax3.set_ylabel('Drawdown (%)')
+    ax3.legend()
+    ax3.grid(True, alpha=0.3)
+    
+    # 4. Stress Test 2008 Plunge
+    ax4 = plt.subplot(2, 2, 4)
+    bl_08_dd = stress_results['black_litterman']['drawdown_series'] * 100
+    sp_08_dd = stress_results['benchmark']['drawdown_series'] * 100
+    ax4.plot(bl_08_dd.index, bl_08_dd, label='BL 2008 Fall', color='#1E88E5', lw=2)
+    ax4.plot(sp_08_dd.index, sp_08_dd, label='S&P 500 2008 Fall', color='#43A047', ls='--', lw=2)
+    ax4.fill_between(bl_08_dd.index, bl_08_dd, 0, alpha=0.2, color='#1E88E5')
+    ax4.set_title('2008 Global Financial Crisis Stress Test', fontsize=14, fontweight='bold')
+    ax4.set_ylabel('Drawdown Depth (%)')
+    ax4.legend()
+    ax4.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    os.makedirs(save_dir, exist_ok=True)
+    save_path = os.path.join(save_dir, 'final_research_dashboard.png')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+def plot_benchmark_comparison(backtest_results, save_dir="results"):
+    """Plot cumulative returns of models against benchmarks and save plot."""
+    import os
+    os.makedirs(save_dir, exist_ok=True)
+    
+    plt.figure(figsize=(12, 7))
+    plt.style.use('seaborn-v0_8-darkgrid')
+    
+    # Calculate cumulative returns
+    models = {
+        'MW (Net)': backtest_results['markowitz']['net'],
+        'MW (Gross)': backtest_results['markowitz']['gross'],
+        'BL (Net)': backtest_results['black_litterman']['net'],
+        'BL (Gross)': backtest_results['black_litterman']['gross'],
+        'Equal-Weight (Net)': backtest_results['equal_weight']['net'],
+        'S&P 500 (^GSPC)': backtest_results['sp500'],
+        'CSI 300 (000300.SS)': backtest_results['csi300']
+    }
+    
+    colors = {
+        'MW (Net)': '#ff7f0e',
+        'MW (Gross)': '#ffbb78',
+        'BL (Net)': '#1f77b4',
+        'BL (Gross)': '#aec7e8',
+        'Equal-Weight (Net)': '#2ca02c',
+        'S&P 500 (^GSPC)': '#d62728',
+        'CSI 300 (000300.SS)': '#9467bd'
+    }
+    
+    for name, returns in models.items():
+        cum_rets = (1 + returns).cumprod() - 1
+        ls = '--' if 'Gross' in name else '-'
+        alpha = 0.5 if 'Gross' in name else 1.0
+        plt.plot(cum_rets.index, cum_rets * 100, label=name, color=colors[name], 
+                 linewidth=2.0, linestyle=ls, alpha=alpha)
+        
+    plt.title('Out-of-Sample Cumulative Returns vs Benchmarks (Gross/Net)', fontsize=14, fontweight='bold')
+    plt.xlabel('Date', fontsize=12)
+    plt.ylabel('Cumulative Return (%)', fontsize=12)
+    plt.legend(loc='upper left')
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    
+    save_path = os.path.join(save_dir, 'benchmark_comparison.png')
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+
+def plot_turnover_history(backtest_results, save_dir="results"):
+    """Plot turnover rates at each rebalance period over time."""
+    import os
+    os.makedirs(save_dir, exist_ok=True)
+    
+    plt.figure(figsize=(12, 5))
+    plt.style.use('seaborn-v0_8-darkgrid')
+    
+    models = {
+        'Markowitz': backtest_results['turnover']['markowitz'],
+        'Black-Litterman': backtest_results['turnover']['black_litterman'],
+        'Equal-Weight': backtest_results['turnover']['equal_weight'],
+    }
+    
+    colors = {
+        'Markowitz': '#ff7f0e',
+        'Black-Litterman': '#1f77b4',
+        'Equal-Weight': '#2ca02c',
+    }
+    
+    for name, turnover in models.items():
+        if not turnover.empty:
+            plt.bar(turnover.index, turnover * 100, label=name, color=colors[name], 
+                    alpha=0.6, width=15)
+        
+    plt.title('Portfolio Asset Turnover at Rolling Rebalances', fontsize=14, fontweight='bold')
+    plt.xlabel('Rebalance Date', fontsize=12)
+    plt.ylabel('Turnover Weight Transacted (%)', fontsize=12)
+    plt.legend(loc='upper left')
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    
+    save_path = os.path.join(save_dir, 'turnover_history.png')
+    plt.savefig(save_path, dpi=300)
+    plt.close()
