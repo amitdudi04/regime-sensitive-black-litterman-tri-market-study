@@ -75,6 +75,83 @@ document.addEventListener('DOMContentLoaded', () => {
         createRow(); // Leave one empty
     });
 
+    // Asset Dictionary Loader
+    let cachedDict = null;
+
+    async function updateAssetDictionary() {
+        const dictBody = document.getElementById('dict-body');
+        const dictCard = document.getElementById('asset-dict-card');
+        const currentTickers = document.getElementById('tickers').value.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
+
+        if (!cachedDict) {
+            try {
+                const res = await fetch('/api/asset_dictionary');
+                const json = await res.json();
+                if (json.status === 'success') {
+                    cachedDict = json.data;
+                }
+            } catch (e) {
+                console.warn("Could not load asset dictionary", e);
+                return;
+            }
+        }
+
+        if (cachedDict && currentTickers.length > 0) {
+            dictBody.innerHTML = '';
+            let count = 0;
+
+            // Only show mappings for actively loaded tickers
+            currentTickers.forEach(ticker => {
+                if (cachedDict[ticker] && cachedDict[ticker] !== ticker) {
+                    count++;
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+                    tr.innerHTML = `
+                        <td style="padding: 0.5rem; color: var(--accent-primary); font-family: monospace;">${ticker}</td>
+                        <td style="padding: 0.5rem; color: var(--text-main);">${cachedDict[ticker]}</td>
+                    `;
+                    dictBody.appendChild(tr);
+                }
+            });
+
+            // Only show the card if there are actual translations happening (e.g. Chinese CSI)
+            if (count > 0) {
+                dictCard.style.display = 'block';
+            } else {
+                dictCard.style.display = 'none';
+            }
+        }
+    }
+
+    // Preset Loaders
+    document.getElementById('load-us-preset').addEventListener('click', () => {
+        document.getElementById('tickers').value = "AAPL,MSFT,GOOGL,AMZN,NVDA";
+        document.getElementById('start_date').value = "2021-02-23";
+        document.getElementById('end_date').value = "2024-02-28";
+        viewsBody.innerHTML = '';
+        presets.forEach(p => createRow(p.asset, p.return, p.conf));
+        updateAssetDictionary();
+    });
+
+    document.getElementById('load-china-preset').addEventListener('click', () => {
+        document.getElementById('tickers').value = "600519.SS,601318.SS,600036.SS,601398.SS,300750.SZ,000858.SZ,600276.SS,600309.SS";
+        document.getElementById('start_date').value = "2021-02-23";
+        document.getElementById('end_date').value = "2024-02-28";
+        viewsBody.innerHTML = '';
+        const chinaPresets = [
+            { asset: '600519.SS', return: 12, conf: 0.50 },
+            { asset: '601318.SS', return: 10, conf: 0.50 },
+            { asset: '600036.SS', return: 11, conf: 0.50 },
+            { asset: '601398.SS', return: 14, conf: 0.50 },
+            { asset: '300750.SZ', return: 15, conf: 0.50 }
+        ];
+        chinaPresets.forEach(p => createRow(p.asset, p.return, p.conf));
+        updateAssetDictionary();
+    });
+
+    // Bind dynamic trigger to manual typing updates too
+    document.getElementById('tickers').addEventListener('change', updateAssetDictionary);
+
     // 3. API Invocation Logic
     const runBtn = document.getElementById('run-optimization-btn');
     const btnText = runBtn.querySelector('span');
@@ -146,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             emptyState.style.display = 'none';
             dataViews.style.display = 'block';
 
-            renderDashboard(result.data, tickers);
+            renderDashboard(result.data, result.data.mapped_tickers || tickers);
 
         } catch (err) {
             showError(err.message);

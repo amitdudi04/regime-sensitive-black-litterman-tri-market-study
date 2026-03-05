@@ -1,0 +1,14 @@
+# .gitignore
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.venv-1/
+.vscode/
+
+# Project specific
+data/raw/*
+data/processed/*
+results/v1_final_results/*.csv
+results/v1_final_results/*.json
+*.log

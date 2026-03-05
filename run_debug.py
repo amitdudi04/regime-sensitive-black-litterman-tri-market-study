@@ -1,7 +1,9 @@
 import traceback
-import main
+import empirical_study
+
 try:
-    main.main()
+    empirical_study.run_market_pipeline('CHINA', empirical_study.MARKET_CONFIG['CHINA'])
 except Exception as e:
-    with open('err.txt', 'w') as f:
-        f.write(traceback.format_exc())
+    with open('error_log.txt', 'w') as f:
+        traceback.print_exc(file=f)
+    print("Error written to error_log.txt")

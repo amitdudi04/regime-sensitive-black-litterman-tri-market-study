@@ -8,6 +8,7 @@ warnings.filterwarnings('ignore')
 from portfolio_optimization import BlackLittermanOptimizer
 from backtesting import run_comprehensive_backtest
 from stress_testing import HistoricalStressTester
+from robustness import run_tau_sensitivity, run_lambda_sensitivity
 
 
 def build_robustness_summary():
@@ -65,7 +66,7 @@ def build_robustness_summary():
     
     # Run Tau Sensitivity (0.01 vs 0.20)
     tau_vals = [0.01, 0.2] 
-    df_tau = opt.run_tau_sensitivity(views, confidence, tau_values=tau_vals, save_dir=save_dir)
+    df_tau = run_tau_sensitivity(opt, views, confidence, tau_values=tau_vals)
     
     # Tau Variance Metrics: How does the model shift identically from Minimum Uncertainty vs Maximum?
     expected_return_shift = df_tau.loc[0.2, 'Expected Return'] - df_tau.loc[0.01, 'Expected Return']
@@ -88,7 +89,7 @@ def build_robustness_summary():
     
     # Run Lambda Sensitivity (Risk Aversion 1.5 vs 4.0)
     lam_vals = [1.5, 4.0]
-    df_lam = opt.run_lambda_sensitivity(views, confidence, lambda_values=lam_vals, save_dir=save_dir)
+    df_lam = run_lambda_sensitivity(opt, views, confidence, lambda_values=lam_vals)
     
     vol_shift = df_lam.loc[4.0, 'Volatility'] - df_lam.loc[1.5, 'Volatility']
     expected_return_shift_lam = df_lam.loc[4.0, 'Expected Return'] - df_lam.loc[1.5, 'Expected Return']

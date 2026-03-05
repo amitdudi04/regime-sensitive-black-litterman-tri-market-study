@@ -1,0 +1,8 @@
+start_date: 2005-01-01
+end_date: 2025-01-01
+rebalance_window: 252
+transaction_cost_rate: 0.001
+tau: 0.05
+risk_free_rate: 0.02
+confidence_interval: 0.95
+bootstrap_samples: 1000
