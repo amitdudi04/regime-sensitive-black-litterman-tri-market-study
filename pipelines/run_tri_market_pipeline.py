@@ -96,14 +96,32 @@ def run():
     mv_mdd = calculate_max_drawdown(mv_returns)
     
     # 9. Final Results Export
-    summary = {
-        'Model': 'Tri-Market Execution',
-        'BL_ASI': bl_asi,
-        'MV_ASI': mv_asi,
-        'Observations': len(returns)
-    }
+    summary_df = pd.DataFrame([
+        {
+            'Market': 'Tri-Market',
+            'Model': 'Black-Litterman',
+            'Return': bl_returns.mean() * 252,
+            'Volatility': bl_returns.std() * (252 ** 0.5),
+            'Sharpe': bl_sharpe,
+            'Turnover': bl_turnover,
+            'ASI': bl_asi,
+            'Max_Drawdown': bl_mdd
+        },
+        {
+            'Market': 'Tri-Market',
+            'Model': 'Markowitz',
+            'Return': mv_returns.mean() * 252,
+            'Volatility': mv_returns.std() * (252 ** 0.5),
+            'Sharpe': mv_sharpe,
+            'Turnover': mv_turnover,
+            'ASI': mv_asi,
+            'Max_Drawdown': mv_mdd
+        }
+    ])
     
-    export_to_csv(summary, "tri_market_summary.csv")
+    tri_market_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'v1_final_results', 'tri_market_summary.csv')
+    summary_df.to_csv(tri_market_path, index=False)
+    print("Exporting results to results/v1_final_results/tri_market_summary.csv")
     
     # 10. Model Comparison Unified Summary
     comparison = [
