@@ -95,7 +95,7 @@ class ModernDashboard(QMainWindow):
     def __init__(self):
         super().__init__()
         # Title tuned to the current empirical engine naming (include India)
-        self.setWindowTitle("Empirical Evaluation Engine — US Developed, China Emerging, India Emerging")
+        self.setWindowTitle("Tri-Market Empirical Engine GUI")
         self.resize(1400, 900)
         self.apply_dark_theme()
         

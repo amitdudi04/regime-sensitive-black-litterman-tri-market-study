@@ -6,12 +6,12 @@ import warnings
 warnings.filterwarnings('ignore')
 from typing import Dict, Any, List, Optional, Tuple
 
-from core.optimizer import BlackLittermanOptimizer
-from core.backtester import run_comprehensive_backtest
-from core.stress_testing import HistoricalStressTester
-from core.robustness import run_tau_sensitivity, run_lambda_sensitivity
-from core.soe_private_analysis import run_china_soe_pipeline, run_china_private_pipeline, _hypothesis_tests
-from core.statistical_tests import bootstrap_sharpe_diff, jobson_korkie_test
+from legacy.core_legacy.optimizer import BlackLittermanOptimizer
+from legacy.core_legacy.backtester import run_comprehensive_backtest
+from legacy.core_legacy.stress_testing import HistoricalStressTester
+from legacy.core_legacy.robustness import run_tau_sensitivity, run_lambda_sensitivity
+from legacy.core_legacy.soe_private_analysis import run_china_soe_pipeline, run_china_private_pipeline, _hypothesis_tests
+from legacy.core_legacy.statistical_tests import bootstrap_sharpe_diff, jobson_korkie_test
 
 logger = logging.getLogger(__name__)
 
@@ -300,7 +300,7 @@ def evaluate_dual_market(custom_config: Optional[Dict[str, Any]] = None) -> Dict
         # we can fetch the prices or pass the cached prices from the optimizer. 
         # The optimizer for CHINA is not saved globally here, so we will download the data once.
         import yfinance as yf
-        from core.ownership_classification import SOE_TICKERS, PRIVATE_TICKERS
+        from legacy.core_legacy.ownership_classification import SOE_TICKERS, PRIVATE_TICKERS
         all_cn_tickers = list(set(SOE_TICKERS + PRIVATE_TICKERS))
         
         try:
