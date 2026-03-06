@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def calculate_asi(rolling_weights_df):
+def compute_asi(rolling_weights_df):
     """
     Compute the Allocation Stability Index (ASI).
     ASI measures the average L1 norm drift between consecutive portfolio weight vectors 

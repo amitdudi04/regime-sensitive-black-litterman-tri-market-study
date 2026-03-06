@@ -14,7 +14,7 @@ from models.black_litterman_model import compute_implied_equilibrium_returns, co
 from models.optimizer import compute_black_litterman_weights, compute_mean_variance_weights
 from backtesting.rolling_backtest import run_rolling_backtest
 from backtesting.transaction_costs import calculate_turnover, apply_transaction_costs
-from backtesting.allocation_stability_index import calculate_asi
+from backtesting.allocation_stability_index import compute_asi
 from results.export_utils import export_to_csv
 
 def calculate_max_drawdown(returns_series):
@@ -85,8 +85,21 @@ def run():
     pd.DataFrame([bl_regr, mv_regr]).to_csv(regr_summary_path, index=False)
     
     # 8. Compute Secondary Metrics (ASI, Turnover, Drawdowns, Sharpe)
-    bl_asi = calculate_asi(bl_weights_history)
-    mv_asi = calculate_asi(mv_weights_history)
+    US_bl_weights = bl_weights_history[['SPY']]
+    China_bl_weights = bl_weights_history[['ASHR']]
+    India_bl_weights = bl_weights_history[['INDA']]
+    
+    US_mv_weights = mv_weights_history[['SPY']]
+    China_mv_weights = mv_weights_history[['ASHR']]
+    India_mv_weights = mv_weights_history[['INDA']]
+    
+    bl_asi_us = compute_asi(US_bl_weights)
+    bl_asi_china = compute_asi(China_bl_weights)
+    bl_asi_india = compute_asi(India_bl_weights)
+    
+    mv_asi_us = compute_asi(US_mv_weights)
+    mv_asi_china = compute_asi(China_mv_weights)
+    mv_asi_india = compute_asi(India_mv_weights)
     
     bl_turnover = float(calculate_turnover(bl_weights_history).mean())
     mv_turnover = float(calculate_turnover(mv_weights_history).mean())
@@ -100,16 +113,16 @@ def run():
     # 9. Final Results Export
     # 9-Row Cross Market Empirical Array Compilation
     summary_df = pd.DataFrame([
-        {'Market': 'US', 'Model': 'Black-Litterman', 'Annualized Return': '37.77%', 'Annualized Volatility': '31.27%', 'Sharpe Ratio': '1.208', 'Turnover': '72.89%', 'ASI': f"{bl_asi:.6f}", 'Max Drawdown': '-43.17%'},
-        {'Market': 'US', 'Model': 'Markowitz', 'Annualized Return': '38.14%', 'Annualized Volatility': '31.74%', 'Sharpe Ratio': '1.201', 'Turnover': '74.78%', 'ASI': f"{mv_asi:.6f}", 'Max Drawdown': '-44.21%'},
+        {'Market': 'US', 'Model': 'Black-Litterman', 'Annualized Return': '37.77%', 'Annualized Volatility': '31.27%', 'Sharpe Ratio': '1.208', 'Turnover': '72.89%', 'ASI': f"{bl_asi_us:.6f}", 'Max Drawdown': '-43.17%'},
+        {'Market': 'US', 'Model': 'Markowitz', 'Annualized Return': '38.14%', 'Annualized Volatility': '31.74%', 'Sharpe Ratio': '1.201', 'Turnover': '74.78%', 'ASI': f"{mv_asi_us:.6f}", 'Max Drawdown': '-44.21%'},
         {'Market': 'US', 'Model': 'Benchmark', 'Annualized Return': '12.45%', 'Annualized Volatility': '17.18%', 'Sharpe Ratio': '0.725', 'Turnover': 'N/A', 'ASI': 'N/A', 'Max Drawdown': '-33.92%'},
         
-        {'Market': 'China', 'Model': 'Black-Litterman', 'Annualized Return': '19.35%', 'Annualized Volatility': '28.92%', 'Sharpe Ratio': '0.669', 'Turnover': '89.15%', 'ASI': f"{bl_asi:.6f}", 'Max Drawdown': '-39.55%'},
-        {'Market': 'China', 'Model': 'Markowitz', 'Annualized Return': '17.16%', 'Annualized Volatility': '30.48%', 'Sharpe Ratio': '0.563', 'Turnover': '91.00%', 'ASI': f"{mv_asi:.6f}", 'Max Drawdown': '-45.19%'},
+        {'Market': 'China', 'Model': 'Black-Litterman', 'Annualized Return': '19.35%', 'Annualized Volatility': '28.92%', 'Sharpe Ratio': '0.669', 'Turnover': '89.15%', 'ASI': f"{bl_asi_china:.6f}", 'Max Drawdown': '-39.55%'},
+        {'Market': 'China', 'Model': 'Markowitz', 'Annualized Return': '17.16%', 'Annualized Volatility': '30.48%', 'Sharpe Ratio': '0.563', 'Turnover': '91.00%', 'ASI': f"{mv_asi_china:.6f}", 'Max Drawdown': '-45.19%'},
         {'Market': 'China', 'Model': 'Benchmark', 'Annualized Return': '3.63%', 'Annualized Volatility': '16.82%', 'Sharpe Ratio': '0.216', 'Turnover': 'N/A', 'ASI': 'N/A', 'Max Drawdown': '-27.27%'},
         
-        {'Market': 'India', 'Model': 'Black-Litterman', 'Annualized Return': '17.73%', 'Annualized Volatility': '16.49%', 'Sharpe Ratio': '1.075', 'Turnover': '8.85%', 'ASI': f"{bl_asi:.6f}", 'Max Drawdown': '-35.01%'},
-        {'Market': 'India', 'Model': 'Markowitz', 'Annualized Return': '17.62%', 'Annualized Volatility': '19.46%', 'Sharpe Ratio': '0.905', 'Turnover': '70.37%', 'ASI': f"{mv_asi:.6f}", 'Max Drawdown': '-40.60%'},
+        {'Market': 'India', 'Model': 'Black-Litterman', 'Annualized Return': '17.73%', 'Annualized Volatility': '16.49%', 'Sharpe Ratio': '1.075', 'Turnover': '8.85%', 'ASI': f"{bl_asi_india:.6f}", 'Max Drawdown': '-35.01%'},
+        {'Market': 'India', 'Model': 'Markowitz', 'Annualized Return': '17.62%', 'Annualized Volatility': '19.46%', 'Sharpe Ratio': '0.905', 'Turnover': '70.37%', 'ASI': f"{mv_asi_india:.6f}", 'Max Drawdown': '-40.60%'},
         {'Market': 'India', 'Model': 'Benchmark', 'Annualized Return': '11.31%', 'Annualized Volatility': '16.75%', 'Sharpe Ratio': '0.675', 'Turnover': 'N/A', 'ASI': 'N/A', 'Max Drawdown': '-38.07%'}
     ])
     

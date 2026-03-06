@@ -72,14 +72,14 @@ Testing mechanisms define an explicit **“frozen weights” methodology**. Here
 
 | Crisis | Market | Model | Annualized Return | Annualized Volatility | Sharpe Ratio | Turnover | ASI | Max Drawdown |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **US** | Black-Litterman | 37.77% | 31.27% | 1.208 | 72.89% | 0.000229 | -43.17% |
-| **US** | Markowitz | 38.14% | 31.74% | 1.201 | 74.78% | 0.011708 | -44.21% |
+| **US** | Black-Litterman | 37.77% | 31.27% | 1.208 | 72.89% | 6.6e-05 | -43.17% |
+| **US** | Markowitz | 38.14% | 31.74% | 1.201 | 74.78% | 0.005409 | -44.21% |
 | **US** | Benchmark | 12.45% | 17.18% | 0.725 | nan | nan | -33.92% |
-| **China** | Black-Litterman | 19.35% | 28.92% | 0.669 | 89.15% | 0.000229 | -39.55% |
-| **China** | Markowitz | 17.16% | 30.48% | 0.563 | 91.00% | 0.011708 | -45.19% |
+| **China** | Black-Litterman | 19.35% | 28.92% | 0.669 | 89.15% | 9.7e-05 | -39.55% |
+| **China** | Markowitz | 17.16% | 30.48% | 0.563 | 91.00% | 0.002903 | -45.19% |
 | **China** | Benchmark | 3.63% | 16.82% | 0.216 | nan | nan | -27.27% |
-| **India** | Black-Litterman | 17.73% | 16.49% | 1.075 | 8.85% | 0.000229 | -35.01% |
-| **India** | Markowitz | 17.62% | 19.46% | 0.905 | 70.37% | 0.011708 | -40.60% |
+| **India** | Black-Litterman | 17.73% | 16.49% | 1.075 | 8.85% | 6.6e-05 | -35.01% |
+| **India** | Markowitz | 17.62% | 19.46% | 0.905 | 70.37% | 0.003397 | -40.60% |
 | **India** | Benchmark | 11.31% | 16.75% | 0.675 | nan | nan | -38.07% |
 
 Economically, the Black–Litterman model routinely produces higher or near-identical net Sharpe ratios, characterized simultaneously by structurally lower algorithmic turnover and systematically suppressed maximum drawdowns. The Markowitz approach maximizes theoretical localized return exclusively by destroying the underlying capital variance capacity.
