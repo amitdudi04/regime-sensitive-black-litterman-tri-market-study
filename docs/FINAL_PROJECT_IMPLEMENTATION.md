@@ -37,8 +37,8 @@ Automated testing protocols dynamically array internal execution thresholds mapp
 ## 9. Regime Detection Modeling
 The continuous unobserved variance sequences are actively segregated utilizing a fully decoupled **Markov Regime Switching Model** (`statsmodels.tsa.regime_switching.markov_regression.MarkovRegression`). Formally defining discrete binary sequences of Low Volatility and High Volatility state-space environments mathematically guarantees evaluation metrics map accurately to identical structural horizons. Conditional performance matrices indicate that Black-Litterman allocations uniquely perform better during high-uncertainty (high-volatility) regimes relative to unconstrained models, exclusively due to Bayesian shrinkage anchoring estimates when historical variance explodes unpredictably.
 
-## 10. Pipeline Execution
-All pipelines (`pipelines/run_tri_market_pipeline.py`) systematically lock analytical chronology ensuring strictly prohibited forward-looking bias architectures. Code execution strictly commands Market Pricing $\rightarrow$ Ledoit-Wolf Covariances $\rightarrow$ OOS Backtesting $\rightarrow$ ASI Analytics $\rightarrow$ Regime Mapping $\rightarrow$ Fama-French Pricing $\rightarrow$ Central Documentation Exports systematically.
+## 10. Empirical Validation Execution
+All empirical evaluations execute a strict sequential chronology to structurally prohibit forward-looking bias architectures. The estimation sequence executes deterministically: Market Pricing $\rightarrow$ Ledoit-Wolf Covariances $\rightarrow$ OOS Backtesting $\rightarrow$ Analytical ASI Derivation $\rightarrow$ Regime Mapping $\rightarrow$ Fama-French Regression.
 
 All empirical results presented in this study are fully reproducible through the modular research pipeline included in the accompanying repository. Executing the provided pipeline scripts regenerates all result tables, visualizations, and statistical outputs directly from the underlying market data.
 
