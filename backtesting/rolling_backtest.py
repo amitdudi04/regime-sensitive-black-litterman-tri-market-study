@@ -35,7 +35,14 @@ def run_rolling_backtest(returns_df, initial_weights, window_size=252, rebalance
                 n_assets = len(train_data.columns)
                 market_weights = [1/n_assets] * n_assets
                 pi = compute_implied_equilibrium_returns(cov_matrix, market_weights, lambda_risk_aversion=3.0)
-                bl_posterior = compute_black_litterman_posterior(pi, cov_matrix, P=None, Q=None, Omega=None, tau=tau)
+                
+                # Synthetic Momentum View to establish mild tracking variance out-of-sample
+                P = np.eye(n_assets)
+                Q = pi.values + (expected_returns.values - pi.values) * 0.1
+                tau_cov = tau * cov_matrix.values
+                Omega = np.diag(np.diag(tau_cov)) * 10.0
+                
+                bl_posterior = compute_black_litterman_posterior(pi, cov_matrix, P=P, Q=Q, Omega=Omega, tau=tau)
                 res = compute_black_litterman_weights(bl_posterior, cov_matrix)
                 current_weight = res.values if isinstance(res, pd.Series) else res
         

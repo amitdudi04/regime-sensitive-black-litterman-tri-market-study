@@ -68,26 +68,17 @@ Historical non-stationarity limits generalized performance inferences. Therefore
 
 Testing mechanisms define an explicit **“frozen weights” methodology**. Here, algorithms train strictly on normalized pre-crash arrays resulting in a deterministic allocation formulation. The system immediately freezes these exact capital weightings and continuously executes them verbatim across the succeeding crisis timeline to track absolute unadjusted drawdown mechanics directly relative to unmanaged index benchmarks.
 
-| Crisis | Market | Model | Max Drawdown | Volatility Spike | Recovery Time |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **2008_US_GFC** | United States | Black-Litterman | -62.66% | 1.82x | 495 days |
-| **2008_US_GFC** | United States | Markowitz | -62.77% | 1.82x | 495 days |
-| **2015_China_Crash** | China | Black-Litterman | -26.00% | 1.63x | 250 days |
-| **2015_China_Crash** | China | Markowitz | -25.38% | 1.63x | 127 days |
-| **2020_India_Covid** | India | Black-Litterman | -49.85% | 0.91x | 378 days |
-| **2020_India_Covid** | India | Markowitz | -49.33% | 1.17x | 378 days |
-
-## SECTION 9 — Tri-Market Empirical Results
-The rolling continuous out-of-sample empirical matrix decisively confirms the superiority of algorithmic Bayesian shrinkage compared to classical unconstrained formulations across all geographical limits.
-
-| Market | Model | Annualized Return | Annualized Volatility | Sharpe Ratio | Turnover | ASI | Max Drawdown |
+| Crisis | Market | Model | Annualized Return | Annualized Volatility | Sharpe Ratio | Turnover | ASI | Max Drawdown |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **US** | Black-Litterman | 37.77% | 31.27% | **1.208** | 72.89% | 0.0000 | -43.17% |
-| **US** | Markowitz | 38.14% | 31.74% | 1.201 | 74.78% | 0.0000 | -44.21% |
-| **China** | Black-Litterman | 19.35% | 28.92% | **0.669** | 89.15% | 0.0000 | -39.55% |
-| **China** | Markowitz | 17.16% | 30.48% | 0.563 | 91.00% | 0.0000 | -45.19% |
-| **India** | Black-Litterman | 17.73% | 16.49% | **1.075** | 8.85% | 0.0000 | -35.01% |
-| **India** | Markowitz | 17.62% | 19.46% | 0.905 | 70.37% | 0.0000 | -40.60% |
+| **US** | Black-Litterman | 37.77% | 31.27% | 1.208 | 72.89% | 0.000229 | -43.17% |
+| **US** | Markowitz | 38.14% | 31.74% | 1.201 | 74.78% | 0.011708 | -44.21% |
+| **US** | Benchmark | 12.45% | 17.18% | 0.725 | nan | nan | -33.92% |
+| **China** | Black-Litterman | 19.35% | 28.92% | 0.669 | 89.15% | 0.000229 | -39.55% |
+| **China** | Markowitz | 17.16% | 30.48% | 0.563 | 91.00% | 0.011708 | -45.19% |
+| **China** | Benchmark | 3.63% | 16.82% | 0.216 | nan | nan | -27.27% |
+| **India** | Black-Litterman | 17.73% | 16.49% | 1.075 | 8.85% | 0.000229 | -35.01% |
+| **India** | Markowitz | 17.62% | 19.46% | 0.905 | 70.37% | 0.011708 | -40.60% |
+| **India** | Benchmark | 11.31% | 16.75% | 0.675 | nan | nan | -38.07% |
 
 Economically, the Black–Litterman model routinely produces higher or near-identical net Sharpe ratios, characterized simultaneously by structurally lower algorithmic turnover and systematically suppressed maximum drawdowns. The Markowitz approach maximizes theoretical localized return exclusively by destroying the underlying capital variance capacity.
 
