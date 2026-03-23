@@ -15,6 +15,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Core Engine
 from pipelines.dual_market import evaluate_dual_market, MARKET_CONFIG, TICKER_NAME_MAP
@@ -348,6 +351,8 @@ class ModernDashboard(QMainWindow):
         self.tab_stress = QWidget()
         self.tab_soe = QWidget()
         self.tab_stats = QWidget()
+        self.tab_factor = QWidget()
+        self.tab_asi = QWidget()
         
         self.setup_market_tab(self.tab_us, "US")
         self.setup_market_tab(self.tab_cn, "CHINA")
@@ -357,6 +362,8 @@ class ModernDashboard(QMainWindow):
         self.setup_stress_tab(self.tab_stress)
         self.setup_soe_tab(self.tab_soe)
         self.setup_stats_tab(self.tab_stats)
+        self.setup_factor_tab(self.tab_factor)
+        self.setup_asi_tab(self.tab_asi)
         
         self.tabs.addTab(self.tab_us, "US Market")
         self.tabs.addTab(self.tab_cn, "China Market")
@@ -365,6 +372,8 @@ class ModernDashboard(QMainWindow):
         self.tabs.addTab(self.tab_robust, "Robustness Analysis")
         self.tabs.addTab(self.tab_stress, "Crisis Stress Tests")
         self.tabs.addTab(self.tab_soe, "China SOE vs Private Study")
+        self.tabs.addTab(self.tab_factor, "Factor Exposure Analysis")
+        self.tabs.addTab(self.tab_asi, "ASI Tracking Analysis")
         self.tabs.addTab(self.tab_stats, "Formal Statistical Validation")
         
         layout.addWidget(self.tabs)
@@ -536,6 +545,65 @@ class ModernDashboard(QMainWindow):
         h_layout.addWidget(self.build_export_button(self.table_stats, "statistical_validation.csv"))
         layout.addLayout(h_layout)
 
+    def setup_factor_tab(self, tab):
+        layout = QVBoxLayout(tab)
+        
+        # Specification Panel
+        spec_group = QGroupBox("Factor Model Specification")
+        spec_layout = QVBoxLayout(spec_group)
+        eqn = QLabel(
+            "Excess Return Model:\n\n"
+            "R_{p,t} - R_{f,t} = α + β_{MKT} MKT_t + β_{SMB} SMB_t + β_{HML} HML_t + β_{MOM} MOM_t + ε_t\n\n"
+            "MKT: Market Risk Premium | SMB: Size Factor | HML: Value Factor | MOM: Momentum Factor\n"
+        )
+        eqn.setStyleSheet(f"color: {COLORS['text']}; font-size: 14px;")
+        eqn.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        spec_layout.addWidget(eqn)
+        layout.addWidget(spec_group, stretch=1)
+        
+        # Results Table
+        self.table_factor = QTableWidget()
+        self.table_factor.setColumnCount(12)
+        self.table_factor.setHorizontalHeaderLabels([
+            "Portfolio", "Alpha_ann", "t_Alpha", "Beta_MKT", "t_MKT", 
+            "Beta_SMB", "t_SMB", "Beta_HML", "t_HML", "Beta_MOM", "t_MOM", "R_squared"
+        ])
+        self.table_factor.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table_factor.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.table_factor.setAlternatingRowColors(True)
+        layout.addWidget(self.table_factor, stretch=3)
+        
+        # Significance Note
+        sig_label = QLabel("Significance: *** p < 0.01  |  ** p < 0.05  |  * p < 0.10")
+        sig_label.setStyleSheet(f"color: {COLORS['secondary']}; font-style: italic;")
+        layout.addWidget(sig_label)
+        
+        h_layout = QHBoxLayout()
+        h_layout.addStretch()
+        h_layout.addWidget(self.build_export_button(self.table_factor, "factor_exposure_analysis.csv"))
+        layout.addLayout(h_layout)
+
+    def setup_asi_tab(self, tab):
+        layout = QVBoxLayout(tab)
+        
+        self.canvas_asi = MplCanvas(self, width=8, height=4, dpi=100)
+        layout.addWidget(self.canvas_asi, stretch=2)
+        
+        self.table_asi = QTableWidget()
+        self.table_asi.setColumnCount(5)
+        self.table_asi.setHorizontalHeaderLabels([
+            "Market", "Model", "Avg Turnover", "Max Allocation Drift", "Avg ASI"
+        ])
+        self.table_asi.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table_asi.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.table_asi.setAlternatingRowColors(True)
+        layout.addWidget(self.table_asi, stretch=2)
+        
+        h_layout = QHBoxLayout()
+        h_layout.addStretch()
+        h_layout.addWidget(self.build_export_button(self.table_asi, "asi_tracking_analysis.csv"))
+        layout.addLayout(h_layout)
+
     def run_analysis(self):
         self.btn_run.setText("COMPUTING...")
         self.btn_run.setEnabled(False)
@@ -584,6 +652,8 @@ class ModernDashboard(QMainWindow):
             self.update_stress_tab()
             self.update_soe_tab()
             self.update_stats_tab()
+            self.update_factor_tab()
+            self.update_asi_tab()
             
         except Exception as e:
             import traceback
@@ -597,6 +667,7 @@ class ModernDashboard(QMainWindow):
 
     def update_market_tab(self, market, canvas, table, weights_table):
         if not self.results: return
+        logger.info(f"Populating {market} Market Evaluation Tab...")
         res = self.results["raw_results"][market]
         
         fig = canvas.fig
@@ -628,16 +699,23 @@ class ModernDashboard(QMainWindow):
         # Populate Weights Table
         baseline_dict = res["baseline"]
         bl_weights = baseline_dict['black_litterman']['weights']
+        bl_expected_returns = baseline_dict['black_litterman'].get('expected_returns', [])
+        
         # The ordering of weights from the optimizer matches the original tickers order initialized
         tickers = MARKET_CONFIG[market]["tickers"]
-        views = MARKET_CONFIG[market]["views"]
         
         weights_table.setRowCount(len(tickers))
         for r, ticker in enumerate(tickers):
             company_name = TICKER_NAME_MAP.get(ticker, ticker)
             
-            er = views.get(ticker, None)
-            er_text = f"{er*100:.2f}%" if er is not None else "N/A"
+            # Use the posterior expected return dynamically bounded to the asset.
+            # Convert daily back to annualized percentage if it is on a daily scale.
+            if r < len(bl_expected_returns):
+                er = bl_expected_returns[r]
+                er_ann = er * 252 if abs(er) < 0.02 else er # Roughly assume it's daily if < 2% scalar
+                er_text = f"{er_ann*100:.2f}%"
+            else:
+                er_text = "N/A"
             
             weights_table.setItem(r, 0, QTableWidgetItem(str(ticker)))
             weights_table.setItem(r, 1, QTableWidgetItem(company_name))
@@ -646,6 +724,7 @@ class ModernDashboard(QMainWindow):
 
     def update_comparison_tab(self):
         if not self.results: return
+        logger.info("Populating Tri-Market Structural Summary...")
         res_map = self.results["raw_results"]
         if "US" not in res_map or "CHINA" not in res_map or "INDIA" not in res_map:
             return  # Need all 3 for Tri-Market comp
@@ -716,6 +795,7 @@ class ModernDashboard(QMainWindow):
 
     def update_robustness_tab(self):
         if not self.results: return
+        logger.info("Populating Robustness & Sensitivity Matrices...")
         
         fig = self.canvas_robust.fig
         fig.clf()
@@ -760,6 +840,7 @@ class ModernDashboard(QMainWindow):
 
     def update_stress_tab(self):
         if not self.results: return
+        logger.info("Populating Crisis Stress Test Results...")
         
         df = self.results["structural_df"]
         
@@ -770,7 +851,7 @@ class ModernDashboard(QMainWindow):
         res_map = self.results["raw_results"]
         if "US" in res_map and "CHINA" in res_map and "INDIA" in res_map:
             # Simple bar comparison of drawdowns 
-            labels = ["US 2008", "China 2015", "India 2008"]
+            labels = ["US 2008", "China 2015", "India 2020"]
             us_dd = res_map["US"]["stress"]["black_litterman"]["Max Drawdown"] * 100
             cn_dd = res_map["CHINA"]["stress"]["black_litterman"]["Max Drawdown"] * 100
             in_dd = res_map["INDIA"]["stress"]["black_litterman"]["Max Drawdown"] * 100
@@ -796,6 +877,7 @@ class ModernDashboard(QMainWindow):
 
     def update_soe_tab(self):
         if not self.results: return
+        logger.info("Populating China Structural Ownership (SOE) Study...")
         soe_study = self.results.get("soe_study")
         if not soe_study:
             self.label_soe_tests.setText("China market not executed. Select China or Tri-Market to run the SOE structural sub-study.")
@@ -851,6 +933,7 @@ class ModernDashboard(QMainWindow):
 
     def update_stats_tab(self):
         if not self.results: return
+        logger.info("Populating Formal Null Hypothesis Validations...")
         stats = self.results.get("statistical_tests", {})
         
         self.table_stats.setRowCount(len(stats))
@@ -865,6 +948,123 @@ class ModernDashboard(QMainWindow):
             
             self.table_stats.setItem(r, 1, QTableWidgetItem(b_text))
             self.table_stats.setItem(r, 2, QTableWidgetItem(j_text))
+
+    def update_factor_tab(self):
+        if not self.results: return
+        logger.info("Populating Fama-French Factor Exposure Analysis...")
+        
+        res_map = self.results["raw_results"]
+        
+        table_rows = []
+        for market in ["US", "CHINA", "INDIA"]:
+            if market in res_map:
+                fr = res_map[market].get("factor_regression")
+                if not fr: continue
+                
+                for port_key in ["bl", "mw"]:
+                    model_data = fr.get(port_key)
+                    if not model_data: continue
+                    
+                    port_name = f"{market} - {model_data['Model']}"
+                    
+                    # Formatting logic for significance
+                    def sig(t_val):
+                        if abs(t_val) >= 2.576: return "***"
+                        if abs(t_val) >= 1.96: return "**"
+                        if abs(t_val) >= 1.645: return "*"
+                        return ""
+                    
+                    ann_alpha = model_data['Alpha'] * 252
+                    t_a = model_data['Alpha_t_stat']
+                    
+                    b_m = model_data['MKT_beta']
+                    t_m = model_data['MKT_t_stat']
+                    
+                    b_s = model_data['SMB_beta']
+                    t_s = model_data['SMB_t_stat']
+                    
+                    b_h = model_data['HML_beta']
+                    t_h = model_data['HML_t_stat']
+                    
+                    b_mo = model_data['MOM_beta']
+                    t_mo = model_data['MOM_t_stat']
+                    
+                    r2 = model_data['R_squared']
+                    
+                    table_rows.append([
+                        port_name,
+                        f"{ann_alpha*100:.2f}% {sig(t_a)}", f"{t_a:.2f}",
+                        f"{b_m:.3f} {sig(t_m)}", f"{t_m:.2f}",
+                        f"{b_s:.3f} {sig(t_s)}", f"{t_s:.2f}",
+                        f"{b_h:.3f} {sig(t_h)}", f"{t_h:.2f}",
+                        f"{b_mo:.3f} {sig(t_mo)}", f"{t_mo:.2f}",
+                        f"{r2:.3f}"
+                    ])
+        
+        self.table_factor.setRowCount(len(table_rows))
+        for r, row_data in enumerate(table_rows):
+            for c, val in enumerate(row_data):
+                self.table_factor.setItem(r, c, QTableWidgetItem(str(val)))
+
+    def update_asi_tab(self):
+        if not self.results: return
+        logger.info("Populating Allocation Stability Index (ASI) Dynamics...")
+        
+        fig = self.canvas_asi.fig
+        fig.clf()
+        
+        res_map = self.results["raw_results"]
+        markets_run = [m for m in ["US", "CHINA", "INDIA"] if m in res_map and res_map[m].get("asi_data")]
+        
+        if not markets_run:
+            self.canvas_asi.draw()
+            return
+            
+        axs = fig.subplots(1, len(markets_run), sharey=True)
+        if len(markets_run) == 1:
+            axs = [axs]
+            
+        table_rows = []
+        
+        for idx, market in enumerate(markets_run):
+            asi_data = res_map[market].get("asi_data")
+            
+            asi_series = asi_data.get("series", {})
+            asi_scalars = asi_data.get("scalars", {})
+            asi_turnover = asi_data.get("turnover", {})
+            
+            ax = axs[idx]
+            if "black_litterman" in asi_series and not asi_series["black_litterman"].empty:
+                ax.plot(asi_series["black_litterman"].index, asi_series["black_litterman"].values, color=COLORS['primary'], label='Black-Litterman', linewidth=1.5)
+            if "markowitz" in asi_series and not asi_series["markowitz"].empty:
+                ax.plot(asi_series["markowitz"].index, asi_series["markowitz"].values, color=COLORS['secondary'], label='Markowitz', linewidth=1.5, linestyle='--')
+            
+            apply_modern_theme(ax, f"{market} ASI Drift")
+            if idx == 0:
+                ax.legend(frameon=False, labelcolor=COLORS['text'])
+                ax.set_ylabel("L1 Norm Weight Change (ASI)")
+                
+            for model_key, model_label in [("black_litterman", "Black-Litterman"), ("markowitz", "Markowitz")]:
+                if model_key in asi_scalars and model_key in asi_turnover and model_key in asi_series:
+                    avg_turnover = asi_turnover[model_key].mean() if not asi_turnover[model_key].empty else 0.0
+                    max_drift = asi_series[model_key].max() if not asi_series[model_key].empty else 0.0
+                    avg_asi = asi_scalars[model_key]
+                    
+                    table_rows.append([
+                        market,
+                        model_label,
+                        f"{avg_turnover*100:.2f}%",
+                        f"{max_drift:.4f}",
+                        f"{avg_asi:.6f}"
+                    ])
+                    
+        fig.tight_layout(pad=2.0)
+        self.canvas_asi.draw()
+        
+        self.table_asi.setRowCount(len(table_rows))
+        for r, row_data in enumerate(table_rows):
+            for c, val in enumerate(row_data):
+                self.table_asi.setItem(r, c, QTableWidgetItem(str(val)))
 
 def launch_desktop_gui():
     app = QApplication(sys.argv)

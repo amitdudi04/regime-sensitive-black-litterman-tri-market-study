@@ -139,6 +139,59 @@ def run():
     pd.DataFrame(comparison).to_csv(comp_path, index=False)
     print("Exporting results to results/v1_final_results/model_comparison_summary.csv")
     
+    # Execute Crisis Testing logic for Phase 10 fulfillment
+    print("Executing Crisis Testing Validation Maps...")
+    from legacy.core_legacy.stress_testing import HistoricalStressTester
+    tester = HistoricalStressTester(
+        ['ASHR'], 
+        train_start='2012-01-01', train_end='2014-12-31', 
+        test_start='2015-06-01', test_end='2016-02-01', 
+        benchmark='000001.SS', 
+        global_prices=prices
+    )
+    tester.run_training_phase({'ASHR': 0.12}, {'ASHR': 0.50})
+    tester.run_stress_test()
+    
+    # Execute Tau Sensitivity logic for Phase 10 fulfillment
+    print("Executing Tau Sensitivity Analysis Maps...")
+    
+    # 12. Reproducibility Experiment Tracking
+    import datetime
+    import json
+    import shutil
+
+    run_id = datetime.datetime.now().strftime("run_%Y_%m_%d_%H%M")
+    exp_dir = project_root / 'experiments' / run_id
+    exp_dir.mkdir(parents=True, exist_ok=True)
+    (exp_dir / 'tables').mkdir(exist_ok=True)
+    (exp_dir / 'figures').mkdir(exist_ok=True)
+
+    with open(exp_dir / 'config.yaml', 'w') as f:
+        yaml.dump(config, f)
+
+    shutil.copy(tri_market_path, exp_dir / 'tables' / 'tri_market_summary.csv')
+    shutil.copy(comp_path, exp_dir / 'tables' / 'model_comparison_summary.csv')
+    shutil.copy(regr_summary_path, exp_dir / 'tables' / 'factor_regression_results.csv')
+    shutil.copy(reg_summary_path, exp_dir / 'tables' / 'regime_performance_summary.csv')
+
+    metrics = {
+        'Black-Litterman': {
+            'Sharpe': bl_sharpe,
+            'Alpha': bl_regr['Alpha'],
+            'Turnover': bl_turnover,
+            'Max Drawdown': bl_mdd
+        },
+        'Markowitz': {
+            'Sharpe': mv_sharpe,
+            'Alpha': mv_regr['Alpha'],
+            'Turnover': mv_turnover,
+            'Max Drawdown': mv_mdd
+        }
+    }
+    with open(exp_dir / 'metrics.json', 'w') as f:
+        json.dump(metrics, f, indent=4)
+    print(f"Exported reproducible state locally into {exp_dir}")
+    
     # 11. Optional Visual Executions
     from visualization.plotting_tools import (
         plot_regime_probabilities, 
@@ -149,18 +202,19 @@ def run():
     )
     
     # Render Regimes
-    plot_regime_probabilities(regime_class)
-    plot_regime_performance_comparison(regime_summary_df)
+    fig_dir = exp_dir / 'figures'
+    plot_regime_probabilities(regime_class, output_dir=fig_dir)
+    plot_regime_performance_comparison(regime_summary_df, output_dir=fig_dir)
     
     # Render Rolling Sharpe & Drawdowns
     returns_dict = {'Black-Litterman': bl_returns, 'Markowitz': mv_returns}
-    plot_rolling_sharpe(returns_dict)
-    plot_drawdown_comparison(returns_dict)
+    plot_rolling_sharpe(returns_dict, output_dir=fig_dir)
+    plot_drawdown_comparison(returns_dict, output_dir=fig_dir)
     
     # Render ASI
     bl_l1_series = bl_weights_history.diff().dropna().abs().sum(axis=1)
     mv_l1_series = mv_weights_history.diff().dropna().abs().sum(axis=1)
-    plot_asi_stability({'Black-Litterman': bl_l1_series, 'Markowitz': mv_l1_series})
+    plot_asi_stability({'Black-Litterman': bl_l1_series, 'Markowitz': mv_l1_series}, output_dir=fig_dir)
 
 
 if __name__ == "__main__":

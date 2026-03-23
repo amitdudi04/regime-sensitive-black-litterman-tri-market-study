@@ -10,10 +10,10 @@ def compute_asi(rolling_weights_df):
     if rolling_weights_df is None or len(rolling_weights_df) < 2:
         return np.nan
         
-    diffs = rolling_weights_df.diff().dropna()
-    l1_norms = diffs.abs().sum(axis=1)
+    print("ASI computed using L1 norm weight drift")
     
-    # The average L1 distance across consecutive localized execution blocks
-    asi = l1_norms.mean()
+    weights_diff = rolling_weights_df.diff()
+    asi_series = weights_diff.abs().sum(axis=1)
+    asi_value = float(asi_series.mean())
     
-    return asi
+    return asi_value

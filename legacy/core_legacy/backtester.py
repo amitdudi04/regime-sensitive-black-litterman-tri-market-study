@@ -318,6 +318,7 @@ class PortfolioBacktester:
         # Build DataFrames for weight histories and compute ASI / concentration series
         weight_history_dfs = {}
         asi_metrics = {}
+        asi_series_dict = {}
         turnover_metrics = {}
         for model_name in ['markowitz', 'black_litterman', 'equal_weight']:
             entries = self.weight_history.get(model_name, [])
@@ -331,7 +332,10 @@ class PortfolioBacktester:
 
             # ASI: mean L1 distance between consecutive rebalanced weights
             if not df.empty:
-                asi = df.diff().abs().sum(axis=1).mean()
+                print("ASI computed using L1 norm weight drift")
+                weights_diff = df.diff()
+                asi_series = weights_diff.abs().sum(axis=1)
+                asi = float(asi_series.mean())
                 concentration_series = pd.Series(self.concentration.get(model_name, []), index=df.index)
                 turnover_series = pd.Series(self.backtest_results['turnover'][model_name].values, index=df.index)
             else:
@@ -340,11 +344,13 @@ class PortfolioBacktester:
                 turnover_series = pd.Series(dtype=float)
 
             asi_metrics[model_name] = float(asi) if not np.isnan(asi) else np.nan
+            asi_series_dict[model_name] = asi_series
             turnover_metrics[model_name] = turnover_series
 
         # Attach weight history DataFrames and ASI/turnover/concentration to results
         self.backtest_results['weight_history'] = weight_history_dfs
         self.backtest_results['asi'] = asi_metrics
+        self.backtest_results['asi_series'] = asi_series_dict
         self.backtest_results['turnover_series'] = turnover_metrics
         self.backtest_results['concentration'] = {m: pd.Series(self.concentration.get(m, []), index=weight_history_dfs[m].index) if not weight_history_dfs[m].empty else pd.Series(dtype=float) for m in weight_history_dfs}
         self.backtest_results['tau_timeline'] = pd.Series(self.tau_timeline, index=pd.DatetimeIndex(self.rebalance_dates)) if self.rebalance_dates else pd.Series(dtype=float)

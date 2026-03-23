@@ -71,7 +71,7 @@ class BlackLittermanOptimizer:
         
         # Fetch and process data
         self.prices = self._fetch_data()
-        self.returns = self.prices.pct_change().dropna()
+        self.returns = np.log(self.prices / self.prices.shift(1)).dropna()
         
         # Covariance estimation method: 'sample' or 'ledoit'
         self.covariance_method = covariance_method
@@ -121,75 +121,75 @@ class BlackLittermanOptimizer:
         """Fetch historical price data from Yahoo Finance."""
         logger.debug(f"Fetching historical price data for {len(self.original_tickers)} tickers...")
         try:
-            # Override yfinance tz cache to avoid disk I/O errors
-            import tempfile
-            import os
-            try:
-                custom_cache = os.path.join(tempfile.gettempdir(), "yf_cache_custom")
-                if not os.path.exists(custom_cache):
-                    os.makedirs(custom_cache, exist_ok=True)
-                yf.set_tz_cache_location(custom_cache)
-            except AttributeError:
-                pass
-                
-            # Download data with progress disabled
-            logger.info(f"YFINANCE DOWNLOAD INITIATED: Start='{self.start_date}', End='{self.end_date}', Tickers={self.original_tickers}")
-            data = yf.download(self.original_tickers, start=self.start_date, end=self.end_date, 
-                              progress=False)
-            
-            # Handle different return structures based on number of tickers
-            # Handle different return structures robustly
-            if isinstance(data, pd.DataFrame):
-                # Check for MultiIndex
-                if isinstance(data.columns, pd.MultiIndex):
-                    level_0 = data.columns.get_level_values(0)
-                    level_1 = data.columns.get_level_values(1)
+            import time
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    import tempfile
+                    import os
+                    try:
+                        custom_cache = os.path.join(tempfile.gettempdir(), f"yf_cache_custom_{attempt}")
+                        if not os.path.exists(custom_cache):
+                            os.makedirs(custom_cache, exist_ok=True)
+                        yf.set_tz_cache_location(custom_cache)
+                    except AttributeError:
+                        pass
+                        
+                    logger.info(f"YFINANCE DOWNLOAD INITIATED (Attempt {attempt+1}/{max_retries}): Start='{self.start_date}', End='{self.end_date}', Tickers={self.original_tickers}")
+                    data = yf.download(self.original_tickers, start=self.start_date, end=self.end_date, 
+                                      progress=False)
                     
-                    if 'Adj Close' in level_0:
-                        data = data['Adj Close']
-                    elif 'Close' in level_0:
-                        data = data['Close']
-                    elif 'Adj Close' in level_1:
-                        data = data.xs('Adj Close', axis=1, level=1)
-                    elif 'Close' in level_1:
-                        data = data.xs('Close', axis=1, level=1)
-                    else:
-                        raise ValueError(f"Could not find price data in multi-index columns: {data.columns.tolist()}")
-                else:
-                    # Single level columns fallback
-                    if 'Adj Close' in data.columns:
-                        data = data['Adj Close']
-                    elif 'Close' in data.columns:
-                        data = data['Close']
-                    elif len(self.original_tickers) == 1:
-                        # If passing a single ticker, and the column is the ticker name itself!
-                        if self.original_tickers[0] in data.columns:
-                            data = data[[self.original_tickers[0]]]
+                    if isinstance(data, pd.DataFrame):
+                        if isinstance(data.columns, pd.MultiIndex):
+                            level_0 = data.columns.get_level_values(0)
+                            level_1 = data.columns.get_level_values(1)
+                            
+                            if 'Adj Close' in level_0:
+                                data = data['Adj Close']
+                            elif 'Close' in level_0:
+                                data = data['Close']
+                            elif 'Adj Close' in level_1:
+                                data = data.xs('Adj Close', axis=1, level=1)
+                            elif 'Close' in level_1:
+                                data = data.xs('Close', axis=1, level=1)
+                            else:
+                                raise ValueError(f"Could not find price data in multi-index columns: {data.columns.tolist()}")
                         else:
-                            # Try locating the first Price column
-                            for col in ['Adj Close', 'Close', 'Price']:
-                                if col in data.columns:
-                                    data = data[[col]]
-                                    data.columns = [self.original_tickers[0]]
-                                    break
+                            if 'Adj Close' in data.columns:
+                                data = data['Adj Close']
+                            elif 'Close' in data.columns:
+                                data = data['Close']
+                            elif len(self.original_tickers) == 1:
+                                if self.original_tickers[0] in data.columns:
+                                    data = data[[self.original_tickers[0]]]
+                                else:
+                                    for col in ['Adj Close', 'Close', 'Price']:
+                                        if col in data.columns:
+                                            data = data[[col]]
+                                            data.columns = [self.original_tickers[0]]
+                                            break
+                            else:
+                                raise ValueError(f"Could not find price metrics in columns: {data.columns.tolist()}")
+                    
+                    if isinstance(data, pd.Series):
+                        col_name = self.original_tickers[0] if len(self.original_tickers) == 1 else 'Price'
+                        data = data.to_frame(name=col_name)
+                    
+                    if data is None or data.empty:
+                        raise ValueError(f"No data retrieved for tickers: {self.original_tickers}. Check ticker symbols and date range.")
+                    
+                    logger.debug(f"Data fetched: {data.shape[0]} rows, {data.shape[1]} columns")
+                    
+                    if self.name_mapping:
+                        data.rename(columns=self.name_mapping, inplace=True)
+                        
+                    return data.dropna()
+                except Exception as e:
+                    logger.warning(f"Error fetching data on attempt {attempt+1}: {str(e)}")
+                    if attempt < max_retries - 1:
+                        time.sleep(2)
                     else:
-                        raise ValueError(f"Could not find price metrics in columns: {data.columns.tolist()}")
-            
-            # Ensure proper column structure
-            if isinstance(data, pd.Series):
-                col_name = self.original_tickers[0] if len(self.original_tickers) == 1 else 'Price'
-                data = data.to_frame(name=col_name)
-            
-            # Verify data is not empty
-            if data.empty:
-                raise ValueError(f"No data retrieved for tickers: {self.original_tickers}. Check ticker symbols and date range.")
-            
-            logger.debug(f"Data fetched: {data.shape[0]} rows, {data.shape[1]} columns")
-            
-            if self.name_mapping:
-                data.rename(columns=self.name_mapping, inplace=True)
-                
-            return data.dropna()
+                        raise e
         
         except Exception as e:
             raise RuntimeError(f"Error fetching data for {self.ticker_list}: {str(e)}")
@@ -462,7 +462,8 @@ class BlackLittermanOptimizer:
             },
             'black_litterman': {
                 'weights': bl_weights,
-                'metrics': bl_metrics
+                'metrics': bl_metrics,
+                'expected_returns': list(bl_returns)
             },
             'equal_weight': {
                 'weights': equal_weights,

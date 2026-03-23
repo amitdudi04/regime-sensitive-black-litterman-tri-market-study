@@ -53,9 +53,27 @@ def run():
             })
             
     df = pd.DataFrame(records)
+    
+    # Primary export (existing path)
     csv_path = project_root / 'results' / 'v1_final_results' / 'crisis_comparison_tables.csv'
     df.to_csv(csv_path, index=False)
     print("Exporting results to results/v1_final_results/crisis_comparison_tables.csv")
+    
+    # Secondary export: standardised path for GUI and documentation
+    tables_dir = project_root / 'results' / 'tables'
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Rename to the schema required by the master spec
+    df_std = df.rename(columns={
+        'Market': 'Market',
+        'Model': 'Portfolio',
+        'Max Drawdown': 'Max_Drawdown',
+        'Recovery Time': 'Recovery_Duration'
+    })[['Market', 'Portfolio', 'Max_Drawdown', 'Recovery_Duration']]
+    
+    std_path = tables_dir / 'table_crisis_testing.csv'
+    df_std.to_csv(std_path, index=False)
+    print("Exporting results to results/tables/table_crisis_testing.csv")
 
 if __name__ == "__main__":
     run()

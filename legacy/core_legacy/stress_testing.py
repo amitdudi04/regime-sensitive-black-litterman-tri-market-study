@@ -11,10 +11,11 @@ from legacy.core_legacy.optimizer import BlackLittermanOptimizer
 
 class HistoricalStressTester:
     def __init__(self, ticker_list, train_start='2005-01-01', train_end='2007-12-31', 
-                 test_start='2008-01-01', test_end='2009-12-31', benchmark='^GSPC', name_mapping=None):
+                 test_start='2008-01-01', test_end='2009-12-31', benchmark='^GSPC', name_mapping=None, global_prices=None):
         """
         Initialize stress tester with distinct pre-crisis (training) and intra-crisis (testing) windows.
         """
+        self.global_prices = global_prices
         self.original_tickers = ticker_list.copy()
         self.name_mapping = name_mapping
         self.tickers = [name_mapping.get(t, t) for t in ticker_list] if name_mapping else ticker_list.copy()
@@ -32,32 +33,67 @@ class HistoricalStressTester:
         self.results = {}
         
     def _fetch_prices(self, tickers, start_date, end_date, name_mapping=None):
-        """Helper to fetch clean daily data."""
-        try:
-            custom_cache = os.path.join(tempfile.gettempdir(), "yf_cache_custom")
-            os.makedirs(custom_cache, exist_ok=True)
-            yf.set_tz_cache_location(custom_cache)
-        except AttributeError:
-            pass
-            
-        logger.info(f"Fetching data from {start_date} to {end_date}...")
-        data = yf.download(tickers, start=start_date, end=end_date, progress=False)
-        
-        if isinstance(data, pd.DataFrame):
+        """Helper to slice from the main ETF data instead of downloading separately."""
+        if self.global_prices is not None:
+            data = self.global_prices.copy()
+            # If the user asks for benchmark and it's not in global_prices, download it only.
+            if len(tickers) == 1 and tickers[0] not in data.columns:
+                logger.info(f"Downloading benchmark {tickers[0]} as it's not in main dataset...")
+                data = yf.download(tickers, start=start_date, end=end_date, progress=False)
+                if isinstance(data.columns, pd.MultiIndex):
+                    level_0 = data.columns.get_level_values(0)
+                    if 'Adj Close' in level_0:
+                        data = data['Adj Close']
+                    else:
+                        data = data['Close']
+                else:
+                    if 'Adj Close' in data.columns:
+                        data = data['Adj Close']
+                    else:
+                        data = data['Close']
+            else:
+                try:
+                    # Verify if start_date bounds exceed global_prices limitations
+                    start_dt = pd.to_datetime(start_date)
+                    tz_idx0 = data.index[0]
+                    if start_dt.tz_localize(None) < tz_idx0.tz_localize(None):
+                        logger.info(f"Requested start date {start_date} predates global dataset. Fetching live API data...")
+                        downloaded = yf.download(tickers, start=start_date, end=end_date, progress=False)
+                        if isinstance(downloaded.columns, pd.MultiIndex):
+                            level_0 = downloaded.columns.get_level_values(0)
+                            if 'Adj Close' in level_0:
+                                downloaded = downloaded['Adj Close']
+                            else:
+                                downloaded = downloaded['Close']
+                        else:
+                            if 'Adj Close' in downloaded.columns:
+                                downloaded = downloaded['Adj Close']
+                            else:
+                                downloaded = downloaded['Close']
+                                
+                        valid_cols = [c for c in tickers if c in downloaded.columns]
+                        data = downloaded.loc[:, valid_cols]
+                    else:
+                        data = data.loc[start_date:end_date, tickers]
+                except KeyError:
+                    # In case of missing columns, just take intersection
+                    valid_cols = [c for c in tickers if c in data.columns]
+                    data = data.loc[start_date:end_date, valid_cols]
+        else:
+            # Fallback legacy mode if no global_prices supplied
+            data = yf.download(tickers, start=start_date, end=end_date, progress=False)
             if isinstance(data.columns, pd.MultiIndex):
-                top_level = data.columns.get_level_values(0)
-                if 'Adj Close' in top_level:
+                level_0 = data.columns.get_level_values(0)
+                if 'Adj Close' in level_0:
                     data = data['Adj Close']
-                elif 'Close' in top_level:
+                else:
                     data = data['Close']
             else:
                 if 'Adj Close' in data.columns:
                     data = data['Adj Close']
-                elif 'Close' in data.columns: 
+                else:
                     data = data['Close']
-                elif len(tickers) == 1 and tickers[0] in data.columns:
-                    data = data[tickers[0]] 
-                
+                    
         if isinstance(data, pd.Series):
             mapped_name = name_mapping.get(tickers[0], tickers[0]) if name_mapping else tickers[0]
             data = data.to_frame(name=mapped_name if len(tickers) == 1 else 'Price')
@@ -66,6 +102,8 @@ class HistoricalStressTester:
             if name_mapping:
                 data.rename(columns=name_mapping, inplace=True)
             mapped_tickers = [name_mapping.get(t, t) for t in tickers] if name_mapping else tickers
+            # Intersect with available columns
+            mapped_tickers = [t for t in mapped_tickers if t in data.columns]
             data = data[mapped_tickers] 
         elif name_mapping and isinstance(data, pd.DataFrame): 
             data.rename(columns=name_mapping, inplace=True)
@@ -97,12 +135,12 @@ class HistoricalStressTester:
         # Fetch exact asset array outputs from crisis window
         logger.info("Fetching test window Asset prices...")
         self.test_prices = self._fetch_prices(self.original_tickers, self.test_start, self.test_end, name_mapping=self.name_mapping)
-        self.test_returns = self.test_prices.pct_change().dropna()
+        self.test_returns = np.log(self.test_prices / self.test_prices.shift(1)).dropna()
         
         # Fetch S&P 500 equivalent window actively
         logger.info(f"Fetching test window Benchmark ({self.benchmark}) prices...")
         bench_prices = self._fetch_prices([self.benchmark], self.test_start, self.test_end)
-        self.benchmark_returns = bench_prices.pct_change().dropna().iloc[:, 0]
+        self.benchmark_returns = np.log(bench_prices / bench_prices.shift(1)).dropna().iloc[:, 0]
         
         # Align timelines natively to identical market days
         aligned = pd.concat([self.test_returns, self.benchmark_returns], axis=1).dropna()
@@ -111,8 +149,9 @@ class HistoricalStressTester:
         
         # Pre-crisis Benchmark Volatility evaluation
         logger.info("Evaluating pre-crisis Benchmark volatility...")
-        bench_train = self._fetch_prices([self.benchmark], self.train_start, self.train_end).pct_change().dropna()
-        self.train_vol['benchmark'] = bench_train.iloc[:, 0].std() * np.sqrt(252)
+        bench_train = self._fetch_prices([self.benchmark], self.train_start, self.train_end)
+        bench_train_ret = np.log(bench_train / bench_train.shift(1)).dropna()
+        self.train_vol['benchmark'] = bench_train_ret.iloc[:, 0].std() * np.sqrt(252)
         
         logger.info("Calculating exact crisis performance trails...")
         self.daily_performance = {}
@@ -142,22 +181,77 @@ class HistoricalStressTester:
             vol_spike = (crisis_vol / pre_vol) if not np.isnan(pre_vol) else np.nan
             
             # 4. Crisis Recovery Logic Trace
-            # Evaluates exactly how many trading days are spent inside a single drawdown period
-            # For 2008, it's highly likely it never recovered by Dec 2009.
-            # Return Days if recovered, else -1 (Did not recover in window)
-            recovery_time = -1
-            underwater_days = 0
+            # To accurately measure the exact time-to-recovery (trough-to-peak duration), Evaluate against extended data horizons
             max_underwater_days = 0
-            for dd in drawdowns:
-                if dd < 0:
-                    underwater_days += 1
-                else:
-                    max_underwater_days = max(max_underwater_days, underwater_days)
-                    underwater_days = 0
-            max_underwater_days = max(max_underwater_days, underwater_days)
             
-            if cum_rets.iloc[-1] >= rolling_max.max():
-                 recovery_time = max_underwater_days
+            if hasattr(self, 'global_prices') and self.global_prices is not None and not self.global_prices.empty:
+                ext_end = self.global_prices.index[-1].strftime('%Y-%m-%d')
+                
+                if name == 'benchmark':
+                    ext_prices = self._fetch_prices([self.benchmark], self.test_start, ext_end)
+                    ext_ret = np.log(ext_prices / ext_prices.shift(1)).dropna().iloc[:, 0]
+                else:
+                    ext_prices = self._fetch_prices(self.original_tickers, self.test_start, ext_end, name_mapping=self.name_mapping)
+                    ext_ret_assets = np.log(ext_prices / ext_prices.shift(1)).dropna()
+                    weights_arr = self.weights[name]
+                    ext_ret = ext_ret_assets[self.tickers].dot(weights_arr)
+                    
+                ext_cum = (1 + ext_ret).cumprod()
+                
+                # We identify the major trough uniquely within the tested crisis window
+                crisis_ext = ext_cum.loc[:self.test_end]
+                if not crisis_ext.empty:
+                    rmax = crisis_ext.cummax()
+                    dds = (crisis_ext - rmax) / rmax
+                    dd_trough_idx = dds.idxmin()
+                    
+                    if pd.notna(dd_trough_idx):
+                        # CORRECT FINANCIAL DEFINITION:
+                        # Pre-crisis peak = portfolio value at the START of the crisis period (t0).
+                        # This is the reference level that defines recovery, per standard drawdown
+                        # recovery methodology in quantitative asset management research.
+                        # Searching for a local max within the falling crisis window is incorrect,
+                        # as it finds a spurious intermediate point in an already-declining series.
+                        peak_idx = ext_cum.index[0]
+                        peak_val = ext_cum.iloc[0]
+                        
+                        # Recovery: first date AFTER the trough where portfolio >= crisis-start value.
+                        post_trough = ext_cum.loc[dd_trough_idx:]
+                        recovery_points = post_trough[post_trough >= peak_val]
+                        if not recovery_points.empty:
+                            recovery_idx = recovery_points.index[0]
+                            # Duration = trading days from trough to recovery (not peak to recovery)
+                            trough_pos = ext_cum.index.get_loc(dd_trough_idx)
+                            recovery_pos = ext_cum.index.get_loc(recovery_idx)
+                            max_underwater_days = recovery_pos - trough_pos
+                        else:
+                            # Portfolio did not recover within the dataset horizon
+                            trough_pos = ext_cum.index.get_loc(dd_trough_idx)
+                            max_underwater_days = len(ext_cum) - 1 - trough_pos
+            else:
+                # Fallback to local truncation if extended arrays map invalid
+                if cum_rets.empty:
+                    max_underwater_days = 0
+                else:
+                    dd_trough_idx = drawdowns.idxmin()
+                    if pd.notna(dd_trough_idx):
+                        # CORRECT FINANCIAL DEFINITION (fallback path):
+                        # Pre-crisis peak = portfolio value at the START of the crisis period.
+                        peak_idx = cum_rets.index[0]
+                        peak_val = cum_rets.iloc[0]
+                        post_trough = cum_rets.loc[dd_trough_idx:]
+                        recovery_points = post_trough[post_trough >= peak_val]
+                        if not recovery_points.empty:
+                            recovery_idx = recovery_points.index[0]
+                            # Duration = trading days from trough to recovery
+                            trough_pos = cum_rets.index.get_loc(dd_trough_idx)
+                            recovery_pos = cum_rets.index.get_loc(recovery_idx)
+                            max_underwater_days = recovery_pos - trough_pos
+                        else:
+                            trough_pos = cum_rets.index.get_loc(dd_trough_idx)
+                            max_underwater_days = len(cum_rets) - 1 - trough_pos
+                    else:
+                        max_underwater_days = 0
             
             self.results[name] = {
                 'Crisis Return': total_crisis_return,

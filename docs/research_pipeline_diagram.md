@@ -1,44 +1,33 @@
 # Research Pipeline Architecture
 
-Market Data (yfinance)
+Market Data
         │
         ▼
-Return Calculation
-(core/return_calculations.py)
+Returns
         │
         ▼
-Covariance Estimation
-(Ledoit–Wolf Shrinkage)
-(core/covariance_estimators.py)
+Covariance
         │
         ▼
-Black–Litterman Optimization
-(models/black_litterman_model.py)
+BL
         │
         ▼
-Portfolio Optimization
-(models/optimizer.py)
+Optimization
         │
         ▼
-Rolling Out-of-Sample Backtest
-(backtesting/rolling_backtest.py)
+Backtest
         │
         ▼
-Transaction Cost Adjustment
-(backtesting/transaction_costs.py)
+ASI
         │
         ▼
-Crisis Freeze Stress Testing
-(backtesting/crisis_freeze.py)
+Crisis
         │
         ▼
-SOE vs Private Structural Study
-(analysis/soe_private_analysis.py)
+Factor
         │
         ▼
-Statistical Validation
-(analysis/statistical_tests.py)
+Regime
         │
         ▼
-Export Results
-(results/v1_final_results)
+Export

@@ -16,7 +16,17 @@ The **Allocation Stability Index (ASI)** functionally aggregates the $L_{1}$-nor
 
 The Allocation Stability Index (ASI) measures the magnitude of portfolio weight drift across consecutive rebalancing periods. The formula dictates that ASI = average L1 norm distance between weight vectors. In interpretation, a lower ASI indicates a more stable portfolio, whereas a higher ASI denotes unstable allocations requiring elevated turnover friction. The Bayesian shrinkage intrinsically utilized by the Black–Litterman optimization significantly reduces ASI because anchoring expected returns to an implied equilibrium fundamentally stabilizes predictive estimates across time domains.
 
-The dual-track methodology also incorporates isolated historical extreme environments via the **Crisis Freeze Methodology**. Peak-to-trough allocations are frozen explicitly leading into and executing precisely over the 2008 Global Financial Crisis, 2015 Chinese liquidity crisis, and 2020 pandemic timeline. Empirical testing revealed distinct volatility reaction parameters, most notably during the 2020 India Covid dislocation where the Black-Litterman array registered a volatility spike of 0.91x compared to the Markowitz model's 1.17x. A volatility spike below unity indicates that realized volatility during the crisis window was not higher than the preceding training period, which may occur in emerging markets when crisis dynamics are transmitted through liquidity contractions rather than volatility expansions.
+The dual-track methodology also incorporates isolated historical extreme environments via the **Crisis Freeze Methodology**. Peak-to-trough allocations are frozen explicitly leading into and executing precisely over the 2008 Global Financial Crisis, 2015 Chinese liquidity crisis, and 2020 pandemic timeline. Empirical testing revealed distinct volatility reaction parameters, most notably during the 2020 India Covid dislocation where the Black-Litterman array registered a volatility spike of 3.39x compared to the Markowitz model's 3.40x. A volatility spike below unity indicates that realized volatility during the crisis window was not higher than the preceding training period, which may occur in emerging markets when crisis dynamics are transmitted through liquidity contractions rather than volatility expansions.
+
+
+
+## 4.1 Crisis Metric Definition
+The crisis recovery duration uses the portfolio value at the crisis start date V(t0) as the peak reference. Duration is measured strictly in trading days (index-based), rather than calendar days. A full recovery occurs when the cumulative wealth index is equal to or greater than V(t0).
+
+
+
+## 4.2 Allocation Stability Index (ASI)
+ASI is computed as the average L1-norm distance between weight vectors mathematically smoothing period-to-period drift. The hierarchy is always Black-Litterman << Markowitz due to the equilibrium anchoring mechanism minimizing unconstrained reallocation errors.
 
 ## 5. Research Hypotheses
 * **H1**: Bayesian regularization drastically isolates maximum drawdowns structurally compared to classical Mean-Variance.
@@ -29,6 +39,8 @@ The project executes primary operations encompassing dual structural tracks: 1) 
 The Tri-Market empirical results consistently demonstrated that the Black-Litterman optimization significantly improves upon the unconstrained Mean-Variance portfolio in terms of structural turnover and maximum drawdown mitigation out-of-sample. The empirical findings indicate that Bayesian shrinkage stabilizes portfolio allocations under conditions of parameter uncertainty and regime volatility. By anchoring expected returns to equilibrium priors, the Black–Litterman framework reduces estimation error amplification and improves the robustness of portfolio weights relative to classical mean–variance optimization.
 
 ## 7. Factor Regression Validation
+Factor data is obtained directly from the Kenneth French Data Library using pandas_datareader.
+
 The **Fama-French Factor Regression** module specifically executes multi-variate statistical significance mapping across Ken French Data Library variables (MKT, SMB, HML, MOM). Evaluating the unobserved OLS intercepts analytically verifies optimization robustness. Empirical testing indicates that neither portfolio's performance is driven significantly by pure alpha ($\alpha$ = -0.00016 for Black-Litterman and -0.00005 for Markowitz). Instead, portfolio returns are dominated by systematic factor exposure, predominantly market beta, confirming that the out-of-performance profile scales with efficient systemic loading rather than stock-picking idiosyncrasies.
 
 ## 8. Robustness Testing
@@ -50,3 +62,20 @@ The empirical generalizations presented heavily rely on formalized boundary assu
 
 ## 12. Future Research Directions
 Future iterations of this framework could extend the Markov transition arrays to encompass multi-regime permutations characterizing distinct inflation and deflation macroeconomic architectures. Furthermore, the explicit derivation of quantitative predictive indicators serving directly as Bayesian subjective `P` matrices offers significant alpha-generation potential. Finally, expanding the emerging market locus to natively benchmark frontier market isolations alongside regime-dependent transaction cost thresholds would rigorously scale institutional robustness parameters.
+
+
+## Runtime Environment
+Python Version: 3.11
+
+Core Libraries:
+* NumPy
+* Pandas
+* SciPy
+* PyQt6
+* yfinance
+* pandas_datareader
+
+Data Sources:
+* Yahoo Finance (ETF price data)
+* Kenneth French Data Library (Factor data)
+

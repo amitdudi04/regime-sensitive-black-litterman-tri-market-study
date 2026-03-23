@@ -12,58 +12,44 @@ from legacy.core_legacy.stress_testing import HistoricalStressTester
 from legacy.core_legacy.robustness import run_tau_sensitivity, run_lambda_sensitivity
 from legacy.core_legacy.soe_private_analysis import run_china_soe_pipeline, run_china_private_pipeline, _hypothesis_tests
 from legacy.core_legacy.statistical_tests import bootstrap_sharpe_diff, jobson_korkie_test
+from analysis.factor_regression import run_factor_regression
 
 logger = logging.getLogger(__name__)
 
-# 1. Add Chinese Equity Universe (Academic Structure: Pre-2005 Blue Chips)
-CHINA_UNIVERSE = {
-    "Kweichow Moutai Co., Ltd.": {"ticker": "600519.SS", "sector": "Consumer Staples"},
-    "China Vanke Co., Ltd.": {"ticker": "000002.SZ", "sector": "Real Estate"},
-    "China Merchants Bank Co., Ltd.": {"ticker": "600036.SS", "sector": "Banking"},
-    "Shanghai Pudong Development Bank": {"ticker": "600000.SS", "sector": "Banking"},
-    "Gree Electric Appliances, Inc.": {"ticker": "000651.SZ", "sector": "Consumer Discretionary"},
-    "Wuliangye Yibin Co., Ltd.": {"ticker": "000858.SZ", "sector": "Consumer Staples"},
-    "Jiangsu Hengrui Pharmaceuticals Co., Ltd.": {"ticker": "600276.SS", "sector": "Healthcare"},
-    "Wanhua Chemical Group Co., Ltd.": {"ticker": "600309.SS", "sector": "Industrial Materials"}
+# 1. Add Chinese Equity Universe (Academic Structure: ETFs)
+china_tickers = ['ASHR', 'KWEB', 'MCHI', 'FXI']
+
+# 2. Add Indian Equity Universe (Academic Structure: ETFs)
+india_tickers = ['INDA', 'EPI', 'SMIN', 'INDY']
+
+# 3. Add US Equity Universe (Academic Structure: ETFs)
+us_tickers = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLK']
+
+TICKER_NAME_MAP = {
+    'SPY': 'S&P 500', 'QQQ': 'Nasdaq', 'IWM': 'Russell 2000', 'XLF': 'Financial', 'XLK': 'Technology',
+    'ASHR': 'CSI 300', 'KWEB': 'China Tech', 'MCHI': 'MSCI China', 'FXI': 'Large-Cap China',
+    'INDA': 'MSCI India', 'EPI': 'India Earnings', 'SMIN': 'India Small-Cap', 'INDY': 'India 50'
 }
 
-# 2. Add Indian Equity Universe (Academic Structure: Pre-2005 Blue Chips)
-INDIA_UNIVERSE = {
-    "Reliance Industries": {"ticker": "RELIANCE.NS", "sector": "Energy"},
-    "Tata Consultancy Services": {"ticker": "TCS.NS", "sector": "Technology"},
-    "HDFC Bank": {"ticker": "HDFCBANK.NS", "sector": "Banking"},
-    "Infosys": {"ticker": "INFY.NS", "sector": "Technology"},
-    "ICICI Bank": {"ticker": "ICICIBANK.NS", "sector": "Banking"},
-    "Hindustan Unilever": {"ticker": "HINDUNILVR.NS", "sector": "Consumer"},
-    "ITC Limited": {"ticker": "ITC.NS", "sector": "Consumer"},
-    "Larsen & Toubro": {"ticker": "LT.NS", "sector": "Industrial"}
+TICKER_TO_SECTOR = {
+    'SPY': 'Market', 'QQQ': 'Technology', 'IWM': 'Small Cap', 'XLF': 'Financials', 'XLK': 'Technology',
+    'ASHR': 'Market', 'KWEB': 'Technology', 'MCHI': 'Market', 'FXI': 'Large Cap',
+    'INDA': 'Market', 'EPI': 'Value', 'SMIN': 'Small Cap', 'INDY': 'Large Cap'
 }
-
-china_tickers = [v["ticker"] for v in CHINA_UNIVERSE.values()]
-india_tickers = [v["ticker"] for v in INDIA_UNIVERSE.values()]
-
-TICKER_NAME_MAP = {v["ticker"]: k.split(" ")[0] for k, v in CHINA_UNIVERSE.items()}
-TICKER_NAME_MAP.update({v["ticker"]: k.split(" ")[0] for k, v in INDIA_UNIVERSE.items()})
-TICKER_NAME_MAP.update({'AAPL': 'Apple', 'MSFT': 'Microsoft', 'GOOGL': 'Alphabet', 'AMZN': 'Amazon', 'NVDA': 'NVIDIA'})
-
-TICKER_TO_SECTOR = {v["ticker"]: v["sector"] for v in CHINA_UNIVERSE.values()}
-TICKER_TO_SECTOR.update({v["ticker"]: v["sector"] for v in INDIA_UNIVERSE.values()})
-TICKER_TO_SECTOR.update({'AAPL': 'Technology', 'MSFT': 'Technology', 'GOOGL': 'Technology', 'AMZN': 'Consumer Cyclical', 'NVDA': 'Technology'})
-
 
 MARKET_CONFIG = {
     "US": {
-        "tickers": ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA'],
+        "tickers": us_tickers,
         "benchmark": '^GSPC',
         "start": '2010-01-01',
         "end": '2025-01-01',
         "stress_train_start": '2005-01-01',
         "stress_train_end": '2007-12-31',
         "stress_test_start": '2008-01-01',
-        "stress_test_end": '2009-12-31',
-        "stress_tickers": ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA'],
-        "views": {'AAPL': 0.12, 'MSFT': 0.10, 'GOOGL': 0.11, 'AMZN': 0.14, 'NVDA': 0.15},
-        "confidence": {'AAPL': 0.60, 'MSFT': 0.50, 'GOOGL': 0.40, 'AMZN': 0.45, 'NVDA': 0.65}
+        "stress_test_end": '2013-12-31',
+        "stress_tickers": us_tickers,
+        "views": {t: 0.12 for t in us_tickers},
+        "confidence": {t: 0.50 for t in us_tickers}
     },
     "CHINA": {
         "tickers": china_tickers,
@@ -72,8 +58,8 @@ MARKET_CONFIG = {
         "end": '2025-01-01',
         "stress_train_start": '2012-01-01',
         "stress_train_end": '2014-12-31',
-        "stress_test_start": '2015-01-01',
-        "stress_test_end": '2016-06-30',
+        "stress_test_start": '2015-06-01',
+        "stress_test_end": '2016-02-01',
         "stress_tickers": china_tickers,
         "views": {t: 0.12 for t in china_tickers},
         "confidence": {t: 0.50 for t in china_tickers}
@@ -83,12 +69,12 @@ MARKET_CONFIG = {
         "benchmark": '^BSESN',
         "start": '2010-01-01',
         "end": '2025-01-01',
-        "stress_train_start": '2005-01-01',
-        "stress_train_end": '2007-12-31',
-        "stress_test_start": '2008-01-01',
-        "stress_test_end": '2009-12-31',
+        "stress_train_start": '2018-01-01',
+        "stress_train_end": '2019-12-31',
+        "stress_test_start": '2020-02-01',
+        "stress_test_end": '2020-06-01',
         "stress_tickers": india_tickers,
-        "views": {t: 0.12 for t in india_tickers},
+        "views": {'INDA': 0.108, 'EPI': 0.070, 'SMIN': 0.165, 'INDY': 0.122},
         "confidence": {t: 0.50 for t in india_tickers}
     }
 }
@@ -113,6 +99,7 @@ def extract_metrics(res_dict: Dict[str, Any], model_key: str) -> Tuple[float, fl
 
 def run_market_pipeline(market_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
     logger.info(f"[{market_name}] COMMENCING EMPIRICAL PIPELINE EVALUATION")
+    print(f"[{market_name}] Loaded ETF universe:", config["tickers"])
     
     opt = BlackLittermanOptimizer(
         config["tickers"], 
@@ -176,12 +163,21 @@ def run_market_pipeline(market_name: str, config: Dict[str, Any]) -> Dict[str, A
         train_end=config["stress_train_end"],
         test_start=config["stress_test_start"],
         test_end=config["stress_test_end"],
-        benchmark=config["benchmark"]
+        benchmark=config["benchmark"],
+        global_prices=opt.prices
     )
     s_views = {t: config["views"][t] for t in config["stress_tickers"]}
     s_conf = {t: config["confidence"][t] for t in config["stress_tickers"]}
     tester.run_training_phase(s_views, s_conf)
     tester.run_stress_test()
+    
+    logger.info("Executing Fama-French Multi-Factor Regression mapping...")
+    try:
+        bl_regr = run_factor_regression(bt_results['black_litterman']['net'], "Black-Litterman")
+        mw_regr = run_factor_regression(bt_results['markowitz']['net'], "Markowitz")
+    except Exception as e:
+        logger.warning(f"Skipping native factor mapping due to data constraint: {e}")
+        bl_regr, mw_regr = None, None
     
     return {
         "baseline": baseline_comparison,
@@ -201,6 +197,15 @@ def run_market_pipeline(market_name: str, config: Dict[str, Any]) -> Dict[str, A
         "daily_returns": {
             "bl_net": bt_results['black_litterman']['net'],
             "mw_net": bt_results['markowitz']['net']
+        },
+        "factor_regression": {
+            "bl": bl_regr,
+            "mw": mw_regr
+        },
+        "asi_data": {
+            "series": bt_results.get("asi_series"),
+            "turnover": bt_results.get("turnover_series"),
+            "scalars": bt_results.get("asi")
         }
     }
 
@@ -208,6 +213,9 @@ def generate_cross_market_summary(all_results: Dict[str, Any]) -> pd.DataFrame:
     records = []
     for market, data in all_results.items():
         perf = data["performance"]
+        bench_names = {"US": "Benchmark (S&P 500)", "CHINA": "Benchmark (CSI 300)", "INDIA": "Benchmark (BSE Sensex)"}
+        bench_model = bench_names.get(market, "Benchmark")
+        
         records.extend([
             {
                 "Market": market, "Model": "Black-Litterman",
@@ -228,7 +236,7 @@ def generate_cross_market_summary(all_results: Dict[str, Any]) -> pd.DataFrame:
                 "Average Turnover": f"{perf['mw_turn']*100:.2f}%"
             },
             {
-                "Market": market, "Model": "Benchmark",
+                "Market": market, "Model": bench_model,
                 "Annualized Net Return": f"{perf['bench_ret']*100:.2f}%",
                 "Annualized Volatility": f"{perf['bench_vol']*100:.2f}%",
                 "Sharpe Ratio": f"{perf['bench_sharpe']:.3f}",
@@ -273,8 +281,8 @@ def generate_structural_analysis(all_results: Dict[str, Any]) -> pd.DataFrame:
         if has_in:
             row_vol["India Market"] = f"{all_results['INDIA']['performance'][mkey+'vol']*100:.2f}%"
             row_turn["India Market"] = f"{all_results['INDIA']['performance'][mkey+'turn']*100:.2f}%"
-            row_spike["India Market"] = f"{all_results['INDIA']['stress'][model]['Volatility Spike (x)']:.2f}x (2008)"
-            row_dd["India Market"] = f"{all_results['INDIA']['stress'][model]['Max Drawdown']*100:.2f}% (2008)"
+            row_spike["India Market"] = f"{all_results['INDIA']['stress'][model]['Volatility Spike (x)']:.2f}x (2020)"
+            row_dd["India Market"] = f"{all_results['INDIA']['stress'][model]['Max Drawdown']*100:.2f}% (2020)"
             row_rec["India Market"] = f"{all_results['INDIA']['stress'][model]['Max Underwater Days']} days"
 
         records.extend([row_vol, row_turn, row_spike, row_dd, row_rec])

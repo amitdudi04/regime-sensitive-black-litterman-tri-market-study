@@ -71,8 +71,12 @@ def run_factor_regression(portfolio_returns, model_name="Portfolio"):
         'Alpha_t_stat': float(model.tvalues.get('const', 0)),
         'R_squared': float(model.rsquared),
         'MKT_beta': float(model.params.get('MKT', 0)),
+        'MKT_t_stat': float(model.tvalues.get('MKT', 0)),
         'SMB_beta': float(model.params.get('SMB', 0)),
+        'SMB_t_stat': float(model.tvalues.get('SMB', 0)),
         'HML_beta': float(model.params.get('HML', 0)),
+        'HML_t_stat': float(model.tvalues.get('HML', 0)),
         'MOM_beta': float(model.params.get('MOM', 0)),
+        'MOM_t_stat': float(model.tvalues.get('MOM', 0)),
         'P_value_Alpha': float(model.pvalues.get('const', 1.0))
     }
