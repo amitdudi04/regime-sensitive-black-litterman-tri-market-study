@@ -24,3 +24,9 @@ cache/
 
 # Notebook checkpoints
 .ipynb_checkpoints/
+
+*.log
+*.db
+my_yf_cache/
+archive/
+results/debug/
