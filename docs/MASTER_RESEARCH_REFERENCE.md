@@ -1,115 +1,153 @@
-# MASTER RESEARCH REFERENCE: REGIME-SENSITIVE BLACK-LITTERMAN TRI-MARKET STUDY
+# Master Research Reference — Audit-Aligned Version
 
-## 1. Introduction
-Classical unconstrained mean-variance optimization models frequently exhibit severe structural vulnerability out-of-sample due to inherent estimation error amplification. By maximizing estimation errors in expected return and covariance matrices, the Markowitz optimizer systematically produces economically unviable weight vectors characterized by extreme turnover. This research infrastructure computationally refines and implements a regime-sensitive, transaction-cost-aware Black-Litterman Bayesian allocation framework operating simultaneously across the United States, China, and India markets to systematically examine portfolio allocations during systemic contractions and regime shifts.
+## 1. Research objective
 
-## 2. Research Motivation
-The objective of this study is to empirically evaluate whether Bayesian shrinkage intrinsically stabilizes optimization outputs without permanently sacrificing risk-adjusted performance. The research directly compares the Black-Litterman framework against the classical Markowitz model in a controlled, continuous out-of-sample chronology, integrating absolute fractional constraints, frictional execution, and macro-structural shocks.
+The project evaluates whether Black-Litterman equilibrium anchoring can reduce
+the allocation instability associated with historical-mean Markowitz
+optimization without assuming that Black-Litterman must outperform on every
+return metric.
 
-## 3. Research Hypotheses
-The empirical infrastructure evaluates the following primary hypotheses:
-* **H1**: Black-Litterman improves risk-adjusted performance out-of-sample compared to classical Mean-Variance, particularly in developed markets.
-* **H2**: Black-Litterman formally reduces allocation instability (ASI) by mathematically smoothing period-to-period drift through equilibrium anchoring.
-* **H3**: Portfolio performance remains superior under Black-Litterman after applying linear transaction costs due to significantly restricted turnover.
-* **H4**: Chinese State-Owned Enterprise (SOE) ownership does not guarantee crisis stability relative to the Private sector during targeted liquidity contractions.
+The study compares the methods across US, Chinese and Indian ETF baskets and
+examines allocation stability, turnover, implementation cost, crisis behavior,
+factor exposure, ownership structure and volatility regimes.
 
-## 4. Theoretical Framework
-The Black-Litterman Model stabilizes allocation distributions mathematically by anchoring subjective analyst views against an implied global equilibrium anchor. This process utilizes fundamental Bayesian shrinkage, mapping expected returns into a posterior distribution determined by a market-derived prior and scaled by parameter $\tau$ (tau), which dictates prior uncertainty scaling. By minimizing estimation error amplification, the posterior return formation generates diversified, intuitive weight allocations that inherently resist extreme directional volatility.
+## 2. Hypotheses
 
-## 5. Dataset Configuration
-The empirical evaluation operates on daily Exchange-Traded Fund (ETF) pricing data spanning a sample period of 2010 to 2025. The tri-market structure comprises the United States (5 ETFs), China (4 ETFs), and India (4 ETFs). This cross-sectional diversification isolates model performance across fundamentally distinct liquidity boundaries: developed and highly efficient (US), emerging and policy-driven (China), and emerging high-growth directional momentum (India).
+- **H1 — Risk-adjusted performance:** Black-Litterman may improve risk-adjusted
+  performance under estimation uncertainty.
+- **H2 — Allocation stability:** Black-Litterman should reduce target-weight
+  instability relative to historical-mean Markowitz allocation.
+- **H3 — Implementation friction:** lower allocation drift and turnover should
+  reduce proportional transaction-cost drag.
+- **H4 — SOE stability:** Chinese state-owned exposure may provide greater
+  downside resilience than private-sector exposure.
 
-## 6. Methodology
+H4 is an ex-ante hypothesis. The paper's reported evidence does not support it
+at conventional significance levels.
 
-### Pipeline Chronology
-The empirical evaluation executes a strict sequential chronology to structurally prohibit forward-looking bias. The estimation sequence executes deterministically: Market Data $\rightarrow$ Returns $\rightarrow$ Covariance $\rightarrow$ BL $\rightarrow$ Optimization $\rightarrow$ Backtest $\rightarrow$ ASI $\rightarrow$ Crisis $\rightarrow$ Factor $\rightarrow$ Regime $\rightarrow$ Export.
+## 3. Dataset
 
-### Covariance Estimation
-Ledoit-Wolf shrinkage is employed unconditionally to condition the covariance matrix mathematically, mitigating sample noise inside limited historical windows.
+The intended baskets are:
 
-### Rolling Out-of-Sample Backtest
-Out-of-sample execution is driven by a continuous 252-day expanding execution framework, restricting optimal weight construction exclusively to ex-ante observable parameters.
+- US: SPY, QQQ, IWM, XLF, XLK
+- China: ASHR, KWEB, MCHI, FXI
+- India: INDA, EPI, SMIN, INDY
 
-### Runtime Environment
+The requested interval is 2010-2025. Effective market-specific dates depend on
+common observed ETF histories and must be exported by the data pipeline.
 
-Python Version: 3.11
+## 4. Estimation design
 
-Core Libraries:
-- NumPy
-- Pandas
-- SciPy
-- PyQt6
-- yfinance
-- pandas_datareader
+The canonical study uses a 252-trading-day rolling estimation window and a
+63-trading-day holding/rebalance interval.
 
-Data Sources:
-- Yahoo Finance (ETF prices)
-- Kenneth French Data Library (factor data)
+Ledoit-Wolf covariance shrinkage is applied inside each training window.
 
-## 7. Performance Results
-Empirical evidence indicates that Black-Litterman achieves superior risk-adjusted performance in the United States, generating a Sharpe ratio of 0.650 relative to the Markowitz Sharpe of 0.614. In emerging markets, Markowitz achieves higher gross Sharpe ratios (China: 0.088 vs 0.042; India: 0.440 vs 0.356). Markowitz outperformance in emerging markets is driven by implicit momentum exposure rather than superior allocation efficiency, capturing directional trends at the direct expense of structural stability.
+Both Markowitz and Black-Litterman portfolios are long-only and fully invested
+and use the same optimizer and risk model. The intended difference is the
+expected-return construction.
 
-## 8. Allocation Stability Index (ASI)
-The Allocation Stability Index quantifies the exact magnitude of portfolio weight drift across consecutive rebalancing periods. ASI represents L1-norm sequential drift, formally calculated as:
-$ASI_t = \sum |w_t - w_{t-1}|$
+## 5. Black-Litterman model
 
-The results demonstrate a fundamental hierarchy: Black-Litterman universally constraints unmanaged weight oscillation relative to Markowitz. The empirical output specifies absolute mitigation:
-- **United States**: BL (0.001632) vs MV (0.015365)
-- **China**: BL (0.000391) vs MV (0.010772)
-- **India**: BL (0.000322) vs MV (0.007822)
+Equilibrium returns are expressed as:
 
-## 9. Transaction Cost Impact
-Excessive reallocation is significantly penalized under standard linear transaction cost constraints. Under Black-Litterman execution, turnover scales fractionally relative to unconstrained optimizers. Average annualized turnover constraints measure 0.20% (US), 0.08% (China), and 0.07% (India) for Black-Litterman, compared to respective Markowitz averages of 1.58%, 1.12%, and 0.82%. This confirms the implementation superiority of Bayesian models in frictional environments.
+Pi = lambda * Sigma * w_eq
 
-## 10. Crisis Stress Testing
-The infrastructure leverages a crisis freeze methodology, mapping peak-to-trough isolation across the 2008 GFC, 2015 Chinese liquidity crisis, and 2020 pandemic timeline. Empirical testing defines explicit duration variables:
+The posterior combines Pi with P, Q, Omega and tau.
 
-**Crisis Recovery Durations (Trading Days):**
-- **US 2008 GFC**: 1093 (BL) and 1056 (MV)
-- **China 2015 Crash**: 458 (BL) and 459 (MV)
-- **India 2020 Covid**: 176 (BL) and 176 (MV)
+The reconciliation code uses identity P and the documented mild historical
+view Q = Pi + 0.10*(historical_mean - Pi).
 
-Maximum drawdowns and volatility spikes behaved symmetrically under systemic deleveraging, with the India COVID-19 crash generating a volatility spike of 3.39x (BL) and 3.40x (MV).
+The paper describes a capitalization-weighted prior. The public repository does
+not presently contain a defensible historical ETF market-cap/AUM series, so the
+audit branch uses an explicit equal-weight proxy unless such data are supplied.
 
-### Crisis Metric Validation
-- Peak reference = V(t₀) (crisis start)
-- Duration = trading days (index-based)
-- Recovery = first return to peak
+## 6. Published-paper performance reference
 
-Recovery durations align with historical market timelines: US $\approx$ 4.3 years (S&P recovery), China $\approx$ 22 months, and India $\approx$ 8.5 months. Black–Litterman recovery duration is weakly greater than or comparable to Markowitz when stabilization dominates, confirming the trade-off between robustness and recovery speed.
+The working paper reports:
 
-## 11. Factor Regression Analysis
-Performance is explained by factor exposure rather than stock selection. Multi-variate OLS regression models evaluate Fama-French systematic variables mathematically. The intercept (alpha) fails to achieve statistical significance across all arrays, confirming neither portfolio captures idiosyncratic risk-adjusted excess returns. Momentum ($\beta_{MOM}$) demonstrates statistical significance exclusively within the Markowitz formulation, proving its emerging market outperformance stems mechanically from trend-following estimation errors. Factor data is obtained directly from the Kenneth French Data Library using pandas_datareader, ensuring standardized academic factor construction and eliminating inconsistencies arising from manually sourced datasets.
+| Market | BL Sharpe | Markowitz Sharpe | BL Turnover | Markowitz Turnover | BL ASI | Markowitz ASI |
+|---|---:|---:|---:|---:|---:|---:|
+| US | 0.650 | 0.614 | 0.20% | 1.58% | 0.001632 | 0.015365 |
+| China | 0.042 | 0.088 | 0.08% | 1.12% | 0.000391 | 0.010772 |
+| India | 0.356 | 0.440 | 0.07% | 0.82% | 0.000322 | 0.007822 |
 
-## 12. Structural Ownership Study (SOE vs Private)
-Evaluating the 2015 Chinese liquidity contraction directly, the analysis isolates operational entities by sovereign ownership status. The empirical evidence demonstrates that ownership is not a statistically significant factor. While the private sector generated descriptively superior Sharpe distributions, the Jobson-Korkie test yields a p-value of 0.572, signifying that structural state-owned isolation parameters intrinsically fail to supply absolute asymmetric defensive buffering inside optimized weighting constraints.
+The evidence therefore supports a stability interpretation more strongly than a
+claim of universal return superiority. In the paper reference table, Markowitz
+has higher Sharpe in China and India, and the US benchmark Sharpe is also
+slightly above BL.
 
-## 13. Regime Switching Detection
-A continuous Markov Regime Switching framework formally segments chronological states into binary Low Volatility and High Volatility distributions. The conditional evaluation matrices indicate that while Markowitz optimization generates statistically consistent marginal advantages natively within Low Volatility distributions, Black-Litterman systematically mitigates terminal loss magnitude mathematically executing within High Volatility shock regimes, structurally protected by prior equilibrium anchoring vectors.
+## 7. Allocation Stability Index
 
-## 14. Robustness Testing
-Robustness parameters evaluated variable $\tau$ parameters mapping confidence scales continuously across matrices. Results consistently validate performance inelasticity: Black-Litterman optimizations operate cleanly independent of granular variance estimation inputs, confirming output distributions rely on structural macro-priors uniformly.
+ASI is mean L1 target-weight drift:
 
-## 15. Synthesis of Findings
-Empirical observations evaluated directly against explicit hypotheses yield the following resolution matrix:
-* **H1**: Partially Supported. Black-Litterman yields statistically superior risk-adjusted scaling in developed frameworks (US), establishing mathematically formal dominance. Markowitz generates raw maximization uniquely inside Emerging framework subsets (China, India).
-* **H2**: Strongly Supported. Absolute fractional turnover constraints prove Black-Litterman mathematically mitigates estimation error amplification universally (US ASI $0.001632$ vs $0.015365$).
-* **H3**: Strongly Supported. Reduced structural $L_1$-norm transitions minimize transaction cost frictional drag structurally, asserting Bayesian superiority in execution.
-* **H4**: Rejected. Chinese sovereign structural architectures functionally failed to impart discrete downside containment attributes ($p = 0.572$), rejecting protective state-backed liquidity hypothesis arrays unconditionally.
+ASI_t = sum_i |w_i,t - w_i,t-1|
 
-## 16. Institutional Implications
-This research structurally confirms that unconstrained mean-variance framework implementation is mathematically suboptimal within institutional scales due to extreme turnover. Bayesian shrinkage directly addresses implementation feasibility, emphasizing structural stability versus theoretical optimality.
+It is useful because it isolates changes in the optimizer's desired allocation.
+It is distinct from trading turnover, which should account for portfolio drift
+before each rebalance.
 
-## 17. Numerical Consistency Checks
+The paper reference results show lower BL ASI in all three evaluated markets.
+That finding should be stated as sample-specific evidence, not universal
+mathematical dominance.
 
-The internal consistency of empirical outputs was validated through:
+## 8. Crisis results
 
-1. Expected returns differ across assets and markets  
-2. Performance metrics vary across US, China, and India  
-3. Allocation Stability Index satisfies BL < MV across all markets  
-4. Factor regression R² values remain within empirical bounds  
-5. Crisis recovery durations match historical timelines  
-6. Recovery differences reflect exposure structure, not measurement error  
-7. Black–Litterman recovery duration is weakly greater than or comparable to Markowitz when stabilization dominates  
+Paper reference recovery durations:
 
-These checks confirm full pipeline coherence and empirical validity.
+- US 2008: BL 1093, Markowitz 1056 trading days
+- China 2015: BL 458, Markowitz 459
+- India 2020: both 176
+
+The appropriate conclusion is that systematic crisis exposure can dominate
+portfolio-construction differences. BL does not dominate every crisis statistic.
+
+## 9. Factor interpretation
+
+The project examines MKT, SMB, HML and MOM exposures. The corrected code uses
+HAC/Newey-West inference.
+
+If Markowitz has a significant momentum loading, the defensible statement is
+that its performance is **consistent with greater momentum exposure**. The
+regression does not by itself prove that momentum caused all of its
+emerging-market outperformance.
+
+## 10. Ownership result
+
+The paper reference p-value of about 0.572 does not support statistically
+significant SOE-vs-private risk-adjusted performance differences. The result is
+best described as **H4 not supported**, rather than proof of no ownership effect.
+
+## 11. Regime analysis
+
+Markov switching separates high- and low-volatility states for conditional
+evaluation. An ex-ante rolling-volatility rule separately conditions tau in the
+allocation code.
+
+Unless Markov filtered probabilities are directly used in the portfolio rule,
+the project should not say that the Markov model itself drives the allocation.
+
+## 12. Tau sensitivity
+
+The paper reports a narrow Sharpe range as tau varies. The audit found that the
+public repository's later tau table did not reproduce the same values. Tau
+sensitivity therefore remains a reconciliation item and must be regenerated
+from the final BL parameterization before being promoted as canonical output.
+
+## 13. Research interpretation
+
+The strongest supported research contribution is not that Black-Litterman wins
+every metric. It is the empirical examination of how equilibrium anchoring
+changes allocation stability and implementation characteristics across
+heterogeneous markets.
+
+Negative and mixed results remain part of the research evidence.
+
+## 14. Reproducibility status
+
+The audit branch removes hard-coded primary performance exports, implements HAC
+factor inference, replaces placeholder tests, removes synthetic publication
+figures and creates a machine-derived results/recomputed/ path.
+
+The published result family remains a reference table until an end-to-end run
+with the intended data and equilibrium-prior specification is validated.
