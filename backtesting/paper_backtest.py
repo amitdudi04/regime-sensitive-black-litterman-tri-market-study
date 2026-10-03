@@ -69,7 +69,7 @@ def run_paper_backtest(
     vector: historical means for Markowitz versus an equilibrium-anchored
     Black-Litterman posterior.
 
-    The BL view vector uses the documented synthetic momentum construction:
+    The BL view vector uses the documented mild historical-return tilt:
         Q = Pi + view_blend * (historical_mean - Pi)
 
     P is the identity matrix and Omega is diagonal with the same units as the

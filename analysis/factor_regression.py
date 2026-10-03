@@ -6,9 +6,9 @@ import statsmodels.api as sm
 
 def load_factor_data(index_dates):
     """
-    Load daily Fama-French 3 factors plus Momentum from the Kenneth French library.
+    Load US daily Fama-French 3 factors plus Momentum from the Kenneth French library.
 
-    The function uses exact-date intersection only. It deliberately avoids backward
+    These are US factors. The function uses exact-date intersection only. It deliberately avoids backward
     filling because doing so can inject future factor observations into earlier dates.
     """
     index_dates = pd.DatetimeIndex(index_dates).sort_values()

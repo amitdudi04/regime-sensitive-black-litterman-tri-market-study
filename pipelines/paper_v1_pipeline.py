@@ -3,6 +3,7 @@ import json
 
 import numpy as np
 import pandas as pd
+import yaml
 
 from analysis.factor_regression import run_factor_regression
 from backtesting.paper_backtest import BacktestConfig, run_paper_backtest
@@ -12,6 +13,7 @@ from core.return_calculations import compute_simple_returns
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = PROJECT_ROOT / "results" / "recomputed"
+CONFIG_PATH = PROJECT_ROOT / "config" / "project_config.yaml"
 
 MARKETS = {
     "US": {
@@ -28,8 +30,11 @@ MARKETS = {
     },
 }
 
-REQUESTED_START = "2010-01-01"
-REQUESTED_END = "2025-01-01"
+
+def _load_project_config():
+    with open(CONFIG_PATH, "r", encoding="utf-8") as handle:
+        cfg = yaml.safe_load(handle)
+    return cfg
 
 
 def _performance(series):
@@ -60,19 +65,23 @@ def _benchmark_returns(ticker, start, end, target_index):
 
 
 def run_paper_v1_study():
+    project_cfg = _load_project_config()
+    requested_start = str(project_cfg["requested_start"])
+    requested_end = str(project_cfg["requested_end"])
+
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     cfg = BacktestConfig(
-        window_size=252,
-        rebalance_freq=63,
-        risk_aversion=3.0,
-        tau_low_vol=0.05,
-        tau_high_vol=0.01,
-        transaction_cost_rate=0.001,
-        view_blend=0.10,
-        view_uncertainty_scale=10.0,
-        min_weight=0.0,
-        max_weight=1.0,
+        window_size=int(project_cfg["window_size"]),
+        rebalance_freq=int(project_cfg["rebalance_frequency"]),
+        risk_aversion=float(project_cfg["risk_aversion"]),
+        tau_low_vol=float(project_cfg["tau_low_vol"]),
+        tau_high_vol=float(project_cfg["tau_high_vol"]),
+        transaction_cost_rate=float(project_cfg["transaction_cost_rate"]),
+        view_blend=float(project_cfg["view_blend"]),
+        view_uncertainty_scale=float(project_cfg["view_uncertainty_scale"]),
+        min_weight=float(project_cfg["min_weight"]),
+        max_weight=float(project_cfg["max_weight"]),
     )
 
     summary_rows = []
@@ -80,9 +89,7 @@ def run_paper_v1_study():
     factor_rows = []
 
     for market, spec in MARKETS.items():
-        prices = download_market_data(
-            spec["tickers"], REQUESTED_START, REQUESTED_END
-        )
+        prices = download_market_data(spec["tickers"], requested_start, requested_end)
         returns = compute_simple_returns(prices)
 
         packet = run_paper_backtest(returns, cfg)
@@ -107,9 +114,8 @@ def run_paper_v1_study():
             ("Markowitz", "markowitz_net"),
         ]:
             metrics = _performance(daily[col])
-            weights = packet["weights"][
-                "black_litterman" if model == "Black-Litterman" else "markowitz"
-            ]
+            weight_key = "black_litterman" if model == "Black-Litterman" else "markowitz"
+            weights = packet["weights"][weight_key]
             average_turnover = float(
                 packet["turnover"][model].iloc[1:].mean()
                 if len(packet["turnover"]) > 1
@@ -125,25 +131,25 @@ def run_paper_v1_study():
                 }
             )
 
-            try:
-                factor = run_factor_regression(daily[col], model)
-                factor["Market"] = market
-                factor_rows.append(factor)
-            except Exception as exc:
-                factor_rows.append(
-                    {
-                        "Market": market,
-                        "Model": model,
-                        "Factor_Regression_Error": str(exc),
-                    }
-                )
+            # Kenneth French daily factors used here are US factors. Applying
+            # them silently to China/India would not be a defensible local-factor
+            # specification, so the canonical runner limits this regression to US.
+            if market == "US":
+                try:
+                    factor = run_factor_regression(daily[col], model)
+                    factor["Market"] = market
+                    factor_rows.append(factor)
+                except Exception as exc:
+                    factor_rows.append(
+                        {
+                            "Market": market,
+                            "Model": model,
+                            "Factor_Regression_Error": str(exc),
+                        }
+                    )
 
-        # Benchmark metrics use only dates that overlap the OOS strategy sample.
         benchmark = _benchmark_returns(
-            spec["benchmark"],
-            REQUESTED_START,
-            REQUESTED_END,
-            daily.index,
+            spec["benchmark"], requested_start, requested_end, daily.index
         )
         if not benchmark.empty:
             benchmark_metrics = _performance(benchmark)
@@ -161,8 +167,8 @@ def run_paper_v1_study():
             {
                 "Market": market,
                 "Tickers": ",".join(spec["tickers"]),
-                "Requested Start": REQUESTED_START,
-                "Requested End": REQUESTED_END,
+                "Requested Start": requested_start,
+                "Requested End": requested_end,
                 "Effective Price Start": prices.index.min().date().isoformat(),
                 "Effective Price End": prices.index.max().date().isoformat(),
                 "Price Observations": int(len(prices)),
@@ -179,17 +185,18 @@ def run_paper_v1_study():
 
     summary.to_csv(RESULTS_DIR / "tri_market_summary.csv", index=False)
     manifest.to_csv(RESULTS_DIR / "dataset_manifest.csv", index=False)
-    factors.to_csv(RESULTS_DIR / "factor_regression_by_market.csv", index=False)
+    factors.to_csv(RESULTS_DIR / "factor_regression_us.csv", index=False)
 
     run_manifest = {
         "status": "recomputed_not_yet_paper_certified",
-        "requested_sample": [REQUESTED_START, REQUESTED_END],
+        "requested_sample": [requested_start, requested_end],
         "window_size": cfg.window_size,
         "rebalance_frequency": cfg.rebalance_freq,
         "transaction_cost_rate": cfg.transaction_cost_rate,
         "view_method": "Q = Pi + 0.10 * (historical_mean - Pi)",
-        "equilibrium_weight_default": "equal_weight_proxy",
+        "equilibrium_weight_default": project_cfg["equilibrium_weight_default"],
         "return_convention": "simple returns for portfolio P&L",
+        "factor_scope": "US only; Kenneth French US daily factors",
         "note": (
             "The published paper states a market-capitalization prior. The current "
             "public repository does not contain defensible historical market-cap/AUM "

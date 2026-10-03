@@ -1,0 +1,7 @@
+Crisis,Market,Model,Max Drawdown,Volatility Spike,Recovery Trading Days
+2008 US GFC,US,Black-Litterman,-0.6257,1.94,1093
+2008 US GFC,US,Markowitz,-0.6218,1.93,1056
+2015 China crash,China,Black-Litterman,-0.4342,1.92,458
+2015 China crash,China,Markowitz,-0.4382,1.95,459
+2020 India COVID,India,Black-Litterman,-0.4744,3.39,176
+2020 India COVID,India,Markowitz,-0.4748,3.40,176

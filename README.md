@@ -1,74 +1,73 @@
 # Regime-Sensitive Black-Litterman Portfolio Allocation
 
-### Cross-market stability, turnover and crisis analysis in the US, China and India
+Cross-market research on allocation stability, turnover and crisis behavior in the United States, China and India.
 
 **Author:** Amit Kumar Dudi  
-**Research status:** working-paper project with an active reproducibility reconciliation
+**Repository status:** research-facing, audit-cleaned working-paper repository
 
-## Research question
+## What this repository is
 
-Classical mean-variance optimization is highly sensitive to expected-return
-estimation error. This project studies whether an equilibrium-anchored
-Black-Litterman return model can produce more stable implementable allocations
-than a classical historical-mean Markowitz specification.
+This project studies whether an equilibrium-anchored Black-Litterman expected-return model can reduce the allocation instability associated with classical historical-mean Markowitz optimization.
 
-The empirical design compares the two approaches across:
+The intended ETF baskets are:
 
 - **United States:** SPY, QQQ, IWM, XLF, XLK
 - **China:** ASHR, KWEB, MCHI, FXI
 - **India:** INDA, EPI, SMIN, INDY
 
-The analysis considers allocation stability, turnover, transaction costs,
-crisis behavior, factor exposures and volatility regimes.
+The canonical implementation uses a 252-trading-day rolling estimation window and a 63-trading-day holding/rebalance interval.
+
+## Source-of-truth hierarchy
+
+The repository deliberately separates three things:
+
+1. **Working-paper reference results** — values reported in the existing paper.
+2. **Canonical code** — the cleaned implementation under core/, models/, backtesting/, analysis/, and pipelines/.
+3. **Fresh recomputed outputs** — written to results/recomputed/ when the canonical pipeline is run.
+
+Paper values are not manually copied into executable code to make the project appear reproducible.
 
 ## Canonical research flow
 
-Observed market data -> common-date validation -> simple returns -> 252-day
-rolling estimation -> Ledoit-Wolf covariance -> Markowitz historical means and
-Black-Litterman posterior -> identical long-only fully-invested optimizer ->
-63-trading-day OOS holding period -> drift-adjusted turnover and proportional
-trading cost -> net returns -> ASI/drawdown/Sharpe/crisis/factor/regime analysis.
-
-## Methodological controls
-
-- No hard-coded performance results in the canonical paper-v1 runner.
-- The same optimizer and constraints are applied to Markowitz and BL.
-- No silent synthetic-price fallback is permitted in the canonical empirical path.
-- Missing ETF prices are not forward-filled in the canonical data loader.
-- Portfolio P&L uses simple returns.
-- Factor inference uses Newey-West/HAC standard errors and exact-date factor alignment.
-- Research figures must be generated from saved empirical series; the figure script no longer produces random realistic-looking paths.
+Observed prices  
+→ common-date validation  
+→ simple returns for portfolio P&L  
+→ 252-day rolling training window  
+→ Ledoit-Wolf covariance  
+→ Markowitz historical means / Black-Litterman posterior  
+→ identical long-only, fully-invested optimizer  
+→ 63-day out-of-sample holding period  
+→ drift-adjusted turnover and proportional transaction costs  
+→ net OOS returns and weight history  
+→ ASI / drawdown / factor / regime analysis
 
 ## Black-Litterman specification
 
-The equilibrium return vector is Pi = lambda * Sigma * w_eq.
+The equilibrium prior is:
 
-The posterior combines Pi with an absolute-view system P, Q and Omega. For the
-reconciliation implementation:
+Pi = lambda × Sigma × w_eq
 
-- P is the identity matrix;
-- the documented synthetic momentum view is Q = Pi + 0.10 * (historical_mean - Pi);
-- Omega is diagonal and expressed in annualized return-variance units;
-- tau is conditioned by an ex-ante volatility rule;
-- the default equilibrium-weight vector is currently an explicit equal-weight
-  proxy because the public repository does not contain a defensible historical
-  ETF market-cap/AUM weight series.
+The posterior combines Pi with P, Q, Omega, and tau.
 
-The published paper describes a capitalization-weighted equilibrium prior.
-That point remains under reconciliation and is not silently approximated by
-price x volume.
+The reconciliation implementation currently uses:
 
-## Allocation Stability Index
+- identity P for absolute ETF views;
+- Q = Pi + 0.10 × (historical_mean - Pi);
+- diagonal Omega in annualized return-variance units;
+- an ex-ante volatility rule for tau;
+- an **explicit equal-weight equilibrium proxy** unless defensible historical ETF capitalization/AUM weights are supplied.
 
-ASI_t = sum_i |w_i,t - w_i,t-1|.
+The working paper describes a capitalization-weighted equilibrium prior. The public repository does not contain a defensible historical ETF market-cap/AUM series, so the code does **not** substitute price × volume and call it market capitalization.
 
-The reported ASI is the mean L1 target-weight change across rebalances. It is a
-model-stability metric, not a dollar transaction-cost measure. Turnover is
-calculated separately from the drifted pre-trade portfolio weights.
+## Fair BL-vs-Markowitz comparison
+
+The canonical implementation applies the same covariance estimator, risk-aversion parameter, optimizer, long-only constraint, fully-invested constraint and weight bounds to both models.
+
+The primary structural difference is the expected-return vector. Model-specific L2 regularization is excluded from the canonical comparison.
 
 ## Published-paper reference results
 
-The working paper reports:
+The existing working paper reports:
 
 | Market | Model | Return | Volatility | Sharpe | Turnover | ASI | Max Drawdown |
 |---|---|---:|---:|---:|---:|---:|---:|
@@ -79,99 +78,94 @@ The working paper reports:
 | India | Black-Litterman | 7.60% | 21.34% | 0.356 | 0.07% | 0.000322 | -53.67% |
 | India | Markowitz | 9.76% | 22.18% | 0.440 | 0.82% | 0.007822 | -50.07% |
 
-These are published-paper reference values. The audit found that an older
-repository result family did not match this table. The corrected code therefore
-writes fresh outputs to results/recomputed/ and does not claim that the
-published values have been independently reproduced until the intended
-data/prior specification is rerun end to end.
+These are **paper-reference values**, not a claim that the cleaned pipeline has already reproduced them.
 
-See docs/RECONCILIATION_STATUS.md.
+Machine-readable reference tables are under results/reference/.
 
-## Crisis stress testing
+## Crisis reference
 
-The paper reports corrected recovery durations measured in trading days from
-the crisis trough back to the crisis-start wealth level V(t0):
+The paper reports recovery durations, measured in trading days from the crisis trough back to crisis-start wealth V(t0):
 
-| Crisis | BL recovery | Markowitz recovery |
-|---|---:|---:|
-| US 2008 GFC | 1093 | 1056 |
-| China 2015 crash | 458 | 459 |
-| India 2020 COVID | 176 | 176 |
+- US 2008 GFC: BL 1093, Markowitz 1056
+- China 2015 crash: BL 458, Markowitz 459
+- India 2020 COVID: 176 for both
 
 These results do not establish universal crisis dominance by Black-Litterman.
-They show that recovery behavior can be similar across allocation methods when
-systematic market exposure dominates.
 
-## Factor interpretation
+## Factor analysis
 
-The study uses a four-factor regression (MKT, SMB, HML, MOM). The canonical
-factor module now uses HAC/Newey-West inference.
+The current canonical factor module uses Kenneth French **US** daily MKT, SMB, HML and MOM factors with Newey-West/HAC inference.
 
-A significant loading should be interpreted as factor exposure, not proof that
-the factor caused all observed outperformance. The project therefore avoids
-describing Markowitz emerging-market performance as mechanically proven to
-come from momentum.
+The paper-v1 runner therefore performs this factor regression for the **US portfolio only**. China and India require an explicitly justified local/global factor specification rather than silently reusing US factors.
 
-## SOE / private-company sub-study
+A significant loading is interpreted as exposure, not proof of a unique causal explanation for performance.
 
-The paper's ex-ante hypothesis is that state ownership may provide downside
-resilience. The reported result does not support that hypothesis at conventional
-significance levels (paper reference p-value approximately 0.572). This is a
-failure to find statistically significant evidence of a difference, not proof
-that ownership can never matter.
+## Regime analysis
 
-## Execution
+The repository distinguishes:
 
-Install dependencies with:
+- an ex-ante recent-volatility rule used to condition tau; and
+- a two-state Markov-switching model used as an ex-post conditional evaluation layer.
+
+Unless filtered Markov probabilities are explicitly fed into the allocation rule, the Markov model is not described as the portfolio decision engine.
+
+## SOE/private study
+
+The working paper's ex-ante hypothesis is that Chinese state ownership may provide downside resilience. The reported result does not support a statistically significant SOE-vs-private performance difference at conventional levels.
+
+Earlier mock/legacy SOE execution code has been removed from the research-facing branch and remains available in Git history.
+
+## Run the canonical study
+
+Install:
 
     pip install -r requirements.txt
 
-Run the reconciliation study with:
+Run:
 
     python -m pipelines.paper_v1_pipeline
 
-or the backward-compatible entry point:
+Fresh outputs are written to:
 
-    python -m pipelines.run_tri_market_pipeline
-
-Fresh outputs are written to results/recomputed/.
+    results/recomputed/
 
 Generate figures only after a successful empirical run:
 
     python scripts/generate_research_figures.py
 
+The figure generator reads saved empirical outputs only. It does not create simulated “realistic-looking” research trajectories.
+
 ## Repository structure
 
 - core/ — data and return utilities
-- models/ — BL posterior and common optimizer
-- backtesting/ — walk-forward portfolio simulation
-- analysis/ — factor, regime and statistical analysis
-- pipelines/ — executable empirical workflows
-- results/ — published-reference and recomputed outputs
-- tests/ — executable mathematical / no-look-ahead tests
-- docs/ — paper, implementation and audit documentation
-- legacy/ — historical implementation pending final migration
+- models/ — Black-Litterman posterior and common optimizer
+- backtesting/ — canonical walk-forward engine and crisis helpers
+- analysis/ — factor, regime, statistics and ownership helpers
+- pipelines/ — canonical executable study
+- results/reference/ — paper-reported values, explicitly labelled
+- results/recomputed/ — generated by the cleaned pipeline
+- tests/ — executable mathematical and chronology tests
+- docs/ — methodology, architecture, paper status and errata
+- scripts/ — empirical figure generation
 
-## Limitations
+Historical experiment snapshots, legacy engines, the old GUI and stale result figures were removed from the default branch after being preserved in Git history. A dedicated historical branch also preserves the pre-cleanup state.
 
-The study uses ETF proxies, stylized proportional transaction costs and a
-relatively small cross-section. The reconciliation also identifies an important
-prior-specification limitation: the public repository presently lacks the
-historical ETF capitalization/AUM series needed to reproduce the paper's stated
-capitalization-weighted BL equilibrium prior.
+## Important limitations
 
-The Markov-switching model should be interpreted as a regime-evaluation layer
-unless its filtered probabilities are explicitly incorporated into the
-portfolio decision rule.
+- ETF baskets are low-dimensional proxies for broader markets.
+- Transaction costs are stylized proportional frictions, not a full market-impact model.
+- The paper's historical capitalization-prior dataset is not present in the public repository.
+- Crisis windows are selected ex post, although frozen allocations prevent within-window rebalancing look-ahead.
+- The current US factor model should not be treated as a local China/India factor model.
+- Published-paper tables remain reference values until the cleaned pipeline is rerun and reconciled end to end.
 
 ## Research integrity
 
-Negative and non-dominant results are retained. In particular:
+Mixed and negative findings are retained:
 
-- Markowitz has higher reported gross Sharpe in China and India in the published reference table;
-- the US benchmark Sharpe in the paper exceeds BL's published Sharpe;
-- BL does not dominate every crisis drawdown/recovery outcome;
-- the SOE hypothesis is not statistically supported.
+- Markowitz has higher reported Sharpe in China and India in the paper table.
+- The US benchmark Sharpe in the working paper is slightly above BL.
+- BL does not dominate every crisis drawdown/recovery outcome.
+- The SOE hypothesis is not statistically supported.
 
-The purpose of the repository is empirical evaluation, not to force
-Black-Litterman to win every metric.
+The objective is to evaluate Black-Litterman, not to force it to win every metric.
