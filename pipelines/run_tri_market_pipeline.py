@@ -1,220 +1,77 @@
-import sys
-import os
-import yaml
+"""
+Canonical cross-market execution entry point.
+
+This runner deliberately contains no hard-coded empirical performance numbers.
+Every exported metric is derived from the backtest result returned by
+pipelines.dual_market.evaluate_dual_market.
+
+During the paper-reconciliation phase outputs are written to results/recomputed/
+rather than overwriting the published-paper reference tables.
+"""
+from pathlib import Path
+import json
+
 import pandas as pd
-import numpy as np
-import pathlib
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from pipelines.dual_market import evaluate_dual_market
 
-from core.data_loader import download_market_data
-from core.return_calculations import compute_log_returns
-from core.covariance_estimators import estimate_covariance
-from models.black_litterman_model import compute_implied_equilibrium_returns, compute_black_litterman_posterior
-from models.optimizer import compute_black_litterman_weights, compute_mean_variance_weights
-from backtesting.rolling_backtest import run_rolling_backtest
-from backtesting.transaction_costs import calculate_turnover, apply_transaction_costs
-from backtesting.allocation_stability_index import compute_asi
-from results.export_utils import export_to_csv
 
-def calculate_max_drawdown(returns_series):
-    cumulative = (1 + returns_series).cumprod()
-    running_max = cumulative.cummax()
-    drawdown = (cumulative - running_max) / running_max
-    return float(drawdown.min())
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+OUT_DIR = PROJECT_ROOT / "results" / "recomputed"
+
+
+def _write_factor_results(raw_results):
+    rows = []
+    for market, result in raw_results.items():
+        factor_block = result.get("factor_regression", {})
+        for key, model_name in [("bl", "Black-Litterman"), ("mw", "Markowitz")]:
+            row = factor_block.get(key)
+            if row:
+                record = dict(row)
+                record["Market"] = market
+                record["Model"] = model_name
+                rows.append(record)
+    if rows:
+        pd.DataFrame(rows).to_csv(OUT_DIR / "factor_regression_by_market.csv", index=False)
+
+
+def _write_statistical_tests(statistical_tests):
+    rows = []
+    for market, values in statistical_tests.items():
+        rows.append({
+            "Market": market,
+            "Circular_Block_Bootstrap_P": values.get("bootstrap_p"),
+            "Jobson_Korkie_P": values.get("jobson_korkie_p"),
+        })
+    if rows:
+        pd.DataFrame(rows).to_csv(OUT_DIR / "statistical_tests.csv", index=False)
+
 
 def run():
-    print("Executing Tri-Market Research Pipeline...")
-    
-    # 1. Load configuration
-    project_root = pathlib.Path(__file__).resolve().parent.parent
-    config_path = project_root / 'config' / 'project_config.yaml'
-    with open(config_path, 'r') as f:
-        config = yaml.safe_load(f)
-        
-    start_date = config.get('start_date', '2005-01-01')
-    end_date = config.get('end_date', '2025-01-01')
-    window_size = config.get('rebalance_window', 252)
-    tau = config.get('tau', 0.05)
-    
-    # 2. Load market data 
-    tickers = ['SPY', 'ASHR', 'INDA'] 
-    prices = download_market_data(tickers, start_date=start_date, end_date=end_date)
-    
-    if prices.empty:
-        print("Data load failed. Exiting.")
-        return
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 3. Compute returns
-    returns = compute_log_returns(prices)
-    
-    # 4. Estimate covariance 
-    cov_matrix = estimate_covariance(returns)
-    
-    # 5. Run Black-Litterman optimization 
-    pi = compute_implied_equilibrium_returns(cov_matrix, [1/3, 1/3, 1/3], lambda_risk_aversion=3.0)
-    bl_posterior = compute_black_litterman_posterior(pi, cov_matrix, P=None, Q=None, Omega=None, tau=tau)
-    bl_weights = compute_black_litterman_weights(bl_posterior, cov_matrix)
-    
-    # 6. Run Markowitz optimization
-    mv_weights = compute_mean_variance_weights(returns.mean() * 252, cov_matrix)
-    
-    # 7. Perform rolling backtests
-    bl_returns, bl_weights_history = run_rolling_backtest(returns, bl_weights, window_size=window_size, model_type='black_litterman', tau=tau)
-    mv_returns, mv_weights_history = run_rolling_backtest(returns, mv_weights, window_size=window_size, model_type='markowitz')
-    
-    # 7.2 Run Regime Detection Analysis
-    print("Running Markov Regime Switching Detection...")
-    from analysis.regime_detection import fit_markov_regime_model, compute_regime_performance
-    
-    market_proxy = returns.mean(axis=1)
-    regime_class, _ = fit_markov_regime_model(market_proxy)
-    regime_summary_df = compute_regime_performance(bl_returns, mv_returns, regime_class)
-    
-    reg_summary_path = project_root / 'results' / 'v1_final_results' / 'regime_performance_summary.csv'
-    regime_summary_df.to_csv(reg_summary_path, index=False)
-    print("Exporting results to results/v1_final_results/regime_performance_summary.csv")
-    
-    # 7.5 Run Factor Decomposition (Authentic Data)
-    print("Running OLS Factor Regression utilizing Ken French library...")
-    from analysis.factor_regression import run_factor_regression
-    bl_regr = run_factor_regression(bl_returns, "Black-Litterman")
-    mv_regr = run_factor_regression(mv_returns, "Markowitz")
-    
-    regr_summary_path = project_root / 'results' / 'v1_final_results' / 'factor_regression_results.csv'
-    pd.DataFrame([bl_regr, mv_regr]).to_csv(regr_summary_path, index=False)
-    
-    # 8. Compute Secondary Metrics (ASI, Turnover, Drawdowns, Sharpe)
-    US_bl_weights = bl_weights_history[['SPY']]
-    China_bl_weights = bl_weights_history[['ASHR']]
-    India_bl_weights = bl_weights_history[['INDA']]
-    
-    US_mv_weights = mv_weights_history[['SPY']]
-    China_mv_weights = mv_weights_history[['ASHR']]
-    India_mv_weights = mv_weights_history[['INDA']]
-    
-    bl_asi_us = compute_asi(US_bl_weights)
-    bl_asi_china = compute_asi(China_bl_weights)
-    bl_asi_india = compute_asi(India_bl_weights)
-    
-    mv_asi_us = compute_asi(US_mv_weights)
-    mv_asi_china = compute_asi(China_mv_weights)
-    mv_asi_india = compute_asi(India_mv_weights)
-    
-    bl_turnover = float(calculate_turnover(bl_weights_history).mean())
-    mv_turnover = float(calculate_turnover(mv_weights_history).mean())
-    
-    bl_sharpe = float((bl_returns.mean() / bl_returns.std()) * (252 ** 0.5))
-    mv_sharpe = float((mv_returns.mean() / mv_returns.std()) * (252 ** 0.5))
-    
-    bl_mdd = calculate_max_drawdown(bl_returns)
-    mv_mdd = calculate_max_drawdown(mv_returns)
-    
-    # 9. Final Results Export
-    # 9-Row Cross Market Empirical Array Compilation
-    summary_df = pd.DataFrame([
-        {'Market': 'US', 'Model': 'Black-Litterman', 'Annualized Return': '37.77%', 'Annualized Volatility': '31.27%', 'Sharpe Ratio': '1.208', 'Turnover': '72.89%', 'ASI': f"{bl_asi_us:.6f}", 'Max Drawdown': '-43.17%'},
-        {'Market': 'US', 'Model': 'Markowitz', 'Annualized Return': '38.14%', 'Annualized Volatility': '31.74%', 'Sharpe Ratio': '1.201', 'Turnover': '74.78%', 'ASI': f"{mv_asi_us:.6f}", 'Max Drawdown': '-44.21%'},
-        {'Market': 'US', 'Model': 'Benchmark', 'Annualized Return': '12.45%', 'Annualized Volatility': '17.18%', 'Sharpe Ratio': '0.725', 'Turnover': 'N/A', 'ASI': 'N/A', 'Max Drawdown': '-33.92%'},
-        
-        {'Market': 'China', 'Model': 'Black-Litterman', 'Annualized Return': '19.35%', 'Annualized Volatility': '28.92%', 'Sharpe Ratio': '0.669', 'Turnover': '89.15%', 'ASI': f"{bl_asi_china:.6f}", 'Max Drawdown': '-39.55%'},
-        {'Market': 'China', 'Model': 'Markowitz', 'Annualized Return': '17.16%', 'Annualized Volatility': '30.48%', 'Sharpe Ratio': '0.563', 'Turnover': '91.00%', 'ASI': f"{mv_asi_china:.6f}", 'Max Drawdown': '-45.19%'},
-        {'Market': 'China', 'Model': 'Benchmark', 'Annualized Return': '3.63%', 'Annualized Volatility': '16.82%', 'Sharpe Ratio': '0.216', 'Turnover': 'N/A', 'ASI': 'N/A', 'Max Drawdown': '-27.27%'},
-        
-        {'Market': 'India', 'Model': 'Black-Litterman', 'Annualized Return': '17.73%', 'Annualized Volatility': '16.49%', 'Sharpe Ratio': '1.075', 'Turnover': '8.85%', 'ASI': f"{bl_asi_india:.6f}", 'Max Drawdown': '-35.01%'},
-        {'Market': 'India', 'Model': 'Markowitz', 'Annualized Return': '17.62%', 'Annualized Volatility': '19.46%', 'Sharpe Ratio': '0.905', 'Turnover': '70.37%', 'ASI': f"{mv_asi_india:.6f}", 'Max Drawdown': '-40.60%'},
-        {'Market': 'India', 'Model': 'Benchmark', 'Annualized Return': '11.31%', 'Annualized Volatility': '16.75%', 'Sharpe Ratio': '0.675', 'Turnover': 'N/A', 'ASI': 'N/A', 'Max Drawdown': '-38.07%'}
-    ])
-    
-    tri_market_path = project_root / 'results' / 'v1_final_results' / 'tri_market_summary.csv'
-    summary_df.to_csv(tri_market_path, index=False)
-    print("Exporting results to results/v1_final_results/tri_market_summary.csv")
-    
-    # 10. Model Comparison Unified Summary
-    comparison = [
-        {'Model': 'Black-Litterman', 'Sharpe': bl_sharpe, 'Alpha': bl_regr['Alpha'], 'Turnover': bl_turnover, 'Max Drawdown': bl_mdd},
-        {'Model': 'Markowitz', 'Sharpe': mv_sharpe, 'Alpha': mv_regr['Alpha'], 'Turnover': mv_turnover, 'Max Drawdown': mv_mdd}
-    ]
-    comp_path = project_root / 'results' / 'v1_final_results' / 'model_comparison_summary.csv'
-    pd.DataFrame(comparison).to_csv(comp_path, index=False)
-    print("Exporting results to results/v1_final_results/model_comparison_summary.csv")
-    
-    # Execute Crisis Testing logic for Phase 10 fulfillment
-    print("Executing Crisis Testing Validation Maps...")
-    from legacy.core_legacy.stress_testing import HistoricalStressTester
-    tester = HistoricalStressTester(
-        ['ASHR'], 
-        train_start='2012-01-01', train_end='2014-12-31', 
-        test_start='2015-06-01', test_end='2016-02-01', 
-        benchmark='000001.SS', 
-        global_prices=prices
-    )
-    tester.run_training_phase({'ASHR': 0.12}, {'ASHR': 0.50})
-    tester.run_stress_test()
-    
-    # Execute Tau Sensitivity logic for Phase 10 fulfillment
-    print("Executing Tau Sensitivity Analysis Maps...")
-    
-    # 12. Reproducibility Experiment Tracking
-    import datetime
-    import json
-    import shutil
+    packet = evaluate_dual_market()
+    summary = packet["summary_df"].copy()
+    structural = packet["structural_df"].copy()
 
-    run_id = datetime.datetime.now().strftime("run_%Y_%m_%d_%H%M")
-    exp_dir = project_root / 'experiments' / run_id
-    exp_dir.mkdir(parents=True, exist_ok=True)
-    (exp_dir / 'tables').mkdir(exist_ok=True)
-    (exp_dir / 'figures').mkdir(exist_ok=True)
+    summary.to_csv(OUT_DIR / "tri_market_summary.csv", index=False)
+    structural.to_csv(OUT_DIR / "structural_summary.csv", index=False)
+    _write_factor_results(packet["raw_results"])
+    _write_statistical_tests(packet.get("statistical_tests", {}))
 
-    with open(exp_dir / 'config.yaml', 'w') as f:
-        yaml.dump(config, f)
-
-    shutil.copy(tri_market_path, exp_dir / 'tables' / 'tri_market_summary.csv')
-    shutil.copy(comp_path, exp_dir / 'tables' / 'model_comparison_summary.csv')
-    shutil.copy(regr_summary_path, exp_dir / 'tables' / 'factor_regression_results.csv')
-    shutil.copy(reg_summary_path, exp_dir / 'tables' / 'regime_performance_summary.csv')
-
-    metrics = {
-        'Black-Litterman': {
-            'Sharpe': bl_sharpe,
-            'Alpha': bl_regr['Alpha'],
-            'Turnover': bl_turnover,
-            'Max Drawdown': bl_mdd
-        },
-        'Markowitz': {
-            'Sharpe': mv_sharpe,
-            'Alpha': mv_regr['Alpha'],
-            'Turnover': mv_turnover,
-            'Max Drawdown': mv_mdd
-        }
+    manifest = {
+        "status": "recomputed_not_yet_paper_certified",
+        "source": "pipelines.dual_market.evaluate_dual_market",
+        "hard_coded_performance_values": False,
+        "note": (
+            "These outputs must be reconciled against the published-paper tables "
+            "before promotion to results/v1_final_results."
+        ),
     }
-    with open(exp_dir / 'metrics.json', 'w') as f:
-        json.dump(metrics, f, indent=4)
-    print(f"Exported reproducible state locally into {exp_dir}")
-    
-    # 11. Optional Visual Executions
-    from visualization.plotting_tools import (
-        plot_regime_probabilities, 
-        plot_regime_performance_comparison,
-        plot_rolling_sharpe,
-        plot_drawdown_comparison,
-        plot_asi_stability
-    )
-    
-    # Render Regimes
-    fig_dir = exp_dir / 'figures'
-    plot_regime_probabilities(regime_class, output_dir=fig_dir)
-    plot_regime_performance_comparison(regime_summary_df, output_dir=fig_dir)
-    
-    # Render Rolling Sharpe & Drawdowns
-    returns_dict = {'Black-Litterman': bl_returns, 'Markowitz': mv_returns}
-    plot_rolling_sharpe(returns_dict, output_dir=fig_dir)
-    plot_drawdown_comparison(returns_dict, output_dir=fig_dir)
-    
-    # Render ASI
-    bl_l1_series = bl_weights_history.diff().dropna().abs().sum(axis=1)
-    mv_l1_series = mv_weights_history.diff().dropna().abs().sum(axis=1)
-    plot_asi_stability({'Black-Litterman': bl_l1_series, 'Markowitz': mv_l1_series}, output_dir=fig_dir)
+    with open(OUT_DIR / "RUN_MANIFEST.json", "w", encoding="utf-8") as handle:
+        json.dump(manifest, handle, indent=2)
+
+    print(f"Recomputed outputs written to: {OUT_DIR}")
 
 
 if __name__ == "__main__":
