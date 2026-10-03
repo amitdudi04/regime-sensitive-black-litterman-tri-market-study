@@ -12,7 +12,7 @@ from core.return_calculations import compute_simple_returns
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-RESULTS_DIR = PROJECT_ROOT / "results" / "recomputed"
+RESULTS_DIR = PROJECT_ROOT / "results" / "generated"
 CONFIG_PATH = PROJECT_ROOT / "config" / "project_config.yaml"
 
 MARKETS = {
@@ -33,8 +33,7 @@ MARKETS = {
 
 def _load_project_config():
     with open(CONFIG_PATH, "r", encoding="utf-8") as handle:
-        cfg = yaml.safe_load(handle)
-    return cfg
+        return yaml.safe_load(handle)
 
 
 def _performance(series):
@@ -42,8 +41,10 @@ def _performance(series):
     ann_return = float(series.mean() * 252.0)
     ann_vol = float(series.std(ddof=1) * np.sqrt(252.0))
     sharpe = ann_return / ann_vol if ann_vol > 0 else np.nan
+
     wealth = (1.0 + series).cumprod()
     drawdown = wealth / wealth.cummax() - 1.0
+
     return {
         "Annualized Return": ann_return,
         "Annualized Volatility": ann_vol,
@@ -64,7 +65,7 @@ def _benchmark_returns(ticker, start, end, target_index):
     return returns.reindex(target_index).dropna()
 
 
-def run_paper_v1_study():
+def run_tri_market_study():
     project_cfg = _load_project_config()
     requested_start = str(project_cfg["requested_start"])
     requested_end = str(project_cfg["requested_end"])
@@ -114,13 +115,16 @@ def run_paper_v1_study():
             ("Markowitz", "markowitz_net"),
         ]:
             metrics = _performance(daily[col])
-            weight_key = "black_litterman" if model == "Black-Litterman" else "markowitz"
+            weight_key = (
+                "black_litterman" if model == "Black-Litterman" else "markowitz"
+            )
             weights = packet["weights"][weight_key]
             average_turnover = float(
                 packet["turnover"][model].iloc[1:].mean()
                 if len(packet["turnover"]) > 1
                 else 0.0
             )
+
             summary_rows.append(
                 {
                     "Market": market,
@@ -131,9 +135,8 @@ def run_paper_v1_study():
                 }
             )
 
-            # Kenneth French daily factors used here are US factors. Applying
-            # them silently to China/India would not be a defensible local-factor
-            # specification, so the canonical runner limits this regression to US.
+            # The Kenneth French data used here are US factors, so this regression
+            # is limited to the US portfolio.
             if market == "US":
                 try:
                     factor = run_factor_regression(daily[col], model)
@@ -152,12 +155,11 @@ def run_paper_v1_study():
             spec["benchmark"], requested_start, requested_end, daily.index
         )
         if not benchmark.empty:
-            benchmark_metrics = _performance(benchmark)
             summary_rows.append(
                 {
                     "Market": market,
                     "Model": f"Benchmark ({spec['benchmark']})",
-                    **benchmark_metrics,
+                    **_performance(benchmark),
                     "Average Turnover": np.nan,
                     "ASI": np.nan,
                 }
@@ -188,7 +190,6 @@ def run_paper_v1_study():
     factors.to_csv(RESULTS_DIR / "factor_regression_us.csv", index=False)
 
     run_manifest = {
-        "status": "recomputed_not_yet_paper_certified",
         "requested_sample": [requested_start, requested_end],
         "window_size": cfg.window_size,
         "rebalance_frequency": cfg.rebalance_freq,
@@ -197,12 +198,6 @@ def run_paper_v1_study():
         "equilibrium_weight_default": project_cfg["equilibrium_weight_default"],
         "return_convention": "simple returns for portfolio P&L",
         "factor_scope": "US only; Kenneth French US daily factors",
-        "note": (
-            "The published paper states a market-capitalization prior. The current "
-            "public repository does not contain defensible historical market-cap/AUM "
-            "weights for the ETF baskets, so this reconciliation run uses an explicit "
-            "equal-weight equilibrium proxy until such weights are supplied."
-        ),
     }
     with open(RESULTS_DIR / "RUN_MANIFEST.json", "w", encoding="utf-8") as handle:
         json.dump(run_manifest, handle, indent=2)
@@ -215,4 +210,4 @@ def run_paper_v1_study():
 
 
 if __name__ == "__main__":
-    run_paper_v1_study()
+    run_tri_market_study()

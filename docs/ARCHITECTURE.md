@@ -1,44 +1,51 @@
-# Canonical Research Architecture
+# Research Architecture
 
-## Objective
+The project is organized around a single end-to-end tri-market pipeline.
 
-The canonical path is designed so that a reviewer can trace any recomputed result from input data through the exact transformation that produced it.
+## Data flow
 
-## Pipeline
+```text
+ETF prices
+   ↓
+common-date alignment
+   ↓
+simple daily returns
+   ↓
+252-day rolling estimation window
+   ↓
+Ledoit-Wolf covariance
+   ↓
+┌───────────────────────────────┐
+│ Markowitz: historical means   │
+│ Black-Litterman: posterior    │
+└───────────────────────────────┘
+   ↓
+same long-only optimizer
+   ↓
+63-day out-of-sample holding period
+   ↓
+drift-adjusted turnover and transaction costs
+   ↓
+portfolio returns and weight histories
+   ↓
+performance, ASI and US factor analysis
+```
 
-Observed ETF prices  
-→ core/data_loader.py  
-→ common observed dates, no price forward-fill  
-→ core/return_calculations.py  
-→ simple returns for portfolio P&L  
-→ backtesting/paper_backtest.py  
-→ 252-day rolling training window  
-→ Ledoit-Wolf covariance  
-→ BL posterior / historical-mean Markowitz  
-→ same optimizer and constraints  
-→ drift-adjusted turnover  
-→ proportional transaction cost  
-→ pipelines/paper_v1_pipeline.py  
-→ market summaries, dataset manifest, US factor analysis  
-→ results/recomputed/  
-→ scripts/generate_research_figures.py
+## Main modules
 
-## Supporting analysis
+- `core/data_loader.py` — market-data download and alignment.
+- `core/return_calculations.py` — daily return calculations.
+- `core/covariance_estimators.py` — Ledoit-Wolf covariance estimation.
+- `models/black_litterman_model.py` — equilibrium returns and posterior calculation.
+- `models/optimizer.py` — common long-only portfolio optimizer.
+- `backtesting/paper_backtest.py` — rolling out-of-sample comparison.
+- `analysis/factor_regression.py` — US four-factor regression with HAC standard errors.
+- `analysis/regime_detection.py` — two-state Markov-switching analysis.
+- `backtesting/crisis_freeze.py` — fixed-weight crisis-window helper.
+- `pipelines/tri_market_pipeline.py` — end-to-end study runner.
 
-- analysis/factor_regression.py: Kenneth French US MKT/SMB/HML/MOM regression with HAC inference.
-- analysis/regime_detection.py: two-state Markov-switching classification for ex-post conditional analysis.
-- analysis/statistical_tests.py: bootstrap and Sharpe-difference diagnostics.
-- analysis/soe_private_analysis.py: ownership-segmentation/descriptive helper.
-- backtesting/crisis_freeze.py: freezes the last pre-crisis target-weight vector across a specified crisis window.
+## Results
 
-## Output policy
+Tables reported in the research paper are stored in `results/paper_results/`.
 
-- results/reference/ contains values reported in the existing working paper.
-- results/recomputed/ contains machine-generated outputs from the cleaned code.
-- Reference and recomputed outputs are not silently mixed.
-
-## Historical code policy
-
-The old GUI, old dual-market engine, archived experiment snapshots and legacy modules were removed from the default branch because they used different assumptions and, in some cases, indefensible fallbacks or stale result families.
-
-They remain recoverable in Git history and the dedicated historical branch.
+Running the pipeline produces a separate local directory, `results/generated/`, containing the latest output tables, daily returns, weights and figures. The generated directory is excluded from version control.
