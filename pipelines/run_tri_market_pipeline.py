@@ -1,12 +1,12 @@
-"""Backward-compatible entry point for the canonical paper-v1 reconciliation run."""
+"""Command-line entry point for the tri-market portfolio study."""
 
-from pipelines.paper_v1_pipeline import run_paper_v1_study
+from pipelines.tri_market_pipeline import run_tri_market_study
 
 
 def run():
-    packet = run_paper_v1_study()
-    print("Recomputed tri-market outputs written to results/recomputed/")
+    packet = run_tri_market_study()
     print(packet["summary"].to_string(index=False))
+    print("\nGenerated files: results/generated/")
 
 
 if __name__ == "__main__":

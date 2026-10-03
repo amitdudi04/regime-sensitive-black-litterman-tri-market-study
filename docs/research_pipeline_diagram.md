@@ -5,10 +5,10 @@ Observed ETF prices
 → simple daily returns  
 → 252-day rolling estimation  
 → Ledoit-Wolf covariance  
-→ historical means / Black-Litterman equilibrium prior + views  
+→ historical means / Black-Litterman posterior  
 → same long-only, fully-invested optimizer  
-→ 63-day OOS holding period  
-→ drift-adjusted turnover + costs  
-→ net returns + weight histories  
-→ ASI / drawdown / factors / regimes  
-→ results/recomputed/
+→ 63-day out-of-sample holding period  
+→ drift-adjusted turnover and costs  
+→ net returns and weight histories  
+→ ASI / drawdown / US factor analysis  
+→ results/generated/

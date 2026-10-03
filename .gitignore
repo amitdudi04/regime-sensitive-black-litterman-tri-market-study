@@ -18,9 +18,13 @@ Thumbs.db
 # Raw data
 data/raw/
 
+# Generated research outputs
+results/generated/
+
 # Temporary files
 tmp/
 cache/
+results/debug/
 
 # Notebook checkpoints
 .ipynb_checkpoints/
@@ -29,4 +33,3 @@ cache/
 *.db
 my_yf_cache/
 archive/
-results/debug/
