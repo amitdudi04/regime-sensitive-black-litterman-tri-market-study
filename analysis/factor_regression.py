@@ -1,82 +1,93 @@
-import pandas as pd
-import statsmodels.api as sm
 import numpy as np
+import pandas as pd
 import pandas_datareader.data as web
+import statsmodels.api as sm
+
 
 def load_factor_data(index_dates):
     """
-    Load Fama-French 4-factor data aligning to the portfolio dates using pandas-datareader.
-    Data is natively sourced live from the Kenneth French Data Library.
-    """
-    start = index_dates.min().strftime('%Y-%m-%d')
-    end = index_dates.max().strftime('%Y-%m-%d')
-    
-    # 1. Fetch live explicit factors (Market, Size, Value, Risk-Free)
-    ff3_daily = web.DataReader('F-F_Research_Data_Factors_daily', 'famafrench', start, end)[0]
-    
-    # 2. Fetch standard Momentum factor 
-    mom_daily = web.DataReader('F-F_Momentum_Factor_daily', 'famafrench', start, end)[0]
-    
-    factors = pd.concat([ff3_daily, mom_daily], axis=1)
-    
-    # Ken French library returns percentages (e.g., 1.5 instead of 0.015). Convert to formal decimals.
-    factors = factors / 100.0
-    
-    factors.rename(columns={'Mkt-RF': 'MKT', 'Mom   ': 'MOM', 'Mom': 'MOM'}, inplace=True)
-    
-    factors.index = pd.to_datetime(factors.index.astype(str))
-    
-    # Index alignment against trading days without NA drop bleeding
-    aligned_factors = factors.reindex(index_dates).ffill().bfill()
-    
-    return aligned_factors
+    Load daily Fama-French 3 factors plus Momentum from the Kenneth French library.
 
-def prepare_excess_returns(portfolio_returns, rf_rate_series):
+    The function uses exact-date intersection only. It deliberately avoids backward
+    filling because doing so can inject future factor observations into earlier dates.
     """
-    Compute Rp - Rf
-    """
-    excess_return = portfolio_returns - rf_rate_series
-    return excess_return.dropna()
+    index_dates = pd.DatetimeIndex(index_dates).sort_values()
+    if len(index_dates) == 0:
+        raise ValueError("index_dates must contain at least one date")
 
-def run_factor_regression(portfolio_returns, model_name="Portfolio"):
+    start = index_dates.min().strftime("%Y-%m-%d")
+    end = index_dates.max().strftime("%Y-%m-%d")
+
+    ff3 = web.DataReader("F-F_Research_Data_Factors_daily", "famafrench", start, end)[0]
+    mom = web.DataReader("F-F_Momentum_Factor_daily", "famafrench", start, end)[0]
+
+    ff3.index = pd.to_datetime(ff3.index.astype(str))
+    mom.index = pd.to_datetime(mom.index.astype(str))
+
+    ff3 = ff3.rename(columns={"Mkt-RF": "MKT"})
+    mom = mom.rename(columns={"Mom   ": "MOM", "Mom": "MOM"})
+
+    keep_ff3 = [c for c in ["MKT", "SMB", "HML", "RF"] if c in ff3.columns]
+    if "MOM" not in mom.columns:
+        raise ValueError("Momentum factor column was not found in the Kenneth French response")
+
+    factors = ff3[keep_ff3].join(mom[["MOM"]], how="inner") / 100.0
+    factors = factors.loc[factors.index.intersection(index_dates)].sort_index()
+
+    required = {"MKT", "SMB", "HML", "MOM", "RF"}
+    missing = required.difference(factors.columns)
+    if missing:
+        raise ValueError(f"Missing factor columns: {sorted(missing)}")
+    if factors.empty:
+        raise ValueError("No exact trading-date overlap between portfolio returns and factor data")
+
+    return factors
+
+
+def run_factor_regression(portfolio_returns, model_name="Portfolio", hac_maxlags=5):
     """
-    Run OLS regression on authentic Fama-French factors (MKT, SMB, HML, MOM).
-    Rp - Rf = alpha + B1*MKT + B2*SMB + B3*HML + B4*MOM + e
-    Returns dictionary of summary statistics natively.
+    Estimate the daily four-factor model with Newey-West/HAC inference.
+
+    Rp - Rf = alpha + beta_MKT*MKT + beta_SMB*SMB
+              + beta_HML*HML + beta_MOM*MOM + epsilon
+
+    Alpha is returned on both daily and annualized arithmetic scales. HAC affects
+    standard errors, t-statistics and p-values; coefficient estimates remain OLS.
     """
-    # 1. Load authentic Fama-French library arrays 
+    if not isinstance(portfolio_returns, pd.Series):
+        portfolio_returns = pd.Series(portfolio_returns)
+
+    portfolio_returns = portfolio_returns.dropna().sort_index()
     factors = load_factor_data(portfolio_returns.index)
-    
-    # 2. Ensure factor data and portfolio return series share identical dates safely
-    if isinstance(portfolio_returns, pd.Series):
-        pf_df = portfolio_returns.to_frame('Portfolio')
-    else:
-        pf_df = portfolio_returns
-        
-    data = pf_df.join(factors, how="inner").dropna()
-    
-    # 3. Prepare excess returns against authentic risk-free rates
-    excess_returns = data.iloc[:, 0] - data['RF']
-    
-    Y = excess_returns
-    X = data[['MKT', 'SMB', 'HML', 'MOM']]
-    X = sm.add_constant(X)
-    
-    # 4. Fit OLS Model utilizing statsmodels native framework
-    model = sm.OLS(Y, X).fit()
-    
+
+    data = portfolio_returns.rename("Portfolio").to_frame().join(factors, how="inner").dropna()
+    if len(data) <= hac_maxlags + 5:
+        raise ValueError("Insufficient observations for the requested HAC lag length")
+
+    y = data["Portfolio"] - data["RF"]
+    x = sm.add_constant(data[["MKT", "SMB", "HML", "MOM"]])
+
+    model = sm.OLS(y, x).fit(
+        cov_type="HAC",
+        cov_kwds={"maxlags": int(hac_maxlags)},
+    )
+
+    alpha_daily = float(model.params["const"])
     return {
-        'Model': model_name,
-        'Alpha': float(model.params.get('const', 0)),
-        'Alpha_t_stat': float(model.tvalues.get('const', 0)),
-        'R_squared': float(model.rsquared),
-        'MKT_beta': float(model.params.get('MKT', 0)),
-        'MKT_t_stat': float(model.tvalues.get('MKT', 0)),
-        'SMB_beta': float(model.params.get('SMB', 0)),
-        'SMB_t_stat': float(model.tvalues.get('SMB', 0)),
-        'HML_beta': float(model.params.get('HML', 0)),
-        'HML_t_stat': float(model.tvalues.get('HML', 0)),
-        'MOM_beta': float(model.params.get('MOM', 0)),
-        'MOM_t_stat': float(model.tvalues.get('MOM', 0)),
-        'P_value_Alpha': float(model.pvalues.get('const', 1.0))
+        "Model": model_name,
+        "Observations": int(model.nobs),
+        "HAC_MaxLags": int(hac_maxlags),
+        "Alpha": alpha_daily,
+        "Alpha_Annualized": alpha_daily * 252.0,
+        "Alpha_t_stat": float(model.tvalues["const"]),
+        "P_value_Alpha": float(model.pvalues["const"]),
+        "R_squared": float(model.rsquared),
+        "MKT_beta": float(model.params["MKT"]),
+        "MKT_t_stat": float(model.tvalues["MKT"]),
+        "SMB_beta": float(model.params["SMB"]),
+        "SMB_t_stat": float(model.tvalues["SMB"]),
+        "HML_beta": float(model.params["HML"]),
+        "HML_t_stat": float(model.tvalues["HML"]),
+        "MOM_beta": float(model.params["MOM"]),
+        "MOM_t_stat": float(model.tvalues["MOM"]),
     }

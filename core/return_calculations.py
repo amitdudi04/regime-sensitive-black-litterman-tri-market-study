@@ -1,16 +1,16 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-def compute_log_returns(price_df):
-    """
-    Compute log returns and clean missing values.
-    Returns stationary logarithmic return matrices.
-    """
-    # Logarithmic return formula: ln(P_t / P_t-1)
-    log_returns = np.log(price_df / price_df.shift(1))
-    
-    # Clean initial NA from shift and any infinite values
-    log_returns = log_returns.replace([np.inf, -np.inf], np.nan)
-    log_returns = log_returns.dropna()
-    
-    return log_returns
+
+def _clean_returns(values):
+    return values.replace([np.inf, -np.inf], np.nan).dropna(how="any")
+
+
+def compute_simple_returns(price_df: pd.DataFrame) -> pd.DataFrame:
+    """Arithmetic returns used for portfolio P&L, turnover and wealth compounding."""
+    return _clean_returns(price_df.pct_change())
+
+
+def compute_log_returns(price_df: pd.DataFrame) -> pd.DataFrame:
+    """Continuously compounded returns retained for diagnostics/econometric use."""
+    return _clean_returns(np.log(price_df / price_df.shift(1)))

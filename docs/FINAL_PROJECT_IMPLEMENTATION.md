@@ -1,81 +1,183 @@
-# FINAL PROJECT IMPLEMENTATION DOCUMENT
+# Final Project Implementation — Audit-Aligned Version
 
-## 1. Project Motivation
-Classical unconstrained mean-variance optimization models frequently exhibit structural vulnerability out-of-sample due to inherent estimation error maximization. This quantitative infrastructure project computationally refines and implements a regime-sensitive, transaction-cost-aware Black-Litterman Bayesian allocation framework operating across the United States, China, and India markets to systematically stabilize portfolio allocations during systemic contractions.
+## 1. Scope
 
-## 2. Theoretical Framework
-The **Black-Litterman Model** stabilizes matrix inputs mathematically by anchoring subjective analyst views against an implied global equilibrium anchor. 
+This document describes the intended empirical implementation of the project
+*Regime-Sensitive Black-Litterman Portfolio Allocation: A Cross-Market Empirical
+Analysis of Stability, Turnover, and Crisis Resilience*.
 
-## 3. System Architecture
-The research framework abandons monolithic configurations in favor of a heavily modularized infrastructure engineered explicitly for peer-review replication. Functional isolation arrays include `core/` modeling components, `backtesting/` evaluators, `analysis/` structural sub-tests, and declarative `pipelines/` estimation sequences orchestrated centrally by `config/project_config.yaml`.
+The implementation compares classical historical-mean Markowitz allocation with
+an equilibrium-anchored Black-Litterman specification across the United States,
+China and India.
 
-## 4. Methodology Implementation
-Out-of-sample execution is driven by a strict continuous 252-day expanding **Rolling Backtest Framework** to eliminate forward-looking estimation bias.
+## 2. Research universe
 
-The **Allocation Stability Index (ASI)** functionally aggregates the $L_{1}$-norm sequential drift arrays mathematically. 
+- United States: SPY, QQQ, IWM, XLF, XLK
+- China: ASHR, KWEB, MCHI, FXI
+- India: INDA, EPI, SMIN, INDY
 
-The Allocation Stability Index (ASI) measures the magnitude of portfolio weight drift across consecutive rebalancing periods. The formula dictates that ASI = average L1 norm distance between weight vectors. In interpretation, a lower ASI indicates a more stable portfolio, whereas a higher ASI denotes unstable allocations requiring elevated turnover friction. The Bayesian shrinkage intrinsically utilized by the Black–Litterman optimization significantly reduces ASI because anchoring expected returns to an implied equilibrium fundamentally stabilizes predictive estimates across time domains.
+The requested study interval is 2010-2025. The effective sample for each market
+must be determined from the common observed price history of the ETFs actually
+used; the code exports these effective dates rather than assuming that every ETF
+exists for the full requested interval.
 
-The dual-track methodology also incorporates isolated historical extreme environments via the **Crisis Freeze Methodology**. Peak-to-trough allocations are frozen explicitly leading into and executing precisely over the 2008 Global Financial Crisis, 2015 Chinese liquidity crisis, and 2020 pandemic timeline. Empirical testing revealed distinct volatility reaction parameters, most notably during the 2020 India Covid dislocation where the Black-Litterman array registered a volatility spike of 3.39x compared to the Markowitz model's 3.40x. A volatility spike below unity indicates that realized volatility during the crisis window was not higher than the preceding training period, which may occur in emerging markets when crisis dynamics are transmitted through liquidity contractions rather than volatility expansions.
+## 3. Canonical empirical sequence
 
+1. Download observed ETF prices.
+2. Restrict the market basket to common observed dates; no price forward-fill.
+3. Compute simple returns for portfolio P&L.
+4. Estimate Ledoit-Wolf covariance on a 252-trading-day rolling window.
+5. Construct Markowitz historical expected returns.
+6. Construct the Black-Litterman equilibrium prior and posterior.
+7. Apply the same long-only, fully-invested optimizer to both expected-return vectors.
+8. Hold weights for a 63-trading-day out-of-sample period.
+9. Compute drift-adjusted turnover.
+10. Apply proportional transaction cost at rebalance.
+11. Export net OOS returns and weight histories.
+12. Compute Sharpe, drawdown, ASI and turnover.
+13. Run crisis, factor, regime, robustness and ownership analyses.
+14. Generate tables and figures only from saved empirical outputs.
 
+## 4. Black-Litterman specification
 
-## 4.1 Crisis Metric Definition
-The crisis recovery duration uses the portfolio value at the crisis start date V(t0) as the peak reference. Duration is measured strictly in trading days (index-based), rather than calendar days. A full recovery occurs when the cumulative wealth index is equal to or greater than V(t0).
+The prior is defined as:
 
+Pi = lambda * Sigma * w_eq
 
+and the posterior combines Pi with P, Q, Omega and tau.
 
-## 4.2 Allocation Stability Index (ASI)
-ASI is computed as the average L1-norm distance between weight vectors mathematically smoothing period-to-period drift. The hierarchy is always Black-Litterman << Markowitz due to the equilibrium anchoring mechanism minimizing unconstrained reallocation errors.
+The reconciliation branch implements the documented absolute-view structure
+with identity P and a mild historical-return view:
 
-## 5. Research Hypotheses
-* **H1**: Bayesian regularization drastically isolates maximum drawdowns structurally compared to classical Mean-Variance.
-* **H2**: Transaction-cost aware execution penalties penalize excessive reallocation significantly within Markowitz arrays.
-* **H3**: State-Owned Enterprises logically fail to supply absolute asymmetric defensive buffering inside Chinese allocations during aggregate deleveraging shocks.
+Q = Pi + 0.10 * (historical_mean - Pi)
 
-## 6. Empirical Study Structure
-The project executes primary operations encompassing dual structural tracks: 1) Tri-Market continuous out-of-sample scaling, and 2) High-definition isolated historical structural stress events corresponding physically to the 2008 GFC, 2015 Chinese liquidity crisis, and 2020 pandemic timeline. A specific **SOE vs Private Structural Study** empirically segregates the Chinese universe to evaluate whether State-Owned Enterprises natively inject asymmetric downside isolation versus strictly Private-sector operational anchors.
+The public repository currently does not contain a defensible historical ETF
+market-cap/AUM series. Therefore the reconciliation implementation uses an
+explicit equal-weight equilibrium proxy unless a justified prior-weight vector
+is supplied. It does not describe price x volume as market capitalization.
 
-The Tri-Market empirical results consistently demonstrated that the Black-Litterman optimization significantly improves upon the unconstrained Mean-Variance portfolio in terms of structural turnover and maximum drawdown mitigation out-of-sample. The empirical findings indicate that Bayesian shrinkage stabilizes portfolio allocations under conditions of parameter uncertainty and regime volatility. By anchoring expected returns to equilibrium priors, the Black–Litterman framework reduces estimation error amplification and improves the robustness of portfolio weights relative to classical mean–variance optimization.
+## 5. Fair optimizer comparison
 
-## 7. Factor Regression Validation
-Factor data is obtained directly from the Kenneth French Data Library using pandas_datareader.
+The Black-Litterman and Markowitz portfolios must use the same objective,
+covariance matrix, constraints, weight bounds and risk-aversion coefficient.
+Model-specific L2 regularization is excluded from the canonical comparison
+because it would confound the interpretation of allocation stability.
 
-The **Fama-French Factor Regression** module specifically executes multi-variate statistical significance mapping across Ken French Data Library variables (MKT, SMB, HML, MOM). Evaluating the unobserved OLS intercepts analytically verifies optimization robustness. Empirical testing indicates that neither portfolio's performance is driven significantly by pure alpha ($\alpha$ = -0.00016 for Black-Litterman and -0.00005 for Markowitz). Instead, portfolio returns are dominated by systematic factor exposure, predominantly market beta, confirming that the out-of-performance profile scales with efficient systemic loading rather than stock-picking idiosyncrasies.
+## 6. Allocation Stability Index
 
-## 8. Robustness Testing
-Automated testing protocols dynamically array internal execution thresholds mapping `tau` parameter confidence iterations continuously. 
+ASI is the average L1 distance between consecutive target-weight vectors:
 
-## 9. Regime Detection Modeling
-The continuous unobserved variance sequences are actively segregated utilizing a fully decoupled **Markov Regime Switching Model** (`statsmodels.tsa.regime_switching.markov_regression.MarkovRegression`). Formally defining discrete binary sequences of Low Volatility and High Volatility state-space environments mathematically guarantees evaluation metrics map accurately to identical structural horizons. Conditional performance matrices indicate that Black-Litterman allocations uniquely perform better during high-uncertainty (high-volatility) regimes relative to unconstrained models, exclusively due to Bayesian shrinkage anchoring estimates when historical variance explodes unpredictably.
+ASI_t = sum_i |w_i,t - w_i,t-1|
 
-## 10. Empirical Validation Execution
-All empirical evaluations execute a strict sequential chronology to structurally prohibit forward-looking bias architectures. The estimation sequence executes deterministically: Market Pricing $\rightarrow$ Ledoit-Wolf Covariances $\rightarrow$ OOS Backtesting $\rightarrow$ Analytical ASI Derivation $\rightarrow$ Regime Mapping $\rightarrow$ Fama-French Regression.
+Lower ASI indicates a more stable target allocation. ASI is not itself a dollar
+transaction-cost measure. Turnover is computed separately from the drifted
+pre-trade portfolio.
 
-All empirical results presented in this study are fully reproducible through the modular research pipeline included in the accompanying repository. Executing the provided pipeline scripts regenerates all result tables, visualizations, and statistical outputs directly from the underlying market data.
+## 7. Transaction costs
 
-## 11. Execution Integrity and Unit Testing
-The repository includes a lightweight unit testing framework to validate core mathematical functions such as covariance estimation, optimization constraints, and rolling backtest execution. While empirical finance papers rarely document testing infrastructure, the inclusion of unit tests strengthens reproducibility and safeguards against numerical instability within the research pipeline.
+The reconciliation base case uses a 10-basis-point proportional transaction-cost
+rate on rebalancing turnover. The assumption is stylized and does not model
+nonlinear price impact or time-varying bid-ask spreads.
 
-## 12. Study Limitations
-The empirical generalizations presented heavily rely on formalized boundary assumptions. ETF proxies operate as investable baseline representations but inherently suffer from dividend reinvestment friction differences. Frictional constraints heavily utilize linear transaction cost simplifications (0.10%), which do not accurately map the variable illiquidity gaps observed during outright crisis regimes. Structural inferences are also restricted by market microstructure differences across US, Chinese, and Indian clearing operations. Furthermore, the limited target sample selection constraints within developing index arrays restrict deeper cross-sectional conclusions.
+The turnover convention and cost rate must be reported with every empirical
+result so they cannot be mistaken for a universal implementation-cost estimate.
 
-## 12. Future Research Directions
-Future iterations of this framework could extend the Markov transition arrays to encompass multi-regime permutations characterizing distinct inflation and deflation macroeconomic architectures. Furthermore, the explicit derivation of quantitative predictive indicators serving directly as Bayesian subjective `P` matrices offers significant alpha-generation potential. Finally, expanding the emerging market locus to natively benchmark frontier market isolations alongside regime-dependent transaction cost thresholds would rigorously scale institutional robustness parameters.
+## 8. Crisis analysis
 
+The study freezes pre-crisis allocations and evaluates:
 
-## Runtime Environment
-Python Version: 3.11
+- 2008 US Global Financial Crisis
+- 2015 China equity crash
+- 2020 India COVID shock
 
-Core Libraries:
-* NumPy
-* Pandas
-* SciPy
-* PyQt6
-* yfinance
-* pandas_datareader
+Recovery duration is measured in trading days from the crisis trough back to the
+portfolio wealth level at crisis start V(t0).
 
-Data Sources:
-* Yahoo Finance (ETF price data)
-* Kenneth French Data Library (Factor data)
+The paper reports recovery durations of:
 
+- US: 1093 days BL, 1056 days Markowitz
+- China: 458 days BL, 459 days Markowitz
+- India: 176 days for both
+
+These results should not be described as universal Black-Litterman dominance.
+
+## 9. Factor regression
+
+The canonical regression is:
+
+Rp - Rf = alpha + beta_MKT MKT + beta_SMB SMB + beta_HML HML + beta_MOM MOM + epsilon
+
+The corrected analysis module uses Newey-West/HAC standard errors and exact-date
+factor alignment. A significant factor loading is interpreted as exposure, not
+as proof of a unique causal explanation for portfolio outperformance.
+
+## 10. Regime analysis
+
+The repository contains two distinct regime concepts:
+
+1. an ex-ante recent-volatility rule used to condition tau; and
+2. a two-state Markov-switching model used for conditional performance analysis.
+
+These must not be described as the same mechanism. Unless filtered Markov
+probabilities are explicitly fed into the portfolio decision rule, the Markov
+model is an evaluation layer rather than the allocation engine.
+
+## 11. SOE/private study
+
+The paper's ex-ante hypothesis is that state ownership may provide downside
+resilience in China. The reported paper result does not support that hypothesis
+at conventional significance levels (reference p-value about 0.572).
+
+The correct interpretation is failure to find statistically significant evidence
+of superior SOE risk-adjusted performance, not proof that ownership never matters.
+
+## 12. Published-paper reference values
+
+The paper reports:
+
+- US BL Sharpe 0.650 vs Markowitz 0.614
+- China BL 0.042 vs Markowitz 0.088
+- India BL 0.356 vs Markowitz 0.440
+
+and substantially lower reported BL ASI and turnover across all three markets.
+
+These values are reference outputs from the working paper. The audit identified
+a separate public-repository result family and hard-coded exports. The
+reconciliation branch therefore writes fresh machine-derived outputs to
+results/recomputed/ and does not overwrite the reference tables until a complete
+end-to-end rerun is validated.
+
+## 13. Reproducibility policy
+
+A result is considered reproducible only if it can be traced through:
+
+data -> canonical pipeline -> saved CSV -> figure/table -> README/paper
+
+Hard-coded performance tables and random illustrative trajectories are not
+permitted as empirical evidence.
+
+## 14. Unit testing
+
+The repository now includes executable tests for:
+
+- Black-Litterman prior/posterior behavior;
+- optimizer bounds and full-investment constraints;
+- rolling OOS chronology/no-look-ahead behavior;
+- data-loader handling of missing prices.
+
+Further integration tests should be added for transaction costs, crisis recovery,
+factor inference and exported result schemas.
+
+## 15. Limitations
+
+The principal limitations remain:
+
+- ETF proxies instead of firm-level universes;
+- small cross-sectional dimensionality;
+- stylized proportional transaction costs;
+- dependence on public market-data availability;
+- unresolved historical capitalization/AUM prior data;
+- benchmark and factor-model choice;
+- selected crisis windows identified ex post.
+
+These limitations should remain visible in the research record.

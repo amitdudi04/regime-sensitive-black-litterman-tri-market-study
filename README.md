@@ -1,306 +1,177 @@
-![Python](https://img.shields.io/badge/Python-3.10-blue)
-![Finance](https://img.shields.io/badge/Field-Quantitative%20Finance-green)
-![Model](https://img.shields.io/badge/Model-Black--Litterman-orange)
-![Research](https://img.shields.io/badge/Type-Reproducible%20Research-red)
+# Regime-Sensitive Black-Litterman Portfolio Allocation
 
-# Regime-Sensitive Black–Litterman Portfolio Allocation  
-### A Cross-Market Empirical Framework for Stability, Turnover, and Crisis Resilience
+### Cross-market stability, turnover and crisis analysis in the US, China and India
 
 **Author:** Amit Kumar Dudi  
-**Affiliation:** Independent Quantitative Finance Researcher  
-**Date:** March 2026  
+**Research status:** working-paper project with an active reproducibility reconciliation
 
----
+## Research question
 
-## 1. Research Overview
+Classical mean-variance optimization is highly sensitive to expected-return
+estimation error. This project studies whether an equilibrium-anchored
+Black-Litterman return model can produce more stable implementable allocations
+than a classical historical-mean Markowitz specification.
 
-This repository implements a fully reproducible quantitative research framework designed to evaluate the structural limitations of classical mean–variance portfolio optimization and to assess the effectiveness of the Black–Litterman Bayesian allocation model under realistic market conditions.
+The empirical design compares the two approaches across:
 
-The study is motivated by a well-documented limitation in portfolio theory: the Markowitz optimizer behaves as an **error-amplifying mechanism**, producing unstable and economically infeasible allocations when exposed to estimation noise in expected returns.
+- **United States:** SPY, QQQ, IWM, XLF, XLK
+- **China:** ASHR, KWEB, MCHI, FXI
+- **India:** INDA, EPI, SMIN, INDY
 
-To address this instability, the Black–Litterman model introduces **Bayesian equilibrium shrinkage**, anchoring expected returns to a market-implied prior and thereby stabilizing portfolio weights.
+The analysis considers allocation stability, turnover, transaction costs,
+crisis behavior, factor exposures and volatility regimes.
 
-This research evaluates these competing frameworks across three structurally distinct markets:
+## Canonical research flow
 
-- United States (developed, highly efficient)
-- China (policy-driven emerging market)
-- India (high-growth emerging market)
+Observed market data -> common-date validation -> simple returns -> 252-day
+rolling estimation -> Ledoit-Wolf covariance -> Markowitz historical means and
+Black-Litterman posterior -> identical long-only fully-invested optimizer ->
+63-trading-day OOS holding period -> drift-adjusted turnover and proportional
+trading cost -> net returns -> ASI/drawdown/Sharpe/crisis/factor/regime analysis.
 
-The empirical framework integrates **allocation stability, transaction costs, and crisis recovery dynamics** into a unified evaluation system.
+## Methodological controls
 
----
+- No hard-coded performance results in the canonical paper-v1 runner.
+- The same optimizer and constraints are applied to Markowitz and BL.
+- No silent synthetic-price fallback is permitted in the canonical empirical path.
+- Missing ETF prices are not forward-filled in the canonical data loader.
+- Portfolio P&L uses simple returns.
+- Factor inference uses Newey-West/HAC standard errors and exact-date factor alignment.
+- Research figures must be generated from saved empirical series; the figure script no longer produces random realistic-looking paths.
 
-## 2. Research Objectives
+## Black-Litterman specification
 
-The study is designed to address the following fundamental questions:
+The equilibrium return vector is Pi = lambda * Sigma * w_eq.
 
-- Does Bayesian shrinkage improve out-of-sample portfolio stability?
-- Can allocation instability be formally measured and controlled?
-- Do transaction costs eliminate the apparent performance advantage of unstable optimizers?
-- Are crisis outcomes driven by optimization methodology or underlying asset exposure?
+The posterior combines Pi with an absolute-view system P, Q and Omega. For the
+reconciliation implementation:
 
----
+- P is the identity matrix;
+- the documented synthetic momentum view is Q = Pi + 0.10 * (historical_mean - Pi);
+- Omega is diagonal and expressed in annualized return-variance units;
+- tau is conditioned by an ex-ante volatility rule;
+- the default equilibrium-weight vector is currently an explicit equal-weight
+  proxy because the public repository does not contain a defensible historical
+  ETF market-cap/AUM weight series.
 
-## 3. Hypotheses
+The published paper describes a capitalization-weighted equilibrium prior.
+That point remains under reconciliation and is not silently approximated by
+price x volume.
 
-The empirical analysis evaluates four core hypotheses:
+## Allocation Stability Index
 
-- **H1 — Performance Robustness:**  
-  Black–Litterman improves risk-adjusted performance under realistic estimation uncertainty.
+ASI_t = sum_i |w_i,t - w_i,t-1|.
 
-- **H2 — Allocation Stability (ASI):**  
-  Bayesian equilibrium anchoring significantly reduces weight instability.
+The reported ASI is the mean L1 target-weight change across rebalances. It is a
+model-stability metric, not a dollar transaction-cost measure. Turnover is
+calculated separately from the drifted pre-trade portfolio weights.
 
-- **H3 — Transaction Cost Efficiency:**  
-  Lower turnover leads to superior net-of-cost performance.
+## Published-paper reference results
 
-- **H4 — SOE Stability Hypothesis:**  
-  State ownership does not provide statistically significant downside protection in Chinese equity markets.
+The working paper reports:
 
----
+| Market | Model | Return | Volatility | Sharpe | Turnover | ASI | Max Drawdown |
+|---|---|---:|---:|---:|---:|---:|---:|
+| US | Black-Litterman | 12.99% | 20.00% | 0.650 | 0.20% | 0.001632 | -38.04% |
+| US | Markowitz | 13.24% | 21.57% | 0.614 | 1.58% | 0.015365 | -33.95% |
+| China | Black-Litterman | 1.20% | 28.45% | 0.042 | 0.08% | 0.000391 | -68.07% |
+| China | Markowitz | 2.64% | 30.19% | 0.088 | 1.12% | 0.010772 | -68.58% |
+| India | Black-Litterman | 7.60% | 21.34% | 0.356 | 0.07% | 0.000322 | -53.67% |
+| India | Markowitz | 9.76% | 22.18% | 0.440 | 0.82% | 0.007822 | -50.07% |
 
-## 4. Data and Market Representation
+These are published-paper reference values. The audit found that an older
+repository result family did not match this table. The corrected code therefore
+writes fresh outputs to results/recomputed/ and does not claim that the
+published values have been independently reproduced until the intended
+data/prior specification is rerun end to end.
 
-To ensure scalability and eliminate idiosyncratic noise, the study employs **Exchange-Traded Funds (ETFs)** as proxies for broad asset classes.
+See docs/RECONCILIATION_STATUS.md.
 
-### Dataset Characteristics
+## Crisis stress testing
 
-- Frequency: Daily  
-- Period: 2010–2025  
-- Data Type: Adjusted Close Prices  
+The paper reports corrected recovery durations measured in trading days from
+the crisis trough back to the crisis-start wealth level V(t0):
 
-### Market Coverage
+| Crisis | BL recovery | Markowitz recovery |
+|---|---:|---:|
+| US 2008 GFC | 1093 | 1056 |
+| China 2015 crash | 458 | 459 |
+| India 2020 COVID | 176 | 176 |
 
-**United States (Developed Market)**
-- SPY, QQQ, IWM, XLF, XLK  
+These results do not establish universal crisis dominance by Black-Litterman.
+They show that recovery behavior can be similar across allocation methods when
+systematic market exposure dominates.
 
-**China (Emerging Market)**
-- ASHR, KWEB, MCHI, FXI  
+## Factor interpretation
 
-**India (Emerging Market)**
-- INDA, EPI, SMIN, INDY  
+The study uses a four-factor regression (MKT, SMB, HML, MOM). The canonical
+factor module now uses HAC/Newey-West inference.
 
----
+A significant loading should be interpreted as factor exposure, not proof that
+the factor caused all observed outperformance. The project therefore avoids
+describing Markowitz emerging-market performance as mechanically proven to
+come from momentum.
 
-## 5. Methodological Framework
+## SOE / private-company sub-study
 
-The research pipeline follows a strictly chronological, bias-free structure:
+The paper's ex-ante hypothesis is that state ownership may provide downside
+resilience. The reported result does not support that hypothesis at conventional
+significance levels (paper reference p-value approximately 0.572). This is a
+failure to find statistically significant evidence of a difference, not proof
+that ownership can never matter.
 
-```text
-Market Data Acquisition
-        ↓
-Log Returns Calculation
-        ↓ 
-Covariance Estimation (Ledoit–Wolf)
-        ↓
-Black–Litterman Posterior Estimation
-        ↓ 
-Portfolio Optimization
-        ↓
-Rolling Out-of-Sample Backtest
-        ↓ 
-Allocation Stability Index (ASI)
-        ↓ 
-Crisis Stress Testing
-        ↓ 
-Fama–French Factor Regression
-        ↓ 
-Regime Detection (Markov Switching)
-        ↓ 
-Empirical Results Export
-````
+## Execution
 
----
+Install dependencies with:
 
-## 6. Key Methodological Components
+    pip install -r requirements.txt
 
-### 6.1 Covariance Estimation
+Run the reconciliation study with:
 
-Ledoit–Wolf shrinkage is employed to ensure a well-conditioned covariance matrix and to mitigate sampling noise.
+    python -m pipelines.paper_v1_pipeline
 
-### 6.2 Black–Litterman Framework
+or the backward-compatible entry point:
 
-Expected returns are constructed using Bayesian updating:
+    python -m pipelines.run_tri_market_pipeline
 
-* Prior: Market-implied equilibrium returns
-* Views: Historical return signals
-* Confidence: Controlled via τ parameter
+Fresh outputs are written to results/recomputed/.
 
-### 6.3 Allocation Stability Index (ASI)
+Generate figures only after a successful empirical run:
 
-The study introduces a formal instability metric:
+    python scripts/generate_research_figures.py
 
-[
-ASI_t = \sum |w_t - w_{t-1}|
-]
+## Repository structure
 
-This captures **period-to-period allocation drift**, directly linking optimization behavior to turnover.
+- core/ — data and return utilities
+- models/ — BL posterior and common optimizer
+- backtesting/ — walk-forward portfolio simulation
+- analysis/ — factor, regime and statistical analysis
+- pipelines/ — executable empirical workflows
+- results/ — published-reference and recomputed outputs
+- tests/ — executable mathematical / no-look-ahead tests
+- docs/ — paper, implementation and audit documentation
+- legacy/ — historical implementation pending final migration
 
-### 6.4 Transaction Cost Modeling
+## Limitations
 
-Portfolio turnover is explicitly mapped into implementation costs, converting gross performance into realistic net returns.
+The study uses ETF proxies, stylized proportional transaction costs and a
+relatively small cross-section. The reconciliation also identifies an important
+prior-specification limitation: the public repository presently lacks the
+historical ETF capitalization/AUM series needed to reproduce the paper's stated
+capitalization-weighted BL equilibrium prior.
 
-### 6.5 Crisis Stress Testing
+The Markov-switching model should be interpreted as a regime-evaluation layer
+unless its filtered probabilities are explicitly incorporated into the
+portfolio decision rule.
 
-Recovery dynamics are measured using a corrected definition:
+## Research integrity
 
-* Peak reference = portfolio value at crisis start
-* Recovery = first return to initial value
-* Duration = trading days (not calendar days)
+Negative and non-dominant results are retained. In particular:
 
-### 6.6 Factor Decomposition
+- Markowitz has higher reported gross Sharpe in China and India in the published reference table;
+- the US benchmark Sharpe in the paper exceeds BL's published Sharpe;
+- BL does not dominate every crisis drawdown/recovery outcome;
+- the SOE hypothesis is not statistically supported.
 
-Portfolio returns are decomposed using the Fama–French + Momentum model to distinguish:
-
-* True alpha
-* Systematic factor exposure
-
-Factor data is obtained from the **Kenneth French Data Library via pandas_datareader**.
-
-### 6.7 Regime Detection
-
-A Markov-switching model identifies high- and low-volatility states, enabling regime-dependent performance evaluation.
-
----
-
-## 7. Empirical Findings (Summary)
-
-### 7.1 Risk-Adjusted Performance
-
-| Market | Black–Litterman | Markowitz |
-| ------ | --------------- | --------- |
-| US     | 0.650           | 0.614     |
-| China  | 0.042           | 0.088     |
-| India  | 0.356           | 0.440     |
-
-### 7.2 Allocation Stability (ASI)
-
-Black–Litterman consistently produces an **order-of-magnitude reduction in instability**, confirming its structural robustness.
-
-### 7.3 Transaction Costs
-
-High turnover in Markowitz portfolios results in substantial performance erosion, eliminating apparent gross-return advantages.
-
-### 7.4 Crisis Recovery
-
-| Market | BL (Days) | MV (Days) |
-| ------ | --------- | --------- |
-| US     | 1093      | 1056      |
-| China  | 458       | 459       |
-| India  | 176       | 176       |
-
-Recovery dynamics are primarily driven by **market exposure**, not optimization methodology.
-
-### 7.5 Factor Exposure
-
-Markowitz exhibits statistically significant **momentum loading**, while Black–Litterman remains factor-neutral.
-
----
-
-## 8. Repository Structure
-
-```text
-config/
-core/
-models/
-backtesting/
-analysis/
-pipelines/
-experiments/
-results/
-    v1_final_results/
-visualization/
-tests/
-docs/
-legacy/
-```
-
----
-
-## 9. Execution Instructions
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run full pipeline:
-
-```bash
-python -m pipelines.run_tri_market_pipeline
-python -m pipelines.run_soe_pipeline
-python -m pipelines.run_crisis_analysis
-```
-
----
-
-## 10. Reproducibility
-
-The research pipeline is fully deterministic and reproducible:
-
-* No forward-looking bias
-* Chronological execution enforced
-* All outputs generated programmatically
-
-All computations are reproducible given identical inputs and parameters.
-
----
-
-## 11. Runtime Environment
-
-Python Version: 3.11
-
-Core Libraries:
-
-* NumPy
-* Pandas
-* SciPy
-* PyQt6
-* yfinance
-* pandas_datareader
-
-Data Sources:
-
-* Yahoo Finance (ETF price data)
-* Kenneth French Data Library (factor data)
-
----
-
-## 12. Research Contribution
-
-This study contributes to the literature by:
-
-* Formalizing the Allocation Stability Index (ASI)
-* Correcting crisis recovery measurement methodology
-* Integrating stability, costs, and regime dynamics into a unified framework
-* Providing cross-market empirical validation of Bayesian allocation
-
----
-
-## 13. Documentation
-
-All supporting material is located in:
-
-```text
-docs/
-```
-* `FINAL_PROJECT_IMPLEMENTATION.md`
-* `FINAL_RESEARCH_RESULTS_COMPENDIUM.docx` 
-* `Research_Pipeline_Architecture_Documentation.docx`
-
-
----
-
-## 14. Citation
-
-Dudi, A. K. (2026).
-*Regime-Sensitive Black–Litterman Portfolio Allocation: A Cross-Market Empirical Analysis of Stability, Turnover, and Crisis Resilience.*
-
----
-
-## 15. License
-
-This project is intended for academic and research use.
-
-```
+The purpose of the repository is empirical evaluation, not to force
+Black-Litterman to win every metric.
