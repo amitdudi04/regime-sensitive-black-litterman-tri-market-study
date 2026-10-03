@@ -1,18 +1,18 @@
-name: Reconciliation tests
+name: Research tests
 
 on:
   pull_request:
     paths:
       - "**.py"
       - "requirements.txt"
-      - ".github/workflows/reconciliation-tests.yml"
+      - ".github/workflows/research-tests.yml"
   push:
     branches:
       - main
     paths:
       - "**.py"
       - "requirements.txt"
-      - ".github/workflows/reconciliation-tests.yml"
+      - ".github/workflows/research-tests.yml"
   workflow_dispatch:
 
 jobs:
