@@ -1,6 +1,6 @@
 # Working-Paper Errata and Reconciliation Notes
 
-This file accompanies the pre-reconciliation working-paper document retained in this repository.
+These notes refer to the pre-reconciliation working paper preserved in Git history and the historical branch. The unreconciled paper binary is intentionally not part of the research-facing main branch.
 
 The purpose is to identify statements that should be interpreted more narrowly until the paper is formally revised.
 

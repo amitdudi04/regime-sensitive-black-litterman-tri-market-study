@@ -55,7 +55,7 @@ The reconciliation code therefore uses an explicit equal-weight equilibrium prox
 
 ## Working paper
 
-The existing paper is retained as a pre-reconciliation working paper, not presented as a fully reconciled final artifact.
+The unreconciled working-paper binary is not kept on the research-facing main branch. It remains available in Git history and the historical branch together with these reconciliation notes.
 
 See PAPER_ERRATA.md before interpreting its strongest claims.
 
