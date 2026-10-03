@@ -7,6 +7,3 @@ matplotlib
 PyYAML
 statsmodels
 pandas-datareader
-PyQt6
-seaborn
-openpyxl

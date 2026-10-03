@@ -1,41 +1,64 @@
 import numpy as np
 import pandas as pd
 
-def compute_implied_equilibrium_returns(cov_matrix, market_cap_weights, lambda_risk_aversion):
+
+def compute_implied_equilibrium_returns(
+    cov_matrix,
+    equilibrium_weights,
+    lambda_risk_aversion,
+):
     """
-    Derives the neutral Equilibrium Implied Returns (Pi) from observable market capitalization weights.
-    Formula: Pi = lambda * Sigma * w_mkt
+    Compute Black-Litterman equilibrium-implied returns:
+
+        Pi = lambda * Sigma * w_eq
+
+    equilibrium_weights may contain a justified capitalization/AUM prior or an
+    explicitly labelled proxy. The function does not infer market capitalization
+    from price or trading volume.
     """
-    w = np.array(market_cap_weights)
-    sigma = cov_matrix.values
-    
-    pi = lambda_risk_aversion * np.dot(sigma, w)
-    return pd.Series(pi, index=cov_matrix.index)
+    sigma = pd.DataFrame(cov_matrix, dtype=float)
+    w = np.asarray(equilibrium_weights, dtype=float)
+
+    if sigma.shape[0] != sigma.shape[1]:
+        raise ValueError("cov_matrix must be square")
+    if len(w) != sigma.shape[0]:
+        raise ValueError("equilibrium_weights length must match covariance dimension")
+    if not np.isfinite(w).all() or w.sum() <= 0:
+        raise ValueError("equilibrium_weights must be finite with positive total weight")
+
+    w = w / w.sum()
+    pi = float(lambda_risk_aversion) * sigma.to_numpy().dot(w)
+    return pd.Series(pi, index=sigma.index, dtype=float)
+
 
 def compute_black_litterman_posterior(pi, cov_matrix, P, Q, Omega, tau):
-    """
-    Implement the Black–Litterman Bayesian posterior expected return calculation.
-    """
-    sigma = cov_matrix.values
-    inv_tau_sigma = np.linalg.inv(tau * sigma)
-    
-    # If there are no views, posterior == prior
+    """Compute the Black-Litterman posterior expected-return vector."""
+    if tau is None or float(tau) <= 0:
+        raise ValueError("tau must be strictly positive")
+
+    sigma_df = pd.DataFrame(cov_matrix, dtype=float)
+    sigma = sigma_df.to_numpy()
+    pi = pd.Series(pi, index=sigma_df.index, dtype=float)
+
     if P is None or len(P) == 0:
-        return pi
-        
+        return pi.copy()
+
+    P = np.asarray(P, dtype=float)
+    Q = np.asarray(Q, dtype=float)
+    Omega = np.asarray(Omega, dtype=float)
+
+    if P.shape[1] != sigma.shape[0]:
+        raise ValueError("P column count must match covariance dimension")
+    if P.shape[0] != len(Q):
+        raise ValueError("P row count must match Q length")
+    if Omega.shape != (len(Q), len(Q)):
+        raise ValueError("Omega must be square with dimension equal to number of views")
+
+    inv_tau_sigma = np.linalg.inv(float(tau) * sigma)
     inv_omega = np.linalg.inv(Omega)
-    
-    # Pre-compute components
-    pt_inv_omega_p = np.dot(np.dot(P.T, inv_omega), P)
-    pt_inv_omega_q = np.dot(np.dot(P.T, inv_omega), Q)
-    
-    # Compute inverse term
-    inv_term = np.linalg.inv(inv_tau_sigma + pt_inv_omega_p)
-    
-    # Compute expected term
-    exp_term = np.dot(inv_tau_sigma, pi.values) + pt_inv_omega_q
-    
-    # Final posterior E[R]
-    posterior_er = np.dot(inv_term, exp_term)
-    
-    return pd.Series(posterior_er, index=cov_matrix.index)
+
+    precision = inv_tau_sigma + P.T @ inv_omega @ P
+    rhs = inv_tau_sigma @ pi.to_numpy() + P.T @ inv_omega @ Q
+    posterior = np.linalg.solve(precision, rhs)
+
+    return pd.Series(posterior, index=sigma_df.index, dtype=float)

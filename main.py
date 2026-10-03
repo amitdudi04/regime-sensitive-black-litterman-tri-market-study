@@ -1,23 +1,14 @@
-import sys
-import logging
+from pipelines.paper_v1_pipeline import run_paper_v1_study
 
-# Configure root logger to output engine info locally if needed
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-try:
-    from ui.desktop_gui import launch_desktop_gui
-except Exception as e:
-    import traceback
-    traceback.print_exc()
-    print(f"\n[ERROR] Failed to load the Quantitative Research Platform GUI.")
-    print(f"Details: {e}")
-    print("\nPlease ensure all dependencies are installed.")
-    print("If the error is about a missing module, install it via pip (e.g., pip install <module_name>)")
-    sys.exit(1)
+def main():
+    print("Regime-Sensitive Black-Litterman Portfolio Allocation")
+    print("Running canonical paper-v1 reconciliation pipeline...")
+    packet = run_paper_v1_study()
+    print("\nRecomputed summary:")
+    print(packet["summary"].to_string(index=False))
+    print("\nOutputs: results/recomputed/")
+
 
 if __name__ == "__main__":
-    print("=========================================================================")
-    print(" EMPIRICAL EVALUATION ENGINE: US DEVELOPED, CHINA & INDIA EMERGING")
-    print("=========================================================================")
-    print("Starting Professional Quantitative Research Platform GUI...")
-    launch_desktop_gui()
+    main()
