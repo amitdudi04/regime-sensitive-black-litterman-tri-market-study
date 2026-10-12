@@ -1,5 +1,6 @@
-from pathlib import Path
+import hashlib
 import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -18,15 +19,15 @@ CONFIG_PATH = PROJECT_ROOT / "config" / "project_config.yaml"
 MARKETS = {
     "US": {
         "tickers": ["SPY", "QQQ", "IWM", "XLF", "XLK"],
-        "benchmark": "^GSPC",
+        "benchmark": "SPY",
     },
     "China": {
         "tickers": ["ASHR", "KWEB", "MCHI", "FXI"],
-        "benchmark": "000300.SS",
+        "benchmark": "ASHR",
     },
     "India": {
         "tickers": ["INDA", "EPI", "SMIN", "INDY"],
-        "benchmark": "^BSESN",
+        "benchmark": "INDA",
     },
 }
 
@@ -59,10 +60,15 @@ def _asi(weights):
     return float(weights.diff().abs().sum(axis=1).dropna().mean())
 
 
-def _benchmark_returns(ticker, start, end, target_index):
-    prices = download_market_data([ticker], start, end)
-    returns = compute_simple_returns(prices).iloc[:, 0]
-    return returns.reindex(target_index).dropna()
+def _dataframe_sha256(frame):
+    """Hash a stable CSV representation of the exact price panel used by the run."""
+    normalized = frame.sort_index().sort_index(axis=1)
+    payload = normalized.to_csv(
+        index=True,
+        float_format="%.17g",
+        lineterminator="\n",
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def run_tri_market_study():
@@ -88,9 +94,11 @@ def run_tri_market_study():
     summary_rows = []
     manifest_rows = []
     factor_rows = []
+    price_hashes = {}
 
     for market, spec in MARKETS.items():
         prices = download_market_data(spec["tickers"], requested_start, requested_end)
+        price_hashes[market] = _dataframe_sha256(prices)
         returns = compute_simple_returns(prices)
 
         packet = run_paper_backtest(returns, cfg)
@@ -151,9 +159,9 @@ def run_tri_market_study():
                         }
                     )
 
-        benchmark = _benchmark_returns(
-            spec["benchmark"], requested_start, requested_end, daily.index
-        )
+        # The benchmark ticker is part of the same downloaded price panel as
+        # the strategy assets, avoiding a second live-data request.
+        benchmark = returns[spec["benchmark"]].reindex(daily.index).dropna()
         if not benchmark.empty:
             summary_rows.append(
                 {
@@ -169,11 +177,13 @@ def run_tri_market_study():
             {
                 "Market": market,
                 "Tickers": ",".join(spec["tickers"]),
+                "Benchmark": spec["benchmark"],
                 "Requested Start": requested_start,
                 "Requested End": requested_end,
                 "Effective Price Start": prices.index.min().date().isoformat(),
                 "Effective Price End": prices.index.max().date().isoformat(),
                 "Price Observations": int(len(prices)),
+                "Price Data SHA256": price_hashes[market],
                 "OOS Start": daily.index.min().date().isoformat(),
                 "OOS End": daily.index.max().date().isoformat(),
                 "OOS Observations": int(len(daily)),
@@ -191,12 +201,17 @@ def run_tri_market_study():
 
     run_manifest = {
         "requested_sample": [requested_start, requested_end],
+        "data_provider": "Yahoo Finance adjusted-close ETF prices as returned at run time",
+        "price_data_sha256_by_market": price_hashes,
         "window_size": cfg.window_size,
         "rebalance_frequency": cfg.rebalance_freq,
         "transaction_cost_rate": cfg.transaction_cost_rate,
         "view_method": "Q = Pi + 0.10 * (historical_mean - Pi)",
         "equilibrium_weight_default": project_cfg["equilibrium_weight_default"],
         "return_convention": "simple returns for portfolio P&L",
+        "benchmark_convention": "adjusted-close ETF proxy: SPY (US), ASHR (China), INDA (India)",
+        "turnover_convention": "one-way turnover = 0.5 * L1 weight change; initial cash deployment is 100%",
+        "sharpe_convention": "zero risk-free rate; arithmetic daily mean annualized by 252",
         "factor_scope": "US only; Kenneth French US daily factors",
     }
     with open(RESULTS_DIR / "RUN_MANIFEST.json", "w", encoding="utf-8") as handle:
