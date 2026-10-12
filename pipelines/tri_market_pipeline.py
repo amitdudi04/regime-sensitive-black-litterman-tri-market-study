@@ -169,6 +169,7 @@ def run_tri_market_study():
             {
                 "Market": market,
                 "Tickers": ",".join(spec["tickers"]),
+                "Benchmark": spec["benchmark"],
                 "Requested Start": requested_start,
                 "Requested End": requested_end,
                 "Effective Price Start": prices.index.min().date().isoformat(),
@@ -197,6 +198,9 @@ def run_tri_market_study():
         "view_method": "Q = Pi + 0.10 * (historical_mean - Pi)",
         "equilibrium_weight_default": project_cfg["equilibrium_weight_default"],
         "return_convention": "simple returns for portfolio P&L",
+        "benchmark_convention": "adjusted-close ETF proxy: SPY (US), ASHR (China), INDA (India)",
+        "turnover_convention": "one-way turnover = 0.5 * L1 weight change; initial cash deployment is 100%",
+        "sharpe_convention": "zero risk-free rate; arithmetic daily mean annualized by 252",
         "factor_scope": "US only; Kenneth French US daily factors",
     }
     with open(RESULTS_DIR / "RUN_MANIFEST.json", "w", encoding="utf-8") as handle:
