@@ -18,15 +18,15 @@ CONFIG_PATH = PROJECT_ROOT / "config" / "project_config.yaml"
 MARKETS = {
     "US": {
         "tickers": ["SPY", "QQQ", "IWM", "XLF", "XLK"],
-        "benchmark": "^GSPC",
+        "benchmark": "SPY",
     },
     "China": {
         "tickers": ["ASHR", "KWEB", "MCHI", "FXI"],
-        "benchmark": "000300.SS",
+        "benchmark": "ASHR",
     },
     "India": {
         "tickers": ["INDA", "EPI", "SMIN", "INDY"],
-        "benchmark": "^BSESN",
+        "benchmark": "INDA",
     },
 }
 
