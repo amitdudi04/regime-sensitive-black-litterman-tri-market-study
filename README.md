@@ -123,7 +123,7 @@ Run the tri-market study:
 python -m pipelines.run_tri_market_pipeline
 ```
 
-The run creates local output files under `results/generated/`. This directory is excluded from version control so that generated runs are not mixed with the paper tables.
+The run creates local output files under `results/generated/`. The dataset manifest records effective dates, observation counts and a SHA-256 hash of each market's price panel; the run manifest records the provider, benchmark, turnover and Sharpe conventions, and per-market hashes. The downloaded price panels themselves are not committed, so exact reproduction still requires source data that match those hashes. This directory is excluded from version control so generated runs are not mixed with the historical paper tables.
 
 To generate charts from the latest local run:
 
