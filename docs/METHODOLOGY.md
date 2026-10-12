@@ -8,7 +8,7 @@ The study uses liquid ETF baskets representing three equity markets:
 - China: ASHR, KWEB, MCHI, FXI
 - India: INDA, EPI, SMIN, INDY
 
-The requested sample is 2010-2025. Because some ETFs have shorter listing histories, each market uses the common observed history available across its basket.
+The configured request is `start=2010-01-01` and `end=2025-01-01`; Yahoo Finance treats the end date as exclusive, so the request ends on 2024-12-31. Because the ETFs have different listing histories, each market uses the common observed history available across its basket. The generated dataset manifest records the effective price and out-of-sample dates for each market.
 
 ## Rolling design
 
@@ -53,7 +53,11 @@ The prior scaling parameter (	au) is conditioned using realized volatility obser
 
 Before every rebalance, the previous portfolio is drifted using the realized asset returns from the preceding holding period.
 
-Turnover is then calculated from the difference between drifted pre-trade weights and new target weights. Transaction cost is charged once at the rebalance.
+One-way turnover is one half of the L1 difference between drifted pre-trade weights and new target weights:
+
+`turnover = 0.5 * sum(abs(target_weights - pre_trade_weights))`
+
+The first out-of-sample allocation is treated as a 100% deployment from cash. Transaction cost is charged once on the first holding-period return after each trade. Reported average rebalancing turnover excludes the initial deployment and averages subsequent rebalances only.
 
 ## Allocation Stability Index
 
@@ -64,6 +68,10 @@ ASI_t = sum_i |w_{i,t} - w_{i,t-1}|
 ]
 
 ASI is used as a stability measure; it is separate from trading turnover.
+
+## Benchmark convention
+
+The corrected pipeline uses adjusted-close ETF proxies—SPY for the United States, ASHR for China and INDA for India—so benchmark and strategy returns use the same dividend-adjusted price convention. These are single-ETF broad-market proxies, not capitalization-weighted combinations of all ETFs in each strategy basket.
 
 ## Factor analysis
 
