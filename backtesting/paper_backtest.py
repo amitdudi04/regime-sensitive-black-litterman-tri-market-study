@@ -51,9 +51,12 @@ def _drifted_weights(previous_weights, previous_asset_returns):
 
 def _l1_turnover(target, pre_trade):
     if pre_trade is None:
-        # Initial portfolio deployment is not counted as rebalancing turnover.
-        return 0.0
-    return float((target - pre_trade).abs().sum())
+        # The backtest starts from cash and deploys the full portfolio at the
+        # first out-of-sample rebalance. Charge the initial 100% investment.
+        return 1.0
+    # One-way turnover is half the L1 weight change: buys and sells are not
+    # counted twice when the transaction-cost rate is quoted per dollar traded.
+    return float(0.5 * (target - pre_trade).abs().sum())
 
 
 def run_paper_backtest(
