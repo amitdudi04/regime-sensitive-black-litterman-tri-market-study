@@ -18,7 +18,7 @@ The analysis uses three ETF baskets:
 | China | ASHR, KWEB, MCHI, FXI |
 | India | INDA, EPI, SMIN, INDY |
 
-The main backtest requests data from **2010-01-01 through 2024-12-31** (the configured Yahoo Finance end date, `2025-01-01`, is exclusive). Effective start and end dates vary by the ETFs’ listing histories and the common observed calendar. It uses a **252-trading-day estimation window** and a **63-trading-day holding period**.
+The main backtest requests data from **2010-01-01 through 2024-12-31** (the configured Yahoo Finance end date, `2025-01-01`, is exclusive). Effective start and end dates vary by the ETFs’ listing histories and the common observed calendar. It uses a **252-trading-day estimation window** and a **63-trading-day holding period**. Annualized return is the arithmetic daily mean multiplied by 252; Sharpe is annualized return divided by annualized volatility and assumes a zero risk-free rate.
 
 ## Research questions
 
@@ -71,7 +71,7 @@ Lower ASI indicates a more stable target allocation. Turnover is calculated sepa
 
 ## Historical manuscript results (pre-correction; pending rerun)
 
-| Market | Model | Return | Volatility | Sharpe | Turnover | ASI | Max Drawdown |
+| Market | Model | Arithmetic annualized net return | Annualized volatility | Zero-rate Sharpe | Historical turnover | ASI | Max drawdown |
 |---|---|---:|---:|---:|---:|---:|---:|
 | US | Black-Litterman | 12.99% | 20.00% | 0.650 | 0.20% | 0.001632 | -38.04% |
 | US | Markowitz | 13.24% | 21.57% | 0.614 | 1.58% | 0.015365 | -33.95% |
@@ -82,7 +82,7 @@ Lower ASI indicates a more stable target allocation. Turnover is calculated sepa
 
 In the historical manuscript snapshot, allocation instability and turnover are lower under Black-Litterman, while return performance is mixed: Markowitz records the higher Sharpe ratio in China and India, while Black-Litterman is slightly higher in the US. These values predate the current one-way-turnover and benchmark corrections, so this pattern must be rechecked after the full pipeline is rerun.
 
-Machine-readable versions of the paper tables are available in `results/paper_results/`.
+The table above is the earlier manuscript snapshot. Its turnover uses the prior full-L1 convention, and its benchmark rows use index-series returns; neither convention matches the corrected pipeline. Machine-readable historical versions are preserved in `results/paper_results/`, while new main-pipeline results are written to `results/generated/`.
 
 ## Crisis analysis
 
@@ -92,7 +92,7 @@ The saved `results/paper_results/crisis_summary.csv` contains historical manuscr
 
 For the US portfolio, the project estimates MKT, SMB, HML and MOM exposures using Kenneth French daily factors with Newey-West/HAC standard errors.
 
-A separate two-state Markov-switching model is used for ex-post high- and low-volatility analysis. The allocation rule itself uses only information available at the rebalance date.
+A separate two-state Markov-switching model is available for ex-post high- and low-volatility analysis. The allocation rule itself changes tau using a recent-volatility rule; the smoothed Markov probabilities are not used as a live signal. The documented end-to-end pipeline does not currently regenerate the manuscript’s regime-conditioned performance table, so those historical regime figures remain unverified.
 
 ## Repository structure
 
