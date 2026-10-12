@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from backtesting.paper_backtest import BacktestConfig, run_paper_backtest
+from backtesting.paper_backtest import BacktestConfig, _l1_turnover, run_paper_backtest
 
 
 class TestPaperBacktest(unittest.TestCase):
@@ -23,6 +23,12 @@ class TestPaperBacktest(unittest.TestCase):
             view_uncertainty_scale=10.0,
         )
 
+    def test_turnover_uses_one_way_notional_and_charges_initial_deployment(self):
+        target = pd.Series([0.7, 0.3], index=["A", "B"])
+        previous = pd.Series([0.5, 0.5], index=["A", "B"])
+        self.assertAlmostEqual(_l1_turnover(target, previous), 0.2)
+        self.assertAlmostEqual(_l1_turnover(target, None), 1.0)
+
     def test_out_of_sample_starts_after_training_window(self):
         returns = self._returns()
         packet = run_paper_backtest(returns, self._config())
@@ -30,8 +36,8 @@ class TestPaperBacktest(unittest.TestCase):
 
         self.assertEqual(daily.index[0], returns.index[252])
         self.assertEqual(len(daily), len(returns) - 252)
-        self.assertEqual(packet["turnover"].iloc[0]["Black-Litterman"], 0.0)
-        self.assertEqual(packet["turnover"].iloc[0]["Markowitz"], 0.0)
+        self.assertEqual(packet["turnover"].iloc[0]["Black-Litterman"], 1.0)
+        self.assertEqual(packet["turnover"].iloc[0]["Markowitz"], 1.0)
 
     def test_future_data_does_not_change_earlier_oos_returns(self):
         returns = self._returns()
@@ -62,6 +68,8 @@ class TestPaperBacktest(unittest.TestCase):
             daily["markowitz_net"].sum(),
             daily["markowitz_gross"].sum() + 1e-12,
         )
+        self.assertLess(daily["black_litterman_net"].iloc[0], daily["black_litterman_gross"].iloc[0])
+        self.assertLess(daily["markowitz_net"].iloc[0], daily["markowitz_gross"].iloc[0])
 
 
 if __name__ == "__main__":
