@@ -420,8 +420,9 @@ def run_tri_market_study():
         "tau_sensitivity_sample": "same main-sample US returns, fixed tau, net portfolio returns",
         "crisis_metric_conventions": {
             "frozen_weights": "last target weights strictly before crisis start",
-            "max_drawdown": "crisis-window wealth path with initial wealth set to 1.0",
-            "volatility_spike": "crisis-window daily volatility divided by up to prior 252 trading days; actual baseline count is recorded",
+            "crisis_return_convention": "weighted daily log returns derived from adjusted-close simple asset returns",
+            "max_drawdown": "crisis-window wealth path normalized to V(t0)=1.0",
+            "volatility_spike": "crisis-window daily portfolio log-return volatility divided by up to prior 252 trading days; actual baseline count is recorded",
             "recovery_target": "wealth returns to 1.0, the value at the start of the crisis",
             "recovery_duration": "trading-index positions from crisis trough to first recovery",
             "recovery_path": "pre-crisis target weights remain frozen from crisis start through recovery",

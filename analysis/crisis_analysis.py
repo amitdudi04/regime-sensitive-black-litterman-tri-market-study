@@ -45,8 +45,13 @@ def calculate_crisis_metrics(
         raise ValueError("Frozen crisis weights must be long-only and fully invested")
 
     crisis_dates = frozen_history.index
-    crisis_returns = assets.loc[crisis_dates].dot(frozen_weights.astype(float))
-    pre_crisis_assets = assets.loc[assets.index < crisis_dates[0]].tail(pre_crisis_window)
+    if (assets <= -1.0).any().any():
+        raise ValueError("Log-return crisis analysis requires asset simple returns greater than -100%")
+    asset_log_returns = np.log1p(assets)
+    crisis_returns = asset_log_returns.loc[crisis_dates].dot(frozen_weights.astype(float))
+    pre_crisis_assets = asset_log_returns.loc[
+        asset_log_returns.index < crisis_dates[0]
+    ].tail(pre_crisis_window)
     if len(pre_crisis_assets) < 2:
         raise ValueError("Insufficient pre-crisis observations to estimate baseline volatility")
     pre_crisis_returns = pre_crisis_assets.dot(frozen_weights.astype(float))
@@ -55,8 +60,11 @@ def calculate_crisis_metrics(
     if not np.isfinite(baseline_volatility) or baseline_volatility <= 0:
         raise ValueError("Pre-crisis volatility must be finite and positive")
 
-    crisis_wealth = (1.0 + crisis_returns).cumprod()
-    peaks = np.maximum.accumulate(np.concatenate(([1.0], crisis_wealth.to_numpy())))[1:]
+    crisis_wealth = np.exp(crisis_returns.cumsum())
+    # Normalize the first observed crisis value to V(t0)=1.0, so the first
+    # log-return observation is not counted as a drawdown from a pre-t0 wealth level.
+    crisis_wealth = crisis_wealth / float(crisis_wealth.iloc[0])
+    peaks = np.maximum.accumulate(crisis_wealth.to_numpy())
     drawdowns = crisis_wealth.to_numpy() / peaks - 1.0
     trough_position = int(np.argmin(drawdowns))
     trough_date = pd.Timestamp(crisis_returns.index[trough_position])
@@ -65,10 +73,11 @@ def calculate_crisis_metrics(
     # Keep the pre-crisis target weights frozen from crisis start through recovery.
     # Using the adaptive strategy after the crisis window would change the exposure
     # during recovery and can materially shorten the measured recovery duration.
-    recovery_returns = assets.loc[assets.index >= crisis_dates[0]].dot(
-        frozen_weights.astype(float)
-    )
-    recovery_wealth = (1.0 + recovery_returns).cumprod()
+    recovery_returns = asset_log_returns.loc[
+        asset_log_returns.index >= crisis_dates[0]
+    ].dot(frozen_weights.astype(float))
+    recovery_wealth = np.exp(recovery_returns.cumsum())
+    recovery_wealth = recovery_wealth / float(recovery_wealth.iloc[0])
     recovery_candidates = recovery_wealth.loc[recovery_wealth.index >= trough_date]
     recovered = recovery_candidates.loc[recovery_candidates >= 1.0]
     recovery_date = pd.Timestamp(recovered.index[0]) if not recovered.empty else pd.NaT

@@ -10,7 +10,7 @@
 | China | 2013-11-06 | 2014-11-07 | 2024-12-31 | 2,553 |
 | India | 2012-02-09 | 2013-02-13 | 2024-12-31 | 2,991 |
 
-The requested main-sample end date is exclusive (\`2025-01-01\`), so the final possible date is \`2024-12-31\`. ETF launch dates mean that the three markets do not share the same effective sample.
+The requested main-sample end date is exclusive (\`2025-01-01\`), so the final possible date is \`2024-12-31\`. ETF launch dates mean that the three markets do not share the same effective sample. In particular, the current common China ETF basket cannot support a 2010 start.
 
 ## Strategy results: historical paper snapshot vs current implementation
 
@@ -29,33 +29,51 @@ The turnover values also diverge substantially. In the current implementation, a
 
 The current Markowitz weights frequently concentrate at or near a single ETF, which explains its large current ASI and turnover. The configured optimizer permits weights between 0 and 100%, with no tighter concentration cap. Do **not** add a new cap, shrinkage rule, or regularizer merely to force the results to match the paper: that would change the research design and must be justified in the manuscript before implementation.
 
-## Crisis recovery discrepancy
+## Crisis metrics: historical paper snapshot vs current generator
 
-| Crisis | Historical paper BL / Markowitz | Current generator BL / Markowitz |
-|---|---:|---:|
-| 2008 US GFC | 1,093 / 1,056 days | 270 / 273 days |
-| 2015 China crash | 458 / 459 days | 378 / 1,202 days |
-| 2020 India COVID shock | 176 / 176 days | 160 / 161 days |
+| Crisis | Model | Historical max drawdown | Current max drawdown | Historical vol. spike | Current vol. spike | Historical recovery days | Current recovery days |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 2008 US GFC | Black-Litterman | -62.57% | -53.47% | 1.94x | 2.40x | 1,093 | 277 |
+| 2008 US GFC | Markowitz | -62.18% | -46.99% | 1.93x | 2.01x | 1,056 | 272 |
+| 2015 China crash | Black-Litterman | -43.42% | -37.44% | 1.92x | 1.58x | 458 | 402 |
+| 2015 China crash | Markowitz | -43.82% | -49.76% | 1.95x | 1.51x | 459 | 1,220 |
+| 2020 India COVID | Black-Litterman | -47.44% | -42.57% | 3.39x | 4.47x | 176 | 140 |
+| 2020 India COVID | Markowitz | -47.48% | -41.68% | 3.40x | 4.30x | 176 | 161 |
 
-The current generator keeps each pre-crisis target-weight vector frozen from crisis start through recovery, and recovery is the first return to wealth 1.0, the value at crisis start. That matches the paper's stated recovery definition. However, the regenerated recovery durations still diverge materially from the paper for the US and for China Markowitz. The current Markowitz optimizer often selects a single ETF, while the paper's reported crisis paths appear to use different portfolio weights and/or a different data snapshot. The China volatility baseline also has only 139 pre-crisis observations because the common ETF history starts in November 2013; this actual count is included in \`crisis_summary.csv\`. Do not replace the manuscript's recovery table until the historical portfolio weights and data inputs are reconciled.
+The corrected generator keeps each pre-crisis target-weight vector frozen from crisis start through recovery. It converts adjusted-close simple asset returns to weighted daily log returns, normalizes the first observed crisis valuation to \(V(t_0)=1.0\), and defines recovery as the first return to that starting value after the trough. This follows the paper's stated crisis-method definition. The resulting values still diverge materially because the current optimizer weights, data history and/or original metric calculations differ from the historical release. The current China volatility baseline has only 139 pre-crisis observations because the common ETF history starts in November 2013; this actual count is included in \`crisis_summary.csv\`.
+
+## Tau sensitivity
+
+The old \`results/paper_results/tau_sensitivity.csv\` values did not identify a market, sample window, observation count or return convention. The new fixed-\(\tau\) generator uses the same US OOS sample for each value.
+
+| \(\tau\) | Historical reported Sharpe | Current fixed-\(\tau\) Sharpe |
+|---:|---:|---:|
+| 0.01 | 0.3993 | 0.8077 |
+| 0.05 | 0.3983 | 0.8069 |
+| 0.10 | 0.3949 | 0.8059 |
+| 0.15 | 0.3929 | 0.8050 |
+| 0.20 | 0.3926 | 0.8041 |
+
+The old and current sensitivity values are not comparable until the original sample and calculation are recovered. Current rows include OOS start/end dates, observation counts, return series, tau rule and equilibrium-weight method.
 
 ## Benchmark convention
 
-The regenerated pipeline uses adjusted-close ETF proxies—SPY, ASHR and INDA—so benchmark and portfolio returns use a consistent adjusted-close convention and the same dates. Each proxy is also part of its optimized basket, so it is a constituent-ETF comparison, not an independent index comparison. The historical paper uses index-style benchmarks; its old benchmark figures are not directly comparable to the regenerated proxy values.
+The regenerated pipeline uses adjusted-close ETF proxies—SPY, ASHR and INDA—so benchmark and portfolio returns use a consistent adjusted-close convention and the same dates. Each proxy is also part of its optimized basket, so it is a constituent-ETF comparison, not an independent index comparison. The paper's prose describes a market-cap-weighted ETF allocation, while its results table reports index-style benchmarks; that inconsistency must be resolved before replacing the benchmark rows.
 
 ## Method claims that must be reconciled
 
 - The paper describes a market-capitalization-implied equilibrium prior, while the public implementation defaults to \`equal_weight_proxy\`. The paper must either describe the implemented equal-weight prior accurately or provide the historical capitalization/AUM series and rerun the study.
+- The paper says adjusted closes are converted to continuously compounded returns, while the main backtest currently uses simple returns for portfolio P&L. The crisis diagnostic uses weighted daily log returns, matching the paper's specific crisis-method description. The manuscript must distinguish these conventions or the main backtest must be changed and fully rerun.
 - The \`tau\` allocation rule is based on a volatility threshold using the training window. The separate Markov-switching model is an ex-post diagnostic; its smoothed probabilities do not drive portfolio weights.
-- The current pipeline uses adjusted-close ETF proxies SPY, ASHR and INDA as benchmarks. They are constituents of their optimized baskets and are not independent index benchmarks; the manuscript must use these labels or retain a separate, consistently sourced index/total-return benchmark.
-- The configured main sample ends on 2024-12-31. Claims that the main empirical sample extends through 2025 need correction unless a new 2025 run is performed.
+- The benchmark prose and benchmark table are inconsistent. The current pipeline uses SPY, ASHR and INDA adjusted-close ETF proxies, which are constituents of their optimized baskets and are not independent index benchmarks.
+- The configured main sample ends on 2024-12-31. The common China ETF basket starts on 2013-11-06, so the repository cannot support a 2010–2025 China ETF backtest without a different historical data source.
 
 ## What remains before publication
 
-1. Confirm the intended turnover and ASI definitions and recover the historical calculation if possible.
-2. Confirm whether the manuscript's Markowitz concentration behavior matches the stated optimization objective and constraints.
-3. Reconcile crisis drawdown and volatility-spike values after the frozen-weight recovery path is corrected.
-4. Run the same confirmed method over the saved, checksum-verified local price snapshots; retain the snapshot metadata and output checksums.
+1. Recover the historical optimizer constraints/weights and exact turnover/ASI calculation if possible.
+2. Confirm the intended return convention and benchmark definition; do not mix simple-return P&L, log-return crisis diagnostics, and index-style benchmark claims without stating the difference.
+3. Confirm whether the manuscript's Markowitz concentration behavior matches the stated optimization objective and constraints.
+4. Save the Kenneth French factor input series and its checksum as well as the price snapshots before claiming end-to-end reproducibility of factor regressions.
 5. Reconcile every table, figure, abstract claim and README figure to the generated output.
 6. Only then update the paper's numerical results and remove the historical-snapshot warning.
 
