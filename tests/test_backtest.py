@@ -30,8 +30,18 @@ class TestPaperBacktest(unittest.TestCase):
 
         self.assertEqual(daily.index[0], returns.index[252])
         self.assertEqual(len(daily), len(returns) - 252)
-        self.assertEqual(packet["turnover"].iloc[0]["Black-Litterman"], 0.0)
-        self.assertEqual(packet["turnover"].iloc[0]["Markowitz"], 0.0)
+        self.assertAlmostEqual(packet["turnover"].iloc[0]["Black-Litterman"], 1.0, places=6)
+        self.assertAlmostEqual(packet["turnover"].iloc[0]["Markowitz"], 1.0, places=6)
+        self.assertAlmostEqual(
+            daily["black_litterman_gross"].iloc[0] - daily["black_litterman_net"].iloc[0],
+            self._config().transaction_cost_rate,
+            places=10,
+        )
+        self.assertAlmostEqual(
+            daily["markowitz_gross"].iloc[0] - daily["markowitz_net"].iloc[0],
+            self._config().transaction_cost_rate,
+            places=10,
+        )
 
     def test_future_data_does_not_change_earlier_oos_returns(self):
         returns = self._returns()

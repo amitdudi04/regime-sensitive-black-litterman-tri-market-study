@@ -51,8 +51,9 @@ def _drifted_weights(previous_weights, previous_asset_returns):
 
 def _l1_turnover(target, pre_trade):
     if pre_trade is None:
-        # Initial portfolio deployment is not counted as rebalancing turnover.
-        return 0.0
+        # The first out-of-sample portfolio is deployed from cash, so charge the
+        # full one-way purchased weight rather than treating initial turnover as zero.
+        return float(target.abs().sum())
     return float((target - pre_trade).abs().sum())
 
 
