@@ -1,5 +1,7 @@
-import pandas as pd
+import time
+
 import numpy as np
+import pandas as pd
 import yfinance as yf
 
 
@@ -27,7 +29,7 @@ def _extract_adjusted_close(data: pd.DataFrame, tickers):
             prices.columns = [tickers[0]]
         else:
             # yfinance may return ticker-labelled columns for a single field.
-            available = [t for t in tickers if t in data.columns]
+            available = [ticker for ticker in tickers if ticker in data.columns]
             if not available:
                 raise ValueError("Yahoo Finance response does not contain a recognized price column.")
             prices = data[available].copy()
@@ -35,12 +37,12 @@ def _extract_adjusted_close(data: pd.DataFrame, tickers):
     if isinstance(prices, pd.Series):
         prices = prices.to_frame(name=tickers[0])
 
-    prices = prices.reindex(columns=[t for t in tickers if t in prices.columns])
+    prices = prices.reindex(columns=[ticker for ticker in tickers if ticker in prices.columns])
     prices = prices.sort_index().replace([np.inf, -np.inf], np.nan)
 
-    # Research rule: do not manufacture prices by forward-filling missing observations.
-    # The canonical backtest operates on the common observed trading calendar.
-    prices = prices.dropna(how="any")
+    # Keep row-level missing values until the complete requested universe is assembled.
+    # The final downloader drops dates on the common observed trading calendar only after
+    # individually retried tickers have been joined.
     return prices
 
 
@@ -48,21 +50,65 @@ def download_market_data(tickers, start_date, end_date):
     """
     Download adjusted closing prices for the requested instruments.
 
-    Missing prices are not forward-filled. The returned frame contains only dates for
-    which every requested instrument has an observed price, preventing artificial
-    zero-return observations from entering the empirical backtest.
+    The bulk request is attempted first. If Yahoo returns only a subset of tickers,
+    missing instruments are retried individually. A partial universe is never returned:
+    every requested ticker must be present before the common observed calendar is built.
+    Missing prices are not forward-filled.
     """
+    requested = list(tickers)
+    if not requested or len(set(requested)) != len(requested):
+        raise ValueError("tickers must be a non-empty list of unique symbols")
+
     try:
         data = yf.download(
-            list(tickers),
+            requested,
             start=start_date,
             end=end_date,
             auto_adjust=False,
             progress=False,
         )
-        return _extract_adjusted_close(data, tickers)
-    except Exception as exc:
+        prices = _extract_adjusted_close(data, requested)
+    except Exception:
+        prices = pd.DataFrame()
+
+    downloaded = {
+        ticker: prices[[ticker]].copy()
+        for ticker in requested
+        if ticker in prices.columns and prices[ticker].notna().any()
+    }
+    missing = [ticker for ticker in requested if ticker not in downloaded]
+
+    for ticker in missing:
+        last_error = None
+        for attempt in range(2):
+            try:
+                single_data = yf.download(
+                    ticker,
+                    start=start_date,
+                    end=end_date,
+                    auto_adjust=False,
+                    progress=False,
+                )
+                single_prices = _extract_adjusted_close(single_data, [ticker])
+                if ticker in single_prices.columns and single_prices[ticker].notna().any():
+                    downloaded[ticker] = single_prices[[ticker]].copy()
+                    break
+                last_error = RuntimeError("Yahoo returned no usable price rows")
+            except Exception as exc:
+                last_error = exc
+            if attempt == 0:
+                time.sleep(0.5)
+        if ticker not in downloaded:
+            raise RuntimeError(
+                f"Market-data download failed for required ticker {ticker!r} "
+                f"between {start_date} and {end_date}; no partial universe was returned. "
+                f"Last error: {last_error}"
+            ) from last_error
+
+    result = pd.concat([downloaded[ticker] for ticker in requested], axis=1)
+    result = result.reindex(columns=requested).sort_index().dropna(how="any")
+    if result.empty:
         raise RuntimeError(
-            f"Market-data download failed for {list(tickers)} "
-            f"between {start_date} and {end_date}: {exc}"
-        ) from exc
+            f"No common observed trading dates for {requested} between {start_date} and {end_date}"
+        )
+    return result

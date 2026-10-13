@@ -10,25 +10,37 @@ def define_crisis_intervals():
     }
 
 
-def execute_crisis_freeze(full_weights_df, crisis_start, crisis_end):
-    """
-    Freeze the last target-weight vector strictly observed before crisis_start.
+def execute_crisis_freeze(
+    full_weights_df,
+    crisis_start,
+    crisis_end,
+    trading_index=None,
+):
+    """Freeze the last target-weight vector before a crisis over every requested trading day.
 
-    This helper operates on a weight-history DataFrame. It does not calculate
-    drawdown or recovery by itself; those require the corresponding asset-return
-    series and an explicitly defined wealth reference.
+    If trading_index is omitted, retain the legacy behavior of returning only crisis
+    dates present in the weight history. The empirical pipeline passes the full daily
+    return index so the frozen weights cover the entire crisis window.
     """
     weights = pd.DataFrame(full_weights_df).sort_index()
+    if weights.empty:
+        raise ValueError("A non-empty portfolio weight history is required")
+    weights.index = pd.DatetimeIndex(pd.to_datetime(weights.index))
     start = pd.Timestamp(crisis_start)
     end = pd.Timestamp(crisis_end)
+    if end < start:
+        raise ValueError("crisis_end must be on or after crisis_start")
 
     pre_crisis = weights.loc[weights.index < start]
     if pre_crisis.empty:
         raise ValueError("No pre-crisis weight vector is available")
-
     frozen = pre_crisis.iloc[-1]
-    crisis_index = weights.loc[(weights.index >= start) & (weights.index <= end)].index
 
+    if trading_index is None:
+        available_index = weights.index
+    else:
+        available_index = pd.DatetimeIndex(pd.to_datetime(trading_index)).sort_values()
+    crisis_index = available_index[(available_index >= start) & (available_index <= end)]
     return pd.DataFrame(
         [frozen.values] * len(crisis_index),
         index=crisis_index,

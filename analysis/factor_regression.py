@@ -1,7 +1,31 @@
-import numpy as np
+from functools import lru_cache
+
 import pandas as pd
 import pandas_datareader.data as web
 import statsmodels.api as sm
+
+
+@lru_cache(maxsize=16)
+def _download_factor_range(start: str, end: str) -> pd.DataFrame:
+    """Download and normalize each French factor table once per requested date range."""
+    ff3 = web.DataReader("F-F_Research_Data_Factors_daily", "famafrench", start, end)[0]
+    mom = web.DataReader("F-F_Momentum_Factor_daily", "famafrench", start, end)[0]
+
+    ff3.index = pd.to_datetime(ff3.index.astype(str))
+    mom.index = pd.to_datetime(mom.index.astype(str))
+    ff3 = ff3.rename(columns={"Mkt-RF": "MKT"})
+    mom = mom.rename(columns={"Mom   ": "MOM", "Mom": "MOM"})
+
+    keep_ff3 = [column for column in ["MKT", "SMB", "HML", "RF"] if column in ff3.columns]
+    if "MOM" not in mom.columns:
+        raise ValueError("Momentum factor column was not found in the Kenneth French response")
+    factors = ff3[keep_ff3].join(mom[["MOM"]], how="inner") / 100.0
+
+    required = {"MKT", "SMB", "HML", "MOM", "RF"}
+    missing = required.difference(factors.columns)
+    if missing:
+        raise ValueError(f"Missing factor columns: {sorted(missing)}")
+    return factors.sort_index()
 
 
 def load_factor_data(index_dates):
@@ -17,30 +41,11 @@ def load_factor_data(index_dates):
 
     start = index_dates.min().strftime("%Y-%m-%d")
     end = index_dates.max().strftime("%Y-%m-%d")
-
-    ff3 = web.DataReader("F-F_Research_Data_Factors_daily", "famafrench", start, end)[0]
-    mom = web.DataReader("F-F_Momentum_Factor_daily", "famafrench", start, end)[0]
-
-    ff3.index = pd.to_datetime(ff3.index.astype(str))
-    mom.index = pd.to_datetime(mom.index.astype(str))
-
-    ff3 = ff3.rename(columns={"Mkt-RF": "MKT"})
-    mom = mom.rename(columns={"Mom   ": "MOM", "Mom": "MOM"})
-
-    keep_ff3 = [c for c in ["MKT", "SMB", "HML", "RF"] if c in ff3.columns]
-    if "MOM" not in mom.columns:
-        raise ValueError("Momentum factor column was not found in the Kenneth French response")
-
-    factors = ff3[keep_ff3].join(mom[["MOM"]], how="inner") / 100.0
+    factors = _download_factor_range(start, end).copy()
     factors = factors.loc[factors.index.intersection(index_dates)].sort_index()
 
-    required = {"MKT", "SMB", "HML", "MOM", "RF"}
-    missing = required.difference(factors.columns)
-    if missing:
-        raise ValueError(f"Missing factor columns: {sorted(missing)}")
     if factors.empty:
         raise ValueError("No exact trading-date overlap between portfolio returns and factor data")
-
     return factors
 
 
