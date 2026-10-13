@@ -1,37 +1,69 @@
-# Black–Litterman results reconciliation
+# Published Results and Current-Run Reconciliation
 
-**Status: not ready to replace the paper tables.** The corrected pipeline was run locally on 2026-10-13 using checksum-verified adjusted-close price snapshots. The run records its inputs, sample windows and metric conventions, but its strategy metrics differ materially from the historical machine-readable paper tables. The discrepancy is not resolved by charging initial deployment costs or changing benchmark labels.
+**Status: published values preserved; computational reproduction is unresolved.**
 
-## Sample coverage in the current run
+This document separates three things that must not be conflated:
 
-| Market | Common price history starts | Out-of-sample starts | OOS end | OOS observations |
+1. **Published-paper values:** figures printed in the supplied March 2026 manuscript and retained in results/paper_results/.
+2. **Current diagnostic values:** outputs generated locally on 2026-10-13 and retained in the ignored results/generated/ directory.
+3. **Reproduction status:** whether the current implementation has been shown to reproduce the paper's methodology and numerical results. It has not.
+
+The manuscript's Table 2, Table 4 and Table 8 values were checked against the corresponding historical CSVs. The displayed figures agree, subject to rounding. This confirms transcription consistency between the paper and historical CSVs; it does **not** establish that the current implementation reproduces the calculations.
+
+## Source-of-truth rules
+
+- Keep the supplied manuscript as the reference for what was published.
+- Keep results/paper_results/ unchanged as the historical paper-release record.
+- Treat results/generated/ as a separate diagnostic run, not as replacement paper results.
+- Do not alter model parameters, impose concentration limits, change data windows or select a different benchmark solely to force a numerical match.
+- Do not describe the paper as independently reproduced until the prior, return conventions, benchmark, turnover/ASI calculation, crisis path and evaluation sample have been reconciled.
+- Values below are shown rounded for readability. The CSVs retain their stored precision.
+
+## 1. Tri-market performance
+
+The paper-reported values below match the historical tri_market_summary.csv. Current-run values are from the local generated summary.
+
+| Market | Model | Paper return | Current return | Paper volatility | Current volatility | Paper Sharpe | Current Sharpe | Paper ASI | Current ASI |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| US | Black-Litterman | 12.99% | 15.45% | 20.00% | 19.14% | 0.650 | 0.807 | 0.001632 | 0.009242 |
+| US | Markowitz | 13.24% | 15.90% | 21.57% | 21.35% | 0.614 | 0.745 | 0.015365 | 0.790682 |
+| China | Black-Litterman | 1.20% | 6.16% | 28.45% | 28.90% | 0.042 | 0.213 | 0.000391 | 0.001443 |
+| China | Markowitz | 2.64% | 4.54% | 30.19% | 30.30% | 0.088 | 0.150 | 0.010772 | 0.695031 |
+| India | Black-Litterman | 7.60% | 10.97% | 21.34% | 21.58% | 0.356 | 0.508 | 0.000322 | 0.002298 |
+| India | Markowitz | 9.76% | 13.23% | 22.18% | 22.62% | 0.440 | 0.585 | 0.007822 | 0.573067 |
+
+The paper also reports maximum drawdowns of -38.04% (US BL), -33.95% (US Markowitz), -68.07% (China BL), -68.58% (China Markowitz), -53.67% (India BL) and -50.07% (India Markowitz). The current run reports -35.41%, -31.15%, -63.90%, -65.35%, -49.67% and -47.59%, respectively. These values differ and remain unresolved.
+
+### Turnover comparison
+
+| Market | Model | Paper turnover | Current average rebalance turnover |
+|---|---|---:|---:|
+| US | Black-Litterman | 0.20% | 2.87% |
+| US | Markowitz | 1.58% | 80.29% |
+| China | Black-Litterman | 0.08% | 3.58% |
+| China | Markowitz | 1.12% | 70.73% |
+| India | Black-Litterman | 0.07% | 1.72% |
+| India | Markowitz | 0.82% | 58.34% |
+
+**Interpretation note.** The paper reports lower ASI and turnover for Black-Litterman in all three markets. That is a description of the published table, not a conclusion verified by the current run. The current Markowitz portfolios frequently concentrate at or near one ETF, which produces very large weight changes and turnover. The configured optimizer allows 0-100% weights; no cap or regularizer has been added to force agreement.
+
+**Comparability note.** The historical calculation details for turnover and ASI have not been recovered sufficiently to establish that the current metrics are computed identically. The current run separately records initial cash-to-portfolio deployment; the historical turnover figures exclude that initial deployment. This difference alone does not explain the full discrepancy.
+
+## 2. Effective sample and benchmark coverage
+
+| Market | Current common price history starts | Current OOS start | Current OOS end | OOS observations |
 |---|---|---|---|---:|
 | US | 2010-01-04 | 2011-01-04 | 2024-12-31 | 3,521 |
 | China | 2013-11-06 | 2014-11-07 | 2024-12-31 | 2,553 |
 | India | 2012-02-09 | 2013-02-13 | 2024-12-31 | 2,991 |
 
-The requested main-sample end date is exclusive (\`2025-01-01\`), so the final possible date is \`2024-12-31\`. ETF launch dates mean that the three markets do not share the same effective sample. In particular, the current common China ETF basket cannot support a 2010 start.
+The configured end date is exclusive: 2025-01-01 means the last possible date is 2024-12-31. The common China ETF basket does not provide observations back to 2010, and the India basket also starts later than 2010. The paper's stated 2010-2025 coverage must not be read as proof that every current ETF basket has identical coverage.
 
-## Strategy results: historical paper snapshot vs current implementation
+**Benchmark note.** The paper describes market/index-style benchmarks, while the current diagnostic uses adjusted-close ETF proxies SPY, ASHR and INDA. Each proxy is also a constituent of the optimized basket. These are not equivalent benchmark definitions, and the current proxy results must not be substituted for the historical benchmark rows.
 
-The historical figures below come from \`results/paper_results/tri_market_summary.csv\`. Current values come from the local run's \`results/generated/tri_market_summary.csv\`. Return, volatility, Sharpe and drawdown are generated using the same conventions within each run, but the two runs are not reconciled.
+## 3. Crisis results
 
-| Market | Model | Historical return | Current return | Historical Sharpe | Current Sharpe | Historical ASI | Current ASI |
-|---|---|---:|---:|---:|---:|---:|---:|
-| US | Black-Litterman | 12.99% | 15.45% | 0.650 | 0.807 | 0.001632 | 0.009242 |
-| US | Markowitz | 13.24% | 15.90% | 0.614 | 0.745 | 0.015365 | 0.790682 |
-| China | Black-Litterman | 1.20% | 6.16% | 0.042 | 0.213 | 0.000391 | 0.001443 |
-| China | Markowitz | 2.64% | 4.54% | 0.088 | 0.150 | 0.010772 | 0.695031 |
-| India | Black-Litterman | 7.60% | 10.97% | 0.356 | 0.508 | 0.000322 | 0.002298 |
-| India | Markowitz | 9.76% | 13.23% | 0.440 | 0.585 | 0.007822 | 0.573067 |
-
-The turnover values also diverge substantially. In the current implementation, average rebalance turnover is the mean L1 change between the new target and drift-adjusted pre-trade weights, excluding initial deployment. The historical table's exact turnover implementation is not recoverable from this shallow local Git history. Do not compare the turnover columns as equivalent until the historical calculation is established.
-
-The current Markowitz weights frequently concentrate at or near a single ETF, which explains its large current ASI and turnover. The configured optimizer permits weights between 0 and 100%, with no tighter concentration cap. Do **not** add a new cap, shrinkage rule, or regularizer merely to force the results to match the paper: that would change the research design and must be justified in the manuscript before implementation.
-
-## Crisis metrics: historical paper snapshot vs current generator
-
-| Crisis | Model | Historical max drawdown | Current max drawdown | Historical vol. spike | Current vol. spike | Historical recovery days | Current recovery days |
+| Crisis | Model | Paper max drawdown | Current max drawdown | Paper volatility spike | Current volatility spike | Paper recovery days | Current recovery days |
 |---|---|---:|---:|---:|---:|---:|---:|
 | 2008 US GFC | Black-Litterman | -62.57% | -53.47% | 1.94x | 2.40x | 1,093 | 277 |
 | 2008 US GFC | Markowitz | -62.18% | -46.99% | 1.93x | 2.01x | 1,056 | 272 |
@@ -40,13 +72,13 @@ The current Markowitz weights frequently concentrate at or near a single ETF, wh
 | 2020 India COVID | Black-Litterman | -47.44% | -42.57% | 3.39x | 4.47x | 176 | 140 |
 | 2020 India COVID | Markowitz | -47.48% | -41.68% | 3.40x | 4.30x | 176 | 161 |
 
-The corrected generator keeps each pre-crisis target-weight vector frozen from crisis start through recovery. It converts adjusted-close simple asset returns to weighted daily log returns, normalizes the first observed crisis valuation to \(V(t_0)=1.0\), and defines recovery as the first return to that starting value after the trough. This follows the paper's stated crisis-method definition. The resulting values still diverge materially because the current optimizer weights, data history and/or original metric calculations differ from the historical release. The current China volatility baseline has only 139 pre-crisis observations because the common ETF history starts in November 2013; this actual count is included in \`crisis_summary.csv\`.
+The manuscript defines recovery against the portfolio value at crisis start, with recovery duration measured in trading-index positions from trough to recovery. The current generator freezes the last target weights strictly before the crisis, normalizes crisis-start wealth to 1.0, uses weighted daily log returns for the crisis diagnostic, and keeps the weights frozen through recovery. The outputs still differ materially.
 
-## Tau sensitivity
+**Interpretation note.** A matching written definition does not prove matching calculations. The historical weight vectors, exact price history and original crisis metric implementation have not been recovered. The China 2015 diagnostic has only 139 available pre-crisis observations because the common ETF history starts in November 2013. Until the source of the differences is identified, neither set should be represented as a fresh reproduction of the other.
 
-The old \`results/paper_results/tau_sensitivity.csv\` values did not identify a market, sample window, observation count or return convention. The new fixed-\(\tau\) generator uses the same US OOS sample for each value.
+## 4. Tau sensitivity
 
-| \(\tau\) | Historical reported Sharpe | Current fixed-\(\tau\) Sharpe |
+| Tau | Paper-reported Sharpe | Current fixed-tau Sharpe |
 |---:|---:|---:|
 | 0.01 | 0.3993 | 0.8077 |
 | 0.05 | 0.3983 | 0.8069 |
@@ -54,27 +86,44 @@ The old \`results/paper_results/tau_sensitivity.csv\` values did not identify a 
 | 0.15 | 0.3929 | 0.8050 |
 | 0.20 | 0.3926 | 0.8041 |
 
-The old and current sensitivity values are not comparable until the original sample and calculation are recovered. Current rows include OOS start/end dates, observation counts, return series, tau rule and equilibrium-weight method.
+The current diagnostic uses a fixed tau per run, with tau_low_vol and tau_high_vol set equal, on the same US out-of-sample window. The historical sensitivity table does not retain enough metadata to confirm the original market, exact sample, prior construction, net/gross return convention or calculation path. The two series therefore remain **not comparable / unresolved**.
 
-## Benchmark convention
+## 5. Methodology differences requiring explicit disclosure
 
-The regenerated pipeline uses adjusted-close ETF proxies—SPY, ASHR and INDA—so benchmark and portfolio returns use a consistent adjusted-close convention and the same dates. Each proxy is also part of its optimized basket, so it is a constituent-ETF comparison, not an independent index comparison. The paper's prose describes a market-cap-weighted ETF allocation, while its results table reports index-style benchmarks; that inconsistency must be resolved before replacing the benchmark rows.
+### Equilibrium prior
 
-## Method claims that must be reconciled
+The manuscript describes a market-capitalization-implied equilibrium prior. The current public implementation defaults to equal_weight_proxy; the historical capitalization/AUM weight series is not available in the repository. This is a research-design difference, not just a documentation typo.
 
-- The paper describes a market-capitalization-implied equilibrium prior, while the public implementation defaults to \`equal_weight_proxy\`. The paper must either describe the implemented equal-weight prior accurately or provide the historical capitalization/AUM series and rerun the study.
-- The paper says adjusted closes are converted to continuously compounded returns, while the main backtest currently uses simple returns for portfolio P&L. The crisis diagnostic uses weighted daily log returns, matching the paper's specific crisis-method description. The manuscript must distinguish these conventions or the main backtest must be changed and fully rerun.
-- The \`tau\` allocation rule is based on a volatility threshold using the training window. The separate Markov-switching model is an ex-post diagnostic; its smoothed probabilities do not drive portfolio weights.
-- The benchmark prose and benchmark table are inconsistent. The current pipeline uses SPY, ASHR and INDA adjusted-close ETF proxies, which are constituents of their optimized baskets and are not independent index benchmarks.
-- The configured main sample ends on 2024-12-31. The common China ETF basket starts on 2013-11-06, so the repository cannot support a 2010–2025 China ETF backtest without a different historical data source.
+### Return convention
 
-## What remains before publication
+The manuscript's data section describes continuously compounded returns. The current main backtest uses adjusted-close simple returns for portfolio P&L, while the crisis diagnostic uses weighted daily log returns. The documentation must state these separately. We cannot claim exact method reproduction without resolving this difference.
 
-1. Recover the historical optimizer constraints/weights and exact turnover/ASI calculation if possible.
-2. Confirm the intended return convention and benchmark definition; do not mix simple-return P&L, log-return crisis diagnostics, and index-style benchmark claims without stating the difference.
-3. Confirm whether the manuscript's Markowitz concentration behavior matches the stated optimization objective and constraints.
-4. Save the Kenneth French factor input series and its checksum as well as the price snapshots before claiming end-to-end reproducibility of factor regressions.
-5. Reconcile every table, figure, abstract claim and README figure to the generated output.
-6. Only then update the paper's numerical results and remove the historical-snapshot warning.
+### Benchmark definition
 
-Until those checks are complete, retain \`results/paper_results/\` as historical evidence and treat \`results/generated/\` as a local diagnostic run, not the canonical paper release.
+The manuscript's prose refers to a market-capitalization-weighted ETF benchmark, while the historical results table labels index-style benchmarks. The current diagnostic uses SPY, ASHR and INDA as investable ETF proxies that also appear in the optimized baskets. The paper's benchmark prose, table and current proxy definitions are not interchangeable.
+
+### Optimization and concentration
+
+The current optimizer permits weights from 0% to 100% with no tighter concentration cap. The current Markowitz output often becomes highly concentrated. Do not add caps, regularization or other changes simply to make ASI and turnover resemble the historical paper figures. Such a change would alter the research design and would require a separately justified study.
+
+### Initial deployment and turnover
+
+The current run assumes the portfolio starts from cash, records 100% L1 initial deployment for a fully invested long-only portfolio, and charges the associated 10 bps cost. The reported average rebalance turnover excludes that initial deployment. The historical table also excludes initial deployment, but its detailed turnover calculation has not been reconstructed.
+
+## 6. Status and reviewer-facing conclusion
+
+| Item | Status | Documentation treatment |
+|---|---|---|
+| Paper Table 2 values vs historical tri-market CSV | Matches at displayed precision | Preserve as published-paper reference |
+| Paper Table 4 values vs historical crisis CSV | Matches at displayed precision | Preserve as published-paper reference |
+| Paper Table 8 values vs historical tau CSV | Matches at displayed precision | Preserve as published-paper reference |
+| Current performance metrics vs paper | Unresolved | Keep separate; do not overwrite paper values |
+| Current crisis metrics vs paper | Unresolved | Keep separate; explain definition and data limitations |
+| Current tau sensitivity vs paper | Unresolved | Keep separate; mark original run metadata as incomplete |
+| Market-cap prior vs current equal-weight prior | Methodology discrepancy | Disclose explicitly |
+| Paper benchmark descriptions vs current ETF proxies | Methodology discrepancy | Disclose explicitly |
+| Full computational reproduction | Not established | Do not claim the current code reproduces the paper |
+
+**Reviewer-facing conclusion:** the repository preserves the numerical values published in the manuscript and makes the current diagnostic differences visible. The paper-to-CSV transcription check passes for the principal performance, crisis and tau tables; the current implementation's computational reproduction of those values remains unresolved.
+
+No model code or numerical output files are changed by this document.

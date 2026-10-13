@@ -1,14 +1,19 @@
-# Paper Results
+# Published Paper Results
 
-This directory contains the machine-readable tables used in the previous paper release. They are retained for traceability and are **not validated outputs of the corrected pipeline**.
+This directory preserves the machine-readable result tables from the previous paper release. These values are the reference for the results reported in the supplied March 2026 manuscript, *Black-Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets*.
 
-The full pipeline writes new outputs to `results/generated/` without overwriting these historical files:
+## Files
 
-- `tri_market_summary.csv` — strategies and benchmarks, with average rebalancing turnover and initial deployment cost reported separately.
-- `dataset_manifest.csv` — requested/effective dates and observation counts for the main and crisis samples.
-- `factor_regression_us.csv` — US factor-regression results.
-- `crisis_summary.csv` — reproducibly generated crisis drawdown, volatility-spike and recovery metrics.
-- `tau_sensitivity.csv` — fixed-tau sensitivity using the same US main-sample OOS window.
-- `RUN_MANIFEST.json` — return, cost, prior, date-window, metric conventions, and local price-snapshot hashes.
+- tri_market_summary.csv - Table 2: tri-market performance results.
+- crisis_summary.csv - Table 4: crisis drawdown, volatility-spike and recovery-duration results.
+- tau_sensitivity.csv - Table 8: fixed-tau Sharpe sensitivity values.
 
-The raw price data are not distributed in Git. The pipeline was run locally on 2026-10-13 after reacquiring provider data, but the generated strategy and crisis results differ materially from the historical paper tables. Keep these files unchanged for traceability. Do not copy generated values into the manuscript until the optimizer/turnover discrepancy, crisis recovery definition, and benchmark conventions are reconciled. See `docs/RESULTS_RECONCILIATION.md`. The configured main-sample end date is exclusive: `2025-01-01` means the final possible calendar date is `2024-12-31`.
+The values in these historical CSVs agree with the corresponding manuscript tables at displayed precision. This is a transcription check only; it does not prove that the current public implementation reproduces the original calculations.
+
+## Important distinction
+
+The historical tables are intentionally retained unchanged. The current local diagnostic run writes to results/generated/ and produces materially different performance, crisis and tau-sensitivity values. Do not copy generated values over these reference files or present them as paper results until the methodology and numerical differences are reconciled.
+
+The unresolved differences include the equilibrium prior (market-capitalization-implied in the manuscript versus equal-weight by default in the current implementation), simple versus continuously compounded return conventions, benchmark definitions, turnover/ASI calculations, effective market sample dates and crisis outputs. See [the results reconciliation](../../docs/RESULTS_RECONCILIATION.md) for the comparison and status of each issue.
+
+No model code or numerical output is changed by this note.
