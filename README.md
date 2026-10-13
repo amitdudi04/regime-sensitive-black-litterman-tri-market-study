@@ -95,9 +95,9 @@ The corrected pipeline uses adjusted-close ETF proxies—SPY for the US, ASHR fo
 
 ## Reproducible crisis analysis
 
-The pipeline now writes `results/generated/crisis_summary.csv`. It freezes the last target weights strictly before each crisis, evaluates every available out-of-sample trading day in the crisis window, defines initial crisis wealth as 1.0, calculates the volatility-spike ratio against up to the preceding 252 trading days, and records the actual baseline observation count. Because some ETF baskets have short listing histories, the baseline may be shorter than 252 days (the China 2015 window has only 139 available pre-crisis observations in the current run). Recovery is defined as the first return to crisis-start wealth after the trough, with the ordinary net strategy path resuming after the crisis window. This is not necessarily the same recovery definition used in the historical paper table.
+The pipeline now writes `results/generated/crisis_summary.csv`. It freezes the last target weights strictly before each crisis, evaluates every available out-of-sample trading day in the crisis window, defines initial crisis wealth as 1.0, calculates the volatility-spike ratio against up to the preceding 252 trading days, and records the actual baseline observation count. Because some ETF baskets have short listing histories, the baseline may be shorter than 252 days (the China 2015 window has only 139 available pre-crisis observations in the current run). Recovery is defined as the first return to crisis-start wealth after the trough while keeping the pre-crisis target weights frozen through the recovery date, as specified in the paper. The generated recovery durations must still be checked against the historical table because the current portfolio weights and drawdown/volatility results differ materially.
 
-The historical paper table reported the following values, which are **not yet validated against the corrected generator**:
+The historical paper table reported the following values. The corrected generator now follows the paper's frozen-weight-through-recovery definition, but its generated durations still differ because the current portfolio weights and data sample have not been reconciled to the historical release:
 
 | Crisis | BL recovery | Markowitz recovery |
 |---|---:|---:|

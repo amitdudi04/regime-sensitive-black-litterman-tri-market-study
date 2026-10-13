@@ -17,7 +17,6 @@ class TestCrisisAnalysis(unittest.TestCase):
         values_a[25:] = 0.20
         values_b[25:] = 0.20
         assets = pd.DataFrame({"A": values_a, "B": values_b}, index=dates)
-        strategy = pd.Series(0.6 * assets["A"] + 0.4 * assets["B"], index=dates)
         weights = pd.DataFrame(
             [[0.7, 0.3], [0.6, 0.4], [0.2, 0.8]],
             index=[dates[5], dates[19], dates[30]],
@@ -26,7 +25,6 @@ class TestCrisisAnalysis(unittest.TestCase):
 
         metrics = calculate_crisis_metrics(
             assets,
-            strategy,
             weights,
             dates[20].date().isoformat(),
             dates[24].date().isoformat(),

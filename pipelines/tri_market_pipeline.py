@@ -304,15 +304,10 @@ def run_tri_market_study():
         crisis_asset_returns = crisis_returns.reindex(
             crisis_packet["daily_returns"].index
         )
-        crisis_strategy_returns = {
-            "Black-Litterman": crisis_packet["daily_returns"]["black_litterman_net"],
-            "Markowitz": crisis_packet["daily_returns"]["markowitz_net"],
-        }
         crisis_weights = crisis_packet["weights"]
         crisis_summary = build_crisis_summary(
             market,
             crisis_asset_returns,
-            crisis_strategy_returns,
             crisis_weights,
         )
         crisis_summary_rows.extend(crisis_summary.to_dict(orient="records"))
@@ -429,7 +424,7 @@ def run_tri_market_study():
             "volatility_spike": "crisis-window daily volatility divided by up to prior 252 trading days; actual baseline count is recorded",
             "recovery_target": "wealth returns to 1.0, the value at the start of the crisis",
             "recovery_duration": "trading-index positions from crisis trough to first recovery",
-            "post_crisis_path": "ordinary net out-of-sample strategy returns after the crisis window",
+            "recovery_path": "pre-crisis target weights remain frozen from crisis start through recovery",
         },
         "factor_scope": "US only; Kenneth French US daily factors",
     }

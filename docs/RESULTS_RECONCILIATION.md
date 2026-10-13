@@ -1,6 +1,6 @@
 # Black–Litterman results reconciliation
 
-**Status: not ready to replace the paper tables.** The corrected pipeline was run locally on 2026-10-13 using freshly retrieved adjusted-close price data. The run is reproducible from source code and records sample windows, but its strategy metrics differ materially from the historical machine-readable paper tables. The discrepancy is not resolved by adding initial deployment costs or changing the benchmark labels.
+**Status: not ready to replace the paper tables.** The corrected pipeline was run locally on 2026-10-13 using checksum-verified adjusted-close price snapshots. The run records its inputs, sample windows and metric conventions, but its strategy metrics differ materially from the historical machine-readable paper tables. The discrepancy is not resolved by charging initial deployment costs or changing benchmark labels.
 
 ## Sample coverage in the current run
 
@@ -18,10 +18,10 @@ The historical figures below come from \`results/paper_results/tri_market_summar
 
 | Market | Model | Historical return | Current return | Historical Sharpe | Current Sharpe | Historical ASI | Current ASI |
 |---|---|---:|---:|---:|---:|---:|---:|
-| US | Black-Litterman | 12.99% | 15.45% | 0.650 | 0.807 | 0.001632 | 0.009241 |
-| US | Markowitz | 13.24% | 15.90% | 0.614 | 0.745 | 0.015365 | 0.790684 |
+| US | Black-Litterman | 12.99% | 15.45% | 0.650 | 0.807 | 0.001632 | 0.009242 |
+| US | Markowitz | 13.24% | 15.90% | 0.614 | 0.745 | 0.015365 | 0.790682 |
 | China | Black-Litterman | 1.20% | 6.16% | 0.042 | 0.213 | 0.000391 | 0.001443 |
-| China | Markowitz | 2.64% | 4.54% | 0.088 | 0.150 | 0.010772 | 0.695032 |
+| China | Markowitz | 2.64% | 4.54% | 0.088 | 0.150 | 0.010772 | 0.695031 |
 | India | Black-Litterman | 7.60% | 10.97% | 0.356 | 0.508 | 0.000322 | 0.002298 |
 | India | Markowitz | 9.76% | 13.23% | 0.440 | 0.585 | 0.007822 | 0.573067 |
 
@@ -33,22 +33,30 @@ The current Markowitz weights frequently concentrate at or near a single ETF, wh
 
 | Crisis | Historical paper BL / Markowitz | Current generator BL / Markowitz |
 |---|---:|---:|
-| 2008 US GFC | 1,093 / 1,056 days | 270 / 272 days |
-| 2015 China crash | 458 / 459 days | 378 / 459 days |
-| 2020 India COVID shock | 176 / 176 days | 160 / 166 days |
+| 2008 US GFC | 1,093 / 1,056 days | 270 / 273 days |
+| 2015 China crash | 458 / 459 days | 378 / 1,202 days |
+| 2020 India COVID shock | 176 / 176 days | 160 / 161 days |
 
-The current generator explicitly measures recovery from the crisis trough to the first return to wealth 1.0, the value at crisis start. The historical table's recovery definition may be different. The China volatility baseline also has only 139 pre-crisis observations because the common ETF history starts in November 2013; this actual count is included in \`crisis_summary.csv\`. These numbers must not replace the manuscript's recovery table until the original definition is confirmed.
+The current generator keeps each pre-crisis target-weight vector frozen from crisis start through recovery, and recovery is the first return to wealth 1.0, the value at crisis start. That matches the paper's stated recovery definition. However, the regenerated recovery durations still diverge materially from the paper for the US and for China Markowitz. The current Markowitz optimizer often selects a single ETF, while the paper's reported crisis paths appear to use different portfolio weights and/or a different data snapshot. The China volatility baseline also has only 139 pre-crisis observations because the common ETF history starts in November 2013; this actual count is included in \`crisis_summary.csv\`. Do not replace the manuscript's recovery table until the historical portfolio weights and data inputs are reconciled.
 
 ## Benchmark convention
 
 The regenerated pipeline uses adjusted-close ETF proxies—SPY, ASHR and INDA—so benchmark and portfolio returns use a consistent adjusted-close convention and the same dates. Each proxy is also part of its optimized basket, so it is a constituent-ETF comparison, not an independent index comparison. The historical paper uses index-style benchmarks; its old benchmark figures are not directly comparable to the regenerated proxy values.
 
+## Method claims that must be reconciled
+
+- The paper describes a market-capitalization-implied equilibrium prior, while the public implementation defaults to \`equal_weight_proxy\`. The paper must either describe the implemented equal-weight prior accurately or provide the historical capitalization/AUM series and rerun the study.
+- The \`tau\` allocation rule is based on a volatility threshold using the training window. The separate Markov-switching model is an ex-post diagnostic; its smoothed probabilities do not drive portfolio weights.
+- The current pipeline uses adjusted-close ETF proxies SPY, ASHR and INDA as benchmarks. They are constituents of their optimized baskets and are not independent index benchmarks; the manuscript must use these labels or retain a separate, consistently sourced index/total-return benchmark.
+- The configured main sample ends on 2024-12-31. Claims that the main empirical sample extends through 2025 need correction unless a new 2025 run is performed.
+
 ## What remains before publication
 
-1. Recover the exact original calculation or confirm the intended definitions for turnover, ASI, crisis recovery and benchmark returns.
+1. Confirm the intended turnover and ASI definitions and recover the historical calculation if possible.
 2. Confirm whether the manuscript's Markowitz concentration behavior matches the stated optimization objective and constraints.
-3. Run the same confirmed method over a frozen, documented data snapshot; save source hashes and output checksums.
-4. Reconcile every table, figure, abstract claim and README figure to the generated output.
-5. Only then update the paper's numerical results and remove the historical-snapshot warning.
+3. Reconcile crisis drawdown and volatility-spike values after the frozen-weight recovery path is corrected.
+4. Run the same confirmed method over the saved, checksum-verified local price snapshots; retain the snapshot metadata and output checksums.
+5. Reconcile every table, figure, abstract claim and README figure to the generated output.
+6. Only then update the paper's numerical results and remove the historical-snapshot warning.
 
 Until those checks are complete, retain \`results/paper_results/\` as historical evidence and treat \`results/generated/\` as a local diagnostic run, not the canonical paper release.

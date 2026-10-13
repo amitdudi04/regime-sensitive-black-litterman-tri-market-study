@@ -17,7 +17,6 @@ CRISIS_MARKET = {
 
 def calculate_crisis_metrics(
     asset_returns: pd.DataFrame,
-    strategy_returns: pd.Series,
     weight_history: pd.DataFrame,
     crisis_start: str,
     crisis_end: str,
@@ -26,22 +25,16 @@ def calculate_crisis_metrics(
 ) -> dict[str, object]:
     """Calculate crisis metrics using frozen target weights and an explicit V(t0) target."""
     assets = pd.DataFrame(asset_returns).copy().sort_index()
-    strategy = pd.Series(strategy_returns).copy().sort_index()
     weights = pd.DataFrame(weight_history).copy().sort_index()
     assets.index = pd.DatetimeIndex(pd.to_datetime(assets.index))
-    strategy.index = pd.DatetimeIndex(pd.to_datetime(strategy.index))
     weights.index = pd.DatetimeIndex(pd.to_datetime(weights.index))
-
-    common = assets.index.intersection(strategy.index).sort_values()
-    assets = assets.reindex(common)
-    strategy = strategy.reindex(common)
-    if assets.empty or strategy.isna().any() or assets.isna().any().any():
-        raise ValueError("Crisis analysis requires aligned, complete daily asset and strategy returns")
+    if assets.empty or assets.isna().any().any():
+        raise ValueError("Crisis analysis requires complete daily asset returns")
     if pre_crisis_window < 2:
         raise ValueError("pre_crisis_window must be at least two trading days")
 
     frozen_history = execute_crisis_freeze(
-        weights, crisis_start, crisis_end, trading_index=common
+        weights, crisis_start, crisis_end, trading_index=assets.index
     )
     if frozen_history.empty:
         raise ValueError("The crisis interval contains no out-of-sample trading observations")
@@ -69,10 +62,12 @@ def calculate_crisis_metrics(
     trough_date = pd.Timestamp(crisis_returns.index[trough_position])
     max_drawdown = float(drawdowns[trough_position])
 
-    # Replace only the crisis-window strategy returns with the frozen-weight series.
-    # Post-crisis recovery then follows the ordinary out-of-sample strategy path.
-    recovery_returns = strategy.loc[strategy.index >= crisis_dates[0]].copy()
-    recovery_returns.loc[crisis_returns.index] = crisis_returns
+    # Keep the pre-crisis target weights frozen from crisis start through recovery.
+    # Using the adaptive strategy after the crisis window would change the exposure
+    # during recovery and can materially shorten the measured recovery duration.
+    recovery_returns = assets.loc[assets.index >= crisis_dates[0]].dot(
+        frozen_weights.astype(float)
+    )
     recovery_wealth = (1.0 + recovery_returns).cumprod()
     recovery_candidates = recovery_wealth.loc[recovery_wealth.index >= trough_date]
     recovered = recovery_candidates.loc[recovery_candidates >= 1.0]
@@ -104,7 +99,6 @@ def calculate_crisis_metrics(
 def build_crisis_summary(
     market: str,
     asset_returns: pd.DataFrame,
-    strategy_returns: Mapping[str, pd.Series],
     weight_histories: Mapping[str, pd.DataFrame],
     *,
     intervals: Mapping[str, tuple[str, str]] | None = None,
@@ -120,17 +114,16 @@ def build_crisis_summary(
         raise ValueError(f"No configured crisis interval for market {market!r}")
 
     rows: list[dict[str, object]] = []
+    model_keys = (
+        ("Black-Litterman", "black_litterman"),
+        ("Markowitz", "markowitz"),
+    )
     for crisis, (start, end) in matching:
-        for model, strategy in strategy_returns.items():
-            weight_key = {
-                "Black-Litterman": "black_litterman",
-                "Markowitz": "markowitz",
-            }.get(model, model)
+        for model, weight_key in model_keys:
             if weight_key not in weight_histories:
                 raise ValueError(f"Missing weight history for {model}")
             metrics = calculate_crisis_metrics(
                 asset_returns,
-                strategy,
                 weight_histories[weight_key],
                 start,
                 end,
