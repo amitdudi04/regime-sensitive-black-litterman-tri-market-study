@@ -10,7 +10,7 @@ The study uses liquid ETF baskets representing three equity markets:
 - China: ASHR, KWEB, MCHI, FXI
 - India: INDA, EPI, SMIN, INDY
 
-The main sample is requested from 2010-01-01 through 2024-12-31; the configured end date 2025-01-01 is exclusive. Each market uses the common observed history available across its ETF basket. Crisis analysis uses a separate historical sample requested from 2005-01-01 so the 2008 US event is not misrepresented as part of the main 2010–2024 sample. The actual effective dates and observation counts are written to \`results/generated/dataset_manifest.csv\`.
+The main sample is requested from 2010-01-01 through 2024-12-31; the configured end date 2025-01-01 is exclusive. Each market uses the common observed history available across its ETF basket. Crisis analysis uses a separate historical sample requested from 2005-01-01 so the 2008 US event is not misrepresented as part of the main 2010–2024 sample. The actual effective dates and observation counts are written to `results/generated/dataset_manifest.csv`.
 
 ## Data snapshots and repeatability
 
@@ -41,7 +41,7 @@ Equilibrium-implied expected returns are:
 \Pi = \lambda \Sigma w_{eq}
 \]
 
-The public implementation defaults to **equal equilibrium weights** (\`equal_weight_proxy\`). It does not currently construct a historical market-capitalization-implied prior. A different equilibrium-weight series can be supplied directly when historical capitalization or AUM data are available. Manuscript language that calls the current default a market-cap-weighted prior must therefore be corrected.
+The public implementation defaults to **equal equilibrium weights** (`equal_weight_proxy`). It does not currently construct a historical market-capitalization-implied prior. A different equilibrium-weight series can be supplied directly when historical capitalization or AUM data are available. Manuscript language that calls the current default a market-cap-weighted prior must therefore be corrected.
 
 Absolute ETF views use:
 
@@ -83,10 +83,10 @@ For the US portfolio, excess returns are regressed on MKT, SMB, HML and MOM fact
 
 ## Tau sensitivity
 
-The pipeline reruns the US backtest for each configured fixed \(\tau\), setting \`tau_low_vol\` and \`tau_high_vol\` equal to the tested value. Each run uses the same main-sample returns, asset universe, rebalance schedule, transaction-cost assumption and net return series as the headline US result. The generated output records OOS start/end dates, observation count, return convention and equilibrium-weight method.
+The pipeline reruns the US backtest for each configured fixed \(\tau\), setting `tau_low_vol` and `tau_high_vol` equal to the tested value. Each run uses the same main-sample returns, asset universe, rebalance schedule, transaction-cost assumption and net return series as the headline US result. The generated output records OOS start/end dates, observation count, return convention and equilibrium-weight method.
 
 ## Crisis analysis
 
 The crisis generator freezes the last target weights observed strictly before a specified crisis start and applies them to every available out-of-sample trading day in the crisis window. The crisis diagnostic converts adjusted-close simple asset returns to daily log returns and takes their dot product with the frozen weights, as specified in the paper. The wealth path is normalized so the first observed crisis valuation (V(t_0)) is 1.0; maximum drawdown is calculated relative to that starting valuation, and the volatility-spike ratio compares crisis daily portfolio log-return volatility with up to the preceding 252 trading days. The actual baseline observation count is written to the CSV because ETF listing history can limit coverage (139 available observations for the China 2015 window in the current run). Recovery occurs at the first return to wealth 1.0. Recovery duration is the number of trading-index positions from the crisis trough to that first recovery. The pre-crisis target weights remain frozen from crisis start through the recovery date; the path does not resume the adaptive strategy after the crisis window. This matches the paper's stated frozen-weight convention as a written definition only. The generated crisis values still differ from the historical table, so numerical reproduction is not established; see [the results reconciliation](RESULTS_RECONCILIATION.md).
 
-The study considers the 2008 US Global Financial Crisis, the 2015 China equity crash and the 2020 India COVID shock. The generated crisis and tau-sensitivity tables are written under \`results/generated/\`; they do not overwrite the historical paper tables. All crisis definitions, effective dates, metric conventions and recovery dates should be checked against these generated outputs before the manuscript is updated.
+The study considers the 2008 US Global Financial Crisis, the 2015 China equity crash and the 2020 India COVID shock. The generated crisis and tau-sensitivity tables are written under `results/generated/`; they do not overwrite the historical paper tables. All crisis definitions, effective dates, metric conventions and recovery dates should be checked against these generated outputs before the manuscript is updated.
