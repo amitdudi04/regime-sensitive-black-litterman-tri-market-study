@@ -88,7 +88,58 @@ The manuscript defines recovery against the portfolio value at crisis start, wit
 
 The current diagnostic uses a fixed tau per run, with tau_low_vol and tau_high_vol set equal, on the same US out-of-sample window. The historical sensitivity table does not retain enough metadata to confirm the original market, exact sample, prior construction, net/gross return convention or calculation path. The two series therefore remain **not comparable / unresolved**.
 
-## 5. Methodology differences requiring explicit disclosure
+## 5. Other manuscript findings not reproduced by the current run
+
+### Factor exposure (paper Table 5)
+
+The manuscript reports a US four-factor regression with annualized alpha, market/size/value/momentum betas and R-squared. The current diagnostic factor_regression_us.csv uses 3,521 aligned observations and HAC maxlags=5. Its coefficients differ materially from the paper table.
+
+| Model | Paper annualized alpha | Current annualized alpha | Paper alpha t-stat | Current alpha t-stat | Paper MKT beta | Current MKT beta | Paper MOM beta | Current MOM beta | Paper R-squared | Current R-squared |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Black-Litterman | -4.27% | 0.50% | -1.213 | 0.869 | 0.821 | 1.0658 | 0.0144 | 0.0045 | 0.6346 | 0.9858 |
+| Markowitz | -7.38% | -1.13% | -1.418 | -0.552 | 0.904 | 1.1482 | 0.1150 | 0.2239 | 0.4860 | 0.8826 |
+
+The paper also reports SMB and HML betas that differ from the current diagnostic: paper BL SMB 0.0525 and HML -0.0012; current BL SMB 0.0755 and HML 0.0331. Paper Markowitz SMB -0.0217 and HML 0.0117; current Markowitz SMB -0.0467 and HML -0.0221. The original paper does not provide enough retained run metadata here to establish matching sample dates, exact factor data vintage and HAC lag settings.
+
+**Internal paper note.** The Table 5 BL momentum t-statistic appears as +0.856 in the table, while the narrative later gives -0.856. Both descriptions indicate a non-significant loading, but the sign inconsistency should be checked against the final manuscript source rather than silently resolved in repository documentation.
+
+### Statistical validation (paper Section 13)
+
+The manuscript reports a volatility-suppression statistic of -2.678 (p = 0.0106) and an ASI-reduction statistic of 2.927 (p = 0.0046), attributed to circular block bootstrap testing. The current run does not save a matching output table containing these statistics, sample definitions, block size, iteration count and random seed. The presence of bootstrap helper functions in the code is not evidence that these exact reported tests were reproduced.
+
+**Interpretation note.** Keep these as paper-reported statistics until the exact test inputs and run configuration can be traced. Do not label them independently verified by the current pipeline. There is also a significance-threshold issue in the manuscript prose: p = 0.0106 is below 0.05 but above 0.01, so the reported volatility-suppression result is significant at 5%, not at 1%, under conventional cutoffs. The ASI result (p = 0.0046) is below both thresholds.
+
+### SOE versus private firms (paper Table 6)
+
+| Metric | Paper SOE | Paper private |
+|---|---:|---:|
+| Annualized net return | 11.49% | 22.96% |
+| Annualized volatility | 20.51% | 25.64% |
+| Sharpe ratio | 0.41 | 0.78 |
+| Maximum drawdown | -43.63% | -39.11% |
+| Average turnover | 7.32% | 15.79% |
+
+The paper reports a test statistic of -0.563 and p-value of 0.572. The current repository helper provides descriptive return and volatility summaries for explicitly mapped groups; it is not a complete reproduction of the paper's ownership-level hypothesis test, turnover, drawdown and Sharpe calculations. No matching generated SOE/private result artifact is present in the current run.
+
+**Interpretation note.** The paper itself does not reject the null at conventional significance levels (p = 0.572). The descriptive differences should not be presented as statistically established SOE/private outperformance or downside protection.
+
+### Regime-conditioned performance (paper Table 7)
+
+| Regime | Paper BL Sharpe | Paper Markowitz Sharpe | Paper BL return | Paper Markowitz return |
+|---|---:|---:|---:|---:|
+| Low volatility | 1.282 | 1.397 | 17.27% | 19.80% |
+| High volatility | -0.934 | -1.045 | -31.22% | -34.71% |
+
+The current regime helper uses smoothed state probabilities for ex-post descriptive classification. The current run does not save a matching regime-performance table or the sample counts needed to confirm the paper values. Smoothed probabilities use the full sample and are not suitable as real-time trading signals without a separate filtered-probability design.
+
+**Interpretation note.** The table is descriptive unless a corresponding statistical test is specified and retained. The manuscript's phrase "statistically improved downside performance" should not be repeated as a verified statistical conclusion based on Table 7 alone.
+
+### Overall claims and downside interpretation
+
+The paper's broad wording about superior downside mitigation should be read alongside its own Table 2: the reported Black-Litterman maximum drawdown is worse than Markowitz in the US (-38.04% versus -33.95%) and India (-53.67% versus -50.07%), and only slightly less negative in China (-68.07% versus -68.58%). The crisis table may support narrower event-specific observations, but the published cross-market table does not establish universal drawdown superiority.
+
+Likewise, lower reported turnover suggests lower modeled trading costs under the stated cost assumption, but turnover alone does not prove superior net-of-cost returns. The manuscript's gross/net terminology is not fully consistent across sections, and the current run does not reproduce the paper's performance values.
+## 6. Methodology differences requiring explicit disclosure
 
 ### Equilibrium prior
 
@@ -110,7 +161,7 @@ The current optimizer permits weights from 0% to 100% with no tighter concentrat
 
 The current run assumes the portfolio starts from cash, records 100% L1 initial deployment for a fully invested long-only portfolio, and charges the associated 10 bps cost. The reported average rebalance turnover excludes that initial deployment. The historical table also excludes initial deployment, but its detailed turnover calculation has not been reconstructed.
 
-## 6. Status and reviewer-facing conclusion
+## 7. Status and reviewer-facing conclusion
 
 | Item | Status | Documentation treatment |
 |---|---|---|

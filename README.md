@@ -48,7 +48,7 @@ The table below preserves the values reported in the manuscript's Table 2 and th
 | India | Markowitz | 9.76% | 22.18% | 0.440 | 0.82% | 0.007822 | -50.07% |
 | India | Benchmark | 7.54% | 21.33% | 0.353 | - | - | -53.78% |
 
-**Interpretation note.** In the published table, Black-Litterman has lower reported ASI and turnover in all three markets. It does not dominate every return metric: Markowitz has a higher reported Sharpe ratio in China and India, and the US benchmark Sharpe is higher than the Black-Litterman Sharpe. These are historical reported findings, not evidence of universal superiority.
+**Interpretation note.** In the published table, Black-Litterman has lower reported ASI and turnover in all three markets. It does not dominate every return or drawdown metric: Markowitz has a higher reported Sharpe ratio in China and India, the US benchmark Sharpe is higher than the Black-Litterman Sharpe, and Black-Litterman has a worse maximum drawdown than Markowitz in the US and India. These are historical reported findings, not evidence of universal superiority.
 
 **Comparability note.** The paper and repository do not yet have a fully reconciled calculation trail for every published metric. The historical figures are preserved to avoid silently replacing the manuscript's results with numbers from a different run. Metric definitions, effective sample dates, benchmark construction and the equilibrium prior must be reconciled before claiming exact computational reproduction.
 
@@ -93,6 +93,10 @@ The current diagnostic crisis metrics also differ from these values. The current
 | 0.20 | 0.3926 |
 
 The current fixed-tau diagnostic produces materially different Sharpe ratios (approximately 0.808 to 0.804). The original paper's sample, prior, and calculation details have not been recovered sufficiently to treat the two series as comparable.
+
+## Other manuscript findings
+
+The manuscript also reports factor regressions, a circular-block-bootstrap validation, an SOE-versus-private comparison and regime-conditioned performance. The current diagnostic run does not reproduce or save matching result tables for all of these analyses. Their published values and limitations are recorded in [the results reconciliation](docs/RESULTS_RECONCILIATION.md); treat them as paper-reported rather than independently reproduced.
 
 ## Research notes and limitations
 
