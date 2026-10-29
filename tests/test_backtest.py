@@ -75,6 +75,19 @@ class TestPaperBacktest(unittest.TestCase):
         self.assertAlmostEqual(final_weights.sum(), 1.0)
         self.assertAlmostEqual(float((1.0 + realized).prod()), 1.20)
 
+    def test_invalid_supplied_equilibrium_prior_is_rejected(self):
+        returns = self._returns()
+        for supplied in [
+            pd.Series({"A": -0.1, "B": 0.6, "C": 0.5}),
+            pd.Series({"A": 0.0, "B": 0.0, "C": 0.0}),
+            pd.Series({"A": np.nan, "B": 0.5, "C": 0.5}),
+        ]:
+            with self.subTest(prior=supplied.to_dict()):
+                with self.assertRaises(ValueError):
+                    run_paper_backtest(
+                        returns, self._config(), equilibrium_weights=supplied
+                    )
+
     def test_asi_excludes_first_unobserved_difference(self):
         from backtesting.allocation_stability_index import compute_asi
 
