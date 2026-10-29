@@ -52,6 +52,14 @@ The table below preserves the values reported in the manuscript's Table 2 and th
 
 **Comparability note.** The paper and repository do not yet have a fully reconciled calculation trail for every published metric. The historical figures are preserved to avoid silently replacing the manuscript's results with numbers from a different run. Metric definitions, effective sample dates, benchmark construction and the equilibrium prior must be reconciled before claiming exact computational reproduction.
 
+## Latest independently validated diagnostic release (30 October 2026)
+
+- [Final 35-test empirical run and research evidence](docs/EMPIRICAL_AUDIT_2026-10-30.md)
+- [Research acceptance gate: validated versus unavailable manuscript inputs](docs/RESEARCH_ACCEPTANCE_GATE.md)
+- [GitHub Actions: full pipeline, paper comparison, and finance invariant checks](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40942721530)
+
+**Validation result:** 35 unit tests passed and generated output schemas/finance invariants passed. Historical paper reproduction is **not established**. Across 71 reference-table comparisons, 59 are numerically different and 12 benchmark values are **incomparable because they represent different instruments**. The new report contains ex-post regimes, paired block-bootstrap uncertainty, US factor-input fingerprints, and explicit ownership-evidence requirements. None of these newly generated diagnostics should be substituted into the historical paper tables without a formally documented revision.
+
 ## Latest corrected empirical audit (29 October 2026)
 
 The corrected branch was executed end-to-end using freshly retrieved public ETF prices. **29 tests passed**, but the generated historical comparisons **do not reproduce the manuscript**: 59 numeric comparisons differ and 12 lack equivalent benchmark rows across the three historical paper-result CSVs. This is an empirical-reconciliation failure, not a software-test failure. The 2026-10-29 results include self-financing portfolio returns, drift-adjusted turnover, corrected ASI averaging, two separately named crisis conventions, dated-prior support, and complete run/date manifests.
