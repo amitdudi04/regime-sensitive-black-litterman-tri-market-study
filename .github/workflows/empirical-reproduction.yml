@@ -13,6 +13,7 @@ on:
       - "analysis/ownership_research.py"
       - "pipelines/tri_market_pipeline.py"
       - "scripts/verify_paper_results.py"
+      - "scripts/validate_generated_outputs.py"
 
 permissions:
   contents: read
@@ -38,6 +39,9 @@ jobs:
       - name: Compare newly generated outputs with historical manuscript tables
         if: steps.run_study.outcome == 'success'
         run: python -m scripts.verify_paper_results
+      - name: Validate every generated output schema and finance invariant
+        if: steps.run_study.outcome == 'success'
+        run: python -m scripts.validate_generated_outputs
       - name: Upload audit reports only (no raw vendor price histories)
         if: always()
         uses: actions/upload-artifact@v4
@@ -56,5 +60,6 @@ jobs:
             results/generated/tau_sensitivity.csv
             results/generated/paper_reconciliation.csv
             results/generated/paper_reconciliation.json
+            results/generated/OUTPUT_VALIDATION.json
             results/generated/RUN_MANIFEST.json
           retention-days: 30
