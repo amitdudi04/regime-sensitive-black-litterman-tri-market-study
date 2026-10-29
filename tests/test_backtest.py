@@ -33,13 +33,13 @@ class TestPaperBacktest(unittest.TestCase):
         self.assertAlmostEqual(packet["turnover"].iloc[0]["Black-Litterman"], 1.0, places=6)
         self.assertAlmostEqual(packet["turnover"].iloc[0]["Markowitz"], 1.0, places=6)
         self.assertAlmostEqual(
-            daily["black_litterman_gross"].iloc[0] - daily["black_litterman_net"].iloc[0],
-            self._config().transaction_cost_rate,
+            (1.0 + daily["black_litterman_gross"].iloc[0]) * (1.0 - self._config().transaction_cost_rate) - 1.0,
+            daily["black_litterman_net"].iloc[0],
             places=10,
         )
         self.assertAlmostEqual(
-            daily["markowitz_gross"].iloc[0] - daily["markowitz_net"].iloc[0],
-            self._config().transaction_cost_rate,
+            (1.0 + daily["markowitz_gross"].iloc[0]) * (1.0 - self._config().transaction_cost_rate) - 1.0,
+            daily["markowitz_net"].iloc[0],
             places=10,
         )
 
