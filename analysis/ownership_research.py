@@ -39,7 +39,7 @@ def evaluate_dated_ownership(
         raise ValueError("Ambiguous simultaneous ownership classifications")
     if not set(returns.columns).issubset(set(evidence["security_id"])):
         raise ValueError("Every security must have a dated classification record")
-    panel = returns.stack(dropna=True).rename("daily_return").reset_index()
+    panel = returns.stack().rename("daily_return").reset_index()
     panel.columns = ["Date", "security_id", "daily_return"]
     panel = panel.sort_values(["Date", "security_id"])
     evidence = evidence.sort_values(["available_at", "security_id"])
