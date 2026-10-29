@@ -67,6 +67,8 @@ Examples:
 | India | Black-Litterman | 0.000322 | 0.002298 | Unresolved |
 | India | Markowitz | 0.007822 | 0.573067 | Unresolved |
 
+**Correction status (October 2026):** The 2026-10-13 diagnostic numbers above predate the subsequent buy-and-hold portfolio-accounting and ASI averaging corrections on this audit branch. They are retained only as historical diagnostic evidence, not estimates produced by the latest code. A fresh checksum-verified data run is required before publishing a new numerical comparison. The latest code uses drifted buy-and-hold weights within each 63-session interval, with trading costs at the scheduled rebalance dates.
+
 The current Markowitz run often places nearly all weight in one ETF. The configured optimizer permits up to 100% in one asset. No concentration cap or regularizer has been added to force agreement with the paper.
 
 ### Crisis results reported in the paper
