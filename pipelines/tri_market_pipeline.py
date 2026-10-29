@@ -9,6 +9,7 @@ import yaml
 
 from analysis.crisis_analysis import build_crisis_summary
 from analysis.factor_regression import run_factor_regression
+from analysis.supplementary_diagnostics import run_supplementary_diagnostics
 from analysis.tau_sensitivity import run_tau_sensitivity
 from backtesting.paper_backtest import BacktestConfig, run_paper_backtest
 from core.data_loader import download_market_data
@@ -183,6 +184,8 @@ def run_tri_market_study():
     manifest_rows = []
     factor_rows = []
     crisis_summary_rows = []
+    regime_rows = []
+    bootstrap_rows = []
     tau_sensitivity = pd.DataFrame()
     price_snapshot_metadata = {}
 
@@ -232,6 +235,8 @@ def run_tri_market_study():
                 market=market,
             )
             tau_sensitivity.to_csv(RESULTS_DIR / "tau_sensitivity.csv", index=False)
+    pd.DataFrame(regime_rows).to_csv(RESULTS_DIR / "regime_performance_expost.csv", index=False)
+    pd.DataFrame(bootstrap_rows).to_csv(RESULTS_DIR / "bootstrap_sharpe_differences.csv", index=False)
 
         for model, col in [
             ("Black-Litterman", "black_litterman_net"),
@@ -299,6 +304,18 @@ def run_tri_market_study():
                     "ASI": np.nan,
                 }
             )
+
+        # Ex-post regime and paired bootstrap outputs use exactly aligned main-OOS
+        # benchmark and net strategy dates. They are NEW diagnostics, not paper results.
+        supplemental_regime, state_dates, supplemental_bootstrap = run_supplementary_diagnostics(
+            market,
+            benchmark,
+            daily["black_litterman_net"],
+            daily["markowitz_net"],
+        )
+        regime_rows.extend(supplemental_regime.to_dict(orient="records"))
+        bootstrap_rows.extend(supplemental_bootstrap.to_dict(orient="records"))
+        state_dates.to_csv(market_dir / "regime_probabilities_expost.csv")
 
         # Crisis results use a separate historical sample so the 2008 US event is
         # not silently mixed into the main 2010–2024 out-of-sample window.
@@ -431,6 +448,12 @@ def run_tri_market_study():
             "recovery_path": "pre-crisis target weights remain frozen from crisis start through recovery",
         },
         "factor_scope": "US only; Kenneth French US daily factors",
+        "supplementary_evidence": {
+            "regime": "Markov 2-state smoothed probabilities ex-post, not a trading signal",
+            "bootstrap": "paired circular block bootstrap of net Sharpe difference, separate from paper statistics",
+            "ownership": "not computed: lacks dated SOE/private classifications and source-level constituents",
+            "original_paper_reproduced": False,
+        }
     }
     with open(RESULTS_DIR / "RUN_MANIFEST.json", "w", encoding="utf-8") as handle:
         json.dump(run_manifest, handle, indent=2)
@@ -441,6 +464,8 @@ def run_tri_market_study():
         "factors": factors,
         "crisis_summary": crisis_summary,
         "tau_sensitivity": tau_sensitivity,
+        "regime_performance_expost": pd.DataFrame(regime_rows),
+        "bootstrap_sharpe_differences": pd.DataFrame(bootstrap_rows),
     }
 
 
