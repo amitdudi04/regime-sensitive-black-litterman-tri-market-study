@@ -67,7 +67,7 @@ ASI measures the mean L1 change in target weights between consecutive rebalances
 ASI_t = \sum_i |w_{i,t} - w_{i,t-1}|
 \]
 
-ASI is a target-allocation stability measure. It is distinct from drift-adjusted trading turnover and does not include initial deployment.
+ASI is a target-allocation stability measure. It is distinct from drift-adjusted trading turnover and does not include initial deployment. The first undefined consecutive-weight difference is excluded from the mean rather than counted as a zero observation.
 
 ## Performance metrics
 
