@@ -219,6 +219,9 @@ def run_tri_market_study():
         )
         packet["turnover"].to_csv(market_dir / "turnover.csv")
         packet["tau"].to_csv(market_dir / "tau_timeline.csv")
+        packet["equilibrium_prior_history"].to_csv(
+            market_dir / "equilibrium_prior_history.csv"
+        )
         packet["convergence"].to_csv(market_dir / "optimizer_convergence.csv")
 
         if market == "US":
