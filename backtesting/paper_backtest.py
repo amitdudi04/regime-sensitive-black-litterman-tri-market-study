@@ -49,6 +49,24 @@ def _drifted_weights(previous_weights, previous_asset_returns):
     return drifted / total
 
 
+def _buy_and_hold_daily_returns(asset_returns: pd.DataFrame, target_weights: pd.Series) -> pd.Series:
+    """Self-financing buy-and-hold portfolio within a rebalance interval.
+
+    Positions drift after each close. No trades take place between scheduled
+    rebalances; performance is computed before explicit trading costs.
+    """
+    weights = pd.Series(target_weights, index=asset_returns.columns, dtype=float).copy()
+    values = []
+    for _, asset_row in asset_returns.iterrows():
+        portfolio_return = float(weights.dot(asset_row))
+        values.append(portfolio_return)
+        portfolio_growth = 1.0 + portfolio_return
+        if portfolio_growth <= 0.0 or not np.isfinite(portfolio_growth):
+            raise RuntimeError("Portfolio value must remain positive")
+        weights = weights * (1.0 + asset_row) / portfolio_growth
+    return pd.Series(values, index=asset_returns.index, dtype=float)
+
+
 def _l1_turnover(target, pre_trade):
     if pre_trade is None:
         # The first out-of-sample portfolio is deployed from cash, so charge the
@@ -162,8 +180,8 @@ def run_paper_backtest(
         mv_turnover = _l1_turnover(mv_weights, pre_trade_mv)
         bl_turnover = _l1_turnover(bl_weights, pre_trade_bl)
 
-        mv_gross = test.dot(mv_weights)
-        bl_gross = test.dot(bl_weights)
+        mv_gross = _buy_and_hold_daily_returns(test, mv_weights)
+        bl_gross = _buy_and_hold_daily_returns(test, bl_weights)
         mv_net = mv_gross.copy()
         bl_net = bl_gross.copy()
 
