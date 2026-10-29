@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from backtesting.crisis_freeze import define_crisis_intervals, execute_crisis_freeze
+from backtesting.paper_backtest import _buy_and_hold_daily_returns
 
 CRISIS_MARKET = {
     "2008_US_GFC": "US",
@@ -89,8 +90,48 @@ def calculate_crisis_metrics(
             - recovery_returns.index.get_loc(trough_date)
         )
 
+    # Additional economically consistent no-trade stress path. The historical
+    # weighted-log diagnostic above is preserved separately for paper comparison.
+    # Here the last pre-crisis target is purchased before the first event return
+    # and then allowed to drift without rebalancing throughout recovery.
+    buy_hold_returns = _buy_and_hold_daily_returns(
+        assets.loc[assets.index >= crisis_dates[0]], frozen_weights.astype(float)
+    )
+    buy_hold_wealth = (1.0 + buy_hold_returns).cumprod()
+    buy_hold_crisis_wealth = buy_hold_wealth.loc[crisis_dates]
+    # Include an initial wealth of one *before* the first crisis observation.
+    buy_hold_peak = np.maximum.accumulate(
+        np.r_[1.0, buy_hold_crisis_wealth.to_numpy(dtype=float)]
+    )[1:]
+    buy_hold_drawdown = buy_hold_crisis_wealth.to_numpy(dtype=float) / buy_hold_peak - 1.0
+    buy_hold_trough_pos = int(np.argmin(buy_hold_drawdown))
+    buy_hold_trough_date = pd.Timestamp(crisis_dates[buy_hold_trough_pos])
+    buy_hold_max_drawdown = float(buy_hold_drawdown[buy_hold_trough_pos])
+    buy_hold_candidates = buy_hold_wealth.loc[
+        buy_hold_wealth.index >= buy_hold_trough_date
+    ]
+    buy_hold_recovered = buy_hold_candidates.loc[buy_hold_candidates >= 1.0]
+    buy_hold_recovery_date = (
+        pd.Timestamp(buy_hold_recovered.index[0])
+        if not buy_hold_recovered.empty else pd.NaT
+    )
+    buy_hold_recovery_days = (
+        int(buy_hold_returns.index.get_loc(buy_hold_recovery_date)
+            - buy_hold_returns.index.get_loc(buy_hold_trough_date))
+        if not pd.isna(buy_hold_recovery_date) else None
+    )
+
     return {
         "Max Drawdown": max_drawdown,
+        "Buy-Hold Max Drawdown": buy_hold_max_drawdown,
+        "Buy-Hold Recovery Trading Days": buy_hold_recovery_days,
+        "Buy-Hold Trough Date": buy_hold_trough_date.date().isoformat(),
+        "Buy-Hold Recovery Date": (
+            None if pd.isna(buy_hold_recovery_date)
+            else buy_hold_recovery_date.date().isoformat()
+        ),
+        "Buy-Hold Wealth Convention": "self-financing, no interim rebalancing, V(before first crisis return)=1",
+
         "Volatility Spike": (
             crisis_volatility / baseline_volatility if baseline_volatility > 0 else np.nan
         ),
