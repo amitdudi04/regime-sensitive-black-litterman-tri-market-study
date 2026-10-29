@@ -2,6 +2,8 @@
 
 **Status: published values preserved; computational reproduction is unresolved.**
 
+**Diagnostic version warning (2026-10-30):** All numerical values labeled *Current* below were generated on 2026-10-13 **before** the audit branch corrected buy-and-hold daily portfolio accounting and the first-observation ASI denominator. They are prior-run diagnostics, **not validated outputs of the latest code**. The paper-reference numbers are preserved unchanged. Recompute all return-derived, turnover-derived, Sharpe, factor, tau, and allocation values from the original checksum-verified input snapshots before updating the comparisons. Crisis weighted-log diagnostics are a separate convention and must not be represented as the revised buy-and-hold wealth path.
+
 This document separates three things that must not be conflated:
 
 1. **Published-paper values:** figures printed in the supplied March 2026 manuscript and retained in results/paper_results/.
