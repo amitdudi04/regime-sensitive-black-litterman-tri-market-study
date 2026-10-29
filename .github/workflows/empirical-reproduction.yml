@@ -8,6 +8,8 @@ on:
     paths:
       - ".github/workflows/empirical-reproduction.yml"
       - "analysis/crisis_analysis.py"
+      - "analysis/supplementary_diagnostics.py"
+      - "pipelines/tri_market_pipeline.py"
 
 permissions:
   contents: read
@@ -41,6 +43,9 @@ jobs:
           if-no-files-found: warn
           path: |
             results/generated/*/equilibrium_prior_history.csv
+            results/generated/regime_performance_expost.csv
+            results/generated/bootstrap_sharpe_differences.csv
+            results/generated/*/regime_probabilities_expost.csv
             results/generated/tri_market_summary.csv
             results/generated/dataset_manifest.csv
             results/generated/factor_regression_us.csv
