@@ -9,6 +9,8 @@ on:
       - ".github/workflows/empirical-reproduction.yml"
       - "analysis/crisis_analysis.py"
       - "analysis/supplementary_diagnostics.py"
+      - "analysis/factor_regression.py"
+      - "analysis/ownership_research.py"
       - "pipelines/tri_market_pipeline.py"
       - "scripts/verify_paper_results.py"
 
