@@ -13,5 +13,5 @@ def compute_asi(rolling_weights_df):
         return np.nan
 
     weights = pd.DataFrame(rolling_weights_df, dtype=float)
-    asi_series = weights.diff().abs().sum(axis=1).dropna()
+    asi_series = weights.diff().abs().sum(axis=1, min_count=1).dropna()
     return float(asi_series.mean())
