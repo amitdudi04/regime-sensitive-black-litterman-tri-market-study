@@ -27,7 +27,7 @@ The backtest uses:
 - full investment;
 - 10 bps proportional transaction cost per unit of L1 turnover.
 
-No future observation is used when estimating a rebalance-date portfolio.
+No future observation is used when estimating a rebalance-date portfolio. Between the 63-session scheduled rebalances the live portfolio is **buy-and-hold**, not a daily rebalanced constant-mix portfolio. Daily portfolio simple returns use weights drifted by preceding realized asset returns. The drifted holdings at the end of the interval are the pre-trade holdings used at the next scheduled rebalance. This correction changes current-run strategy results relative to previous diagnostics; it does not revise the manuscript's historical tables.
 
 ## Markowitz portfolio
 
