@@ -124,7 +124,7 @@ def _performance(series):
 def _asi(weights):
     if weights is None or len(weights) < 2:
         return np.nan
-    return float(weights.diff().abs().sum(axis=1).dropna().mean())
+    return float(weights.diff().abs().sum(axis=1, min_count=1).dropna().mean())
 
 
 def _benchmark_returns(ticker, start, end, target_index):
