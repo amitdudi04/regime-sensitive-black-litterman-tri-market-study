@@ -235,8 +235,6 @@ def run_tri_market_study():
                 market=market,
             )
             tau_sensitivity.to_csv(RESULTS_DIR / "tau_sensitivity.csv", index=False)
-    pd.DataFrame(regime_rows).to_csv(RESULTS_DIR / "regime_performance_expost.csv", index=False)
-    pd.DataFrame(bootstrap_rows).to_csv(RESULTS_DIR / "bootstrap_sharpe_differences.csv", index=False)
 
         for model, col in [
             ("Black-Litterman", "black_litterman_net"),
@@ -389,6 +387,8 @@ def run_tri_market_study():
     factors.to_csv(RESULTS_DIR / "factor_regression_us.csv", index=False)
     crisis_summary.to_csv(RESULTS_DIR / "crisis_summary.csv", index=False)
     tau_sensitivity.to_csv(RESULTS_DIR / "tau_sensitivity.csv", index=False)
+    pd.DataFrame(regime_rows).to_csv(RESULTS_DIR / "regime_performance_expost.csv", index=False)
+    pd.DataFrame(bootstrap_rows).to_csv(RESULTS_DIR / "bootstrap_sharpe_differences.csv", index=False)
 
     run_manifest = {
         "requested_sample_start": requested_start,
