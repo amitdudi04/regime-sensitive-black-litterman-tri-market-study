@@ -43,7 +43,7 @@ class TestCrisisAnalysis(unittest.TestCase):
     def test_self_financing_buy_hold_crisis_reports_initial_loss(self):
         dates = pd.bdate_range("2024-01-01", periods=14)
         a = np.array([0.001, -0.001] * 6 + [-0.5, 1.0], dtype=float)
-        b = np.array([-0.001, 0.001] * 6 + [0.0, 0.0], dtype=float)
+        b = np.array([0.0] * 14, dtype=float)
         assets = pd.DataFrame({"A": a, "B": b}, index=dates)
         weights = pd.DataFrame(
             [[0.5, 0.5]],
