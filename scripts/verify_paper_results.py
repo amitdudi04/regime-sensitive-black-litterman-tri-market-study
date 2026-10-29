@@ -90,7 +90,7 @@ def compare_tables(
             key = tuple(_normalize_key(original[field]) for field in keys)
             current = None
             if generated is not None and key in generated.index:
-                current = generated.loc[key]
+                current = generated.loc[[key]].iloc[0]
             for paper_field, generated_field in spec["fields"].items():
                 value = pd.to_numeric(original.get(paper_field), errors="coerce")
                 if pd.isna(value):
