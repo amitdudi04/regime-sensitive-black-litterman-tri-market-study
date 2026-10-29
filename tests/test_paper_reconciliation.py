@@ -34,6 +34,20 @@ class TestPaperReconciliation(unittest.TestCase):
             altered = compare_tables(PAPER_DIR, out)
             self.assertTrue((altered["status"] == "MISMATCH").any())
 
+    def test_different_investable_proxy_is_incomparable_not_missing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp)
+            tri = pd.read_csv(PAPER_DIR / "tri_market_summary.csv")
+            tri = tri.rename(columns={"Turnover": "Average Rebalance Turnover"})
+            tri.loc[tri["Model"].eq("Benchmark"), "Model"] = (
+                "Benchmark: different adjusted ETF proxy"
+            )
+            tri.to_csv(out / "tri_market_summary.csv", index=False)
+            result = compare_tables(PAPER_DIR, out)
+            bench = result[result["key"].str.endswith("Benchmark")]
+            self.assertEqual(len(bench), 12)
+            self.assertTrue((bench["status"] == "INCOMPARABLE_BENCHMARK").all())
+
     def test_ambiguous_generated_keys_fail_closed(self):
         with tempfile.TemporaryDirectory() as temp:
             out = Path(temp)
