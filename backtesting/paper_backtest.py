@@ -78,7 +78,7 @@ def _l1_turnover(target, pre_trade):
 def run_paper_backtest(
     returns_df: pd.DataFrame,
     config: BacktestConfig | None = None,
-    equilibrium_weights: pd.Series | None = None,
+    equilibrium_weights: pd.Series | pd.DataFrame | None = None,
 ):
     """
     Chronological 252/63 walk-forward comparison of Markowitz and Black-Litterman.
@@ -108,6 +108,27 @@ def run_paper_backtest(
             np.repeat(1.0 / n_assets, n_assets), index=assets, dtype=float
         )
         equilibrium_weight_method = "equal_weight_proxy"
+    elif isinstance(equilibrium_weights, pd.DataFrame):
+        # Dated as-of prior: for every rebalance use the last row known no later
+        # than the last observed training day, never a subsequent AUM snapshot.
+        if not isinstance(equilibrium_weights.index, pd.DatetimeIndex):
+            raise ValueError("Dated equilibrium priors require a DatetimeIndex")
+        if not set(assets).issubset(equilibrium_weights.columns):
+            raise ValueError("Dated equilibrium prior is missing one or more assets")
+        equilibrium_weights = equilibrium_weights.loc[:, assets].sort_index()
+        if equilibrium_weights.empty or equilibrium_weights.index.has_duplicates:
+            raise ValueError("Dated equilibrium priors must be nonempty with unique dates")
+        prior_matrix = equilibrium_weights.to_numpy(dtype=float)
+        if (
+            not np.isfinite(prior_matrix).all()
+            or (prior_matrix < 0.0).any()
+            or (prior_matrix.sum(axis=1) <= 0.0).any()
+        ):
+            raise ValueError("Dated prior weights must be finite, nonnegative, positive-sum")
+        equilibrium_weights = equilibrium_weights.div(
+            equilibrium_weights.sum(axis=1), axis=0
+        )
+        equilibrium_weight_method = "dated_user_supplied"
     else:
         equilibrium_weights = pd.Series(equilibrium_weights, index=assets, dtype=float)
         if (
@@ -133,6 +154,7 @@ def run_paper_backtest(
     turnover_records = []
     tau_records = []
     convergence_records = []
+    prior_records = []
 
     prev_weights = {"black_litterman": None, "markowitz": None}
     prev_asset_returns = None
@@ -148,8 +170,21 @@ def run_paper_backtest(
         historical_mean = train.mean() * 252.0
 
         tau = _regime_tau(train, cfg)
+        if isinstance(equilibrium_weights, pd.DataFrame):
+            eligible_prior = equilibrium_weights.loc[
+                equilibrium_weights.index <= train.index[-1]
+            ]
+            if eligible_prior.empty:
+                raise ValueError(
+                    "No equilibrium prior is observable before the rebalance training cutoff"
+                )
+            prior_weights = eligible_prior.iloc[-1]
+            prior_asof_date = eligible_prior.index[-1]
+        else:
+            prior_weights = equilibrium_weights
+            prior_asof_date = pd.NaT
         pi = compute_implied_equilibrium_returns(
-            cov, equilibrium_weights.values, cfg.risk_aversion
+            cov, prior_weights.values, cfg.risk_aversion
         )
 
         p = np.eye(n_assets)
@@ -221,6 +256,16 @@ def run_paper_backtest(
             }
         )
         tau_records.append({"Date": rebalance_date, "Tau": tau})
+        prior_records.append(
+            {
+                "Date": rebalance_date,
+                "Prior As-Of Date": (
+                    pd.Timestamp(prior_asof_date).isoformat()
+                    if not pd.isna(prior_asof_date) else None
+                ),
+                **{str(asset): float(prior_weights[asset]) for asset in assets},
+            }
+        )
         convergence_records.append(
             {
                 "Date": rebalance_date,
@@ -257,6 +302,7 @@ def run_paper_backtest(
         "tau": tau_timeline,
         "convergence": convergence,
         "equilibrium_weights": equilibrium_weights,
+        "equilibrium_prior_history": pd.DataFrame(prior_records).set_index("Date"),
         "equilibrium_weight_method": equilibrium_weight_method,
         "config": cfg,
     }
