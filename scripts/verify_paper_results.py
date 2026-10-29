@@ -101,10 +101,27 @@ def compare_tables(
                     else np.nan
                 )
                 delta = float(observed - value) if pd.notna(observed) else np.nan
+                # The manuscript's generic "Benchmark" rows and the new ETF
+                # proxy benchmark rows denote different instruments. A missing
+                # exact-key match in that case is NOT missing market data.
+                paper_benchmark = (
+                    table == "tri_market"
+                    and _normalize_key(original.get("Model")) == "benchmark"
+                )
+                generated_proxy_exists = (
+                    paper_benchmark
+                    and generated is not None
+                    and bool(generated["Market"].map(_normalize_key).eq(
+                        _normalize_key(original["Market"])
+                    ).mul(generated["Model"].map(_normalize_key).str.startswith("benchmark")).any())
+                )
                 status = (
-                    "MATCH"
-                    if pd.notna(observed) and abs(delta) <= tolerance
-                    else ("MISMATCH" if pd.notna(observed) else "MISSING")
+                    "INCOMPARABLE_BENCHMARK"
+                    if paper_benchmark and generated_proxy_exists
+                    else (
+                        "MATCH" if pd.notna(observed) and abs(delta) <= tolerance
+                        else ("MISMATCH" if pd.notna(observed) else "MISSING")
+                    )
                 )
                 rows.append({
                     "table": table,
