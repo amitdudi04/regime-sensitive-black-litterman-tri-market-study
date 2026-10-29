@@ -75,6 +75,33 @@ class TestPaperBacktest(unittest.TestCase):
         self.assertAlmostEqual(final_weights.sum(), 1.0)
         self.assertAlmostEqual(float((1.0 + realized).prod()), 1.20)
 
+    def test_dated_equilibrium_prior_never_uses_future_snapshots(self):
+        returns = self._returns()
+        dates = returns.index
+        priors = pd.DataFrame(
+            [[0.8, 0.1, 0.1], [0.1, 0.1, 0.8]],
+            index=[dates[250], dates[310]],
+            columns=["A", "B", "C"],
+        )
+        packet = run_paper_backtest(
+            returns, self._config(), equilibrium_weights=priors
+        )
+        history = packet["equilibrium_prior_history"]
+        self.assertEqual(packet["equilibrium_weight_method"], "dated_user_supplied")
+        self.assertAlmostEqual(history.iloc[0]["A"], 0.8)
+        self.assertAlmostEqual(history.iloc[1]["C"], 0.8)
+        self.assertEqual(history.iloc[0]["Prior As-Of Date"], dates[250].isoformat())
+        self.assertEqual(history.iloc[1]["Prior As-Of Date"], dates[310].isoformat())
+        future_only = pd.DataFrame(
+            [[0.3, 0.3, 0.4]],
+            index=[dates[320]],
+            columns=["A", "B", "C"],
+        )
+        with self.assertRaises(ValueError):
+            run_paper_backtest(
+                returns, self._config(), equilibrium_weights=future_only
+            )
+
     def test_invalid_supplied_equilibrium_prior_is_rejected(self):
         returns = self._returns()
         for supplied in [
