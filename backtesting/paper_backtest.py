@@ -193,10 +193,16 @@ def run_paper_backtest(
         mv_net = mv_gross.copy()
         bl_net = bl_gross.copy()
 
-        # Charge proportional rebalancing friction once, on the first day after trade.
+        # Deduct trading friction from available wealth at the rebalance, before
+        # earning the next day's gross asset return. This preserves exact
+        # multiplicative self-financing wealth accounting.
         if len(test):
-            mv_net.iloc[0] -= mv_turnover * cfg.transaction_cost_rate
-            bl_net.iloc[0] -= bl_turnover * cfg.transaction_cost_rate
+            mv_cost = mv_turnover * cfg.transaction_cost_rate
+            bl_cost = bl_turnover * cfg.transaction_cost_rate
+            if not 0 <= mv_cost < 1 or not 0 <= bl_cost < 1:
+                raise ValueError("Trading cost fraction must be in [0, 1)")
+            mv_net.iloc[0] = (1.0 - mv_cost) * (1.0 + mv_gross.iloc[0]) - 1.0
+            bl_net.iloc[0] = (1.0 - bl_cost) * (1.0 + bl_gross.iloc[0]) - 1.0
 
         daily["markowitz_gross"].extend(mv_gross.tolist())
         daily["markowitz_net"].extend(mv_net.tolist())
