@@ -1,4 +1,5 @@
 from functools import lru_cache
+import hashlib
 
 import pandas as pd
 import pandas_datareader.data as web
@@ -78,8 +79,19 @@ def run_factor_regression(portfolio_returns, model_name="Portfolio", hac_maxlags
     )
 
     alpha_daily = float(model.params["const"])
+    # Stable identity for the exact aligned factor input, without redistributing
+    # the external Kenneth French dataset itself.
+    aligned_factors = data[["MKT", "SMB", "HML", "MOM", "RF"]].to_csv(
+        float_format="%.17g", index_label="Date"
+    ).encode("utf-8")
+    factor_sha256 = hashlib.sha256(aligned_factors).hexdigest()
     return {
         "Model": model_name,
+        "Sample Start": data.index.min().date().isoformat(),
+        "Sample End": data.index.max().date().isoformat(),
+        "Factor Source": "Kenneth French Data Library US daily FF3 and momentum",
+        "Factor Aligned SHA256": factor_sha256,
+        "Factor Values": "percent source values divided by 100 into decimal daily returns",
         "Observations": int(model.nobs),
         "HAC_MaxLags": int(hac_maxlags),
         "Alpha": alpha_daily,
