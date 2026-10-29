@@ -1,0 +1,50 @@
+name: Empirical reproduction audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - audit/reconcile-crisis-and-tau-pipeline
+    paths:
+      - ".github/workflows/empirical-reproduction.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  empirical-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Validate source and synthetic numerical tests
+        run: python -m unittest discover -s tests -v
+      - name: Run all three market studies and crisis and tau diagnostics
+        id: run_study
+        run: python -m pipelines.run_tri_market_pipeline
+      - name: Compare newly generated outputs with historical manuscript tables
+        if: steps.run_study.outcome == 'success'
+        run: python -m scripts.verify_paper_results
+      - name: Upload audit reports only (no raw vendor price histories)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-litterman-empirical-audit
+          if-no-files-found: warn
+          path: |
+            results/generated/tri_market_summary.csv
+            results/generated/dataset_manifest.csv
+            results/generated/factor_regression_us.csv
+            results/generated/crisis_summary.csv
+            results/generated/tau_sensitivity.csv
+            results/generated/paper_reconciliation.csv
+            results/generated/paper_reconciliation.json
+            results/generated/RUN_MANIFEST.json
+          retention-days: 30
