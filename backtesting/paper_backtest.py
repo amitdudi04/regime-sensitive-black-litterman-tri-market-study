@@ -110,6 +110,14 @@ def run_paper_backtest(
         equilibrium_weight_method = "equal_weight_proxy"
     else:
         equilibrium_weights = pd.Series(equilibrium_weights, index=assets, dtype=float)
+        if (
+            not np.isfinite(equilibrium_weights.to_numpy()).all()
+            or (equilibrium_weights < 0.0).any()
+            or float(equilibrium_weights.sum()) <= 0.0
+        ):
+            raise ValueError(
+                "Equilibrium weights must be finite, nonnegative and have positive sum"
+            )
         equilibrium_weights = equilibrium_weights / equilibrium_weights.sum()
         equilibrium_weight_method = "user_supplied"
 
