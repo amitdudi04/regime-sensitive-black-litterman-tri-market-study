@@ -7,6 +7,7 @@ on:
       - audit/reconcile-crisis-and-tau-pipeline
     paths:
       - ".github/workflows/empirical-reproduction.yml"
+      - "analysis/crisis_analysis.py"
 
 permissions:
   contents: read
