@@ -61,6 +61,29 @@ class TestPaperBacktest(unittest.TestCase):
             self.assertTrue((weights >= -1e-10).all().all())
             np.testing.assert_allclose(weights.sum(axis=1).values, 1.0, atol=1e-7)
 
+    def test_buy_and_hold_returns_drift_weights_without_interim_trades(self):
+        from backtesting.paper_backtest import _buy_and_hold_daily_returns, _drifted_weights
+
+        dates = pd.bdate_range("2024-01-01", periods=2)
+        assets = pd.DataFrame({"A": [0.20, 0.00], "B": [0.00, 0.20]}, index=dates)
+        target = pd.Series({"A": 0.5, "B": 0.5})
+        realized = _buy_and_hold_daily_returns(assets, target)
+        self.assertAlmostEqual(realized.iloc[0], 0.10)
+        self.assertAlmostEqual(realized.iloc[1], 0.20 / 2.20)
+        final_weights = _drifted_weights(target, assets)
+        self.assertAlmostEqual(final_weights["A"], 0.6 / 1.2)
+        self.assertAlmostEqual(final_weights.sum(), 1.0)
+        self.assertAlmostEqual(float((1.0 + realized).prod()), 1.21)
+
+    def test_asi_excludes_first_unobserved_difference(self):
+        from backtesting.allocation_stability_index import compute_asi
+
+        weights = pd.DataFrame(
+            [[0.5, 0.5], [0.7, 0.3], [0.6, 0.4]],
+            columns=["A", "B"],
+        )
+        self.assertAlmostEqual(compute_asi(weights), 0.3)
+
     def test_transaction_costs_do_not_improve_net_return(self):
         packet = run_paper_backtest(self._returns(), self._config(0.001))
         daily = packet["daily_returns"]
