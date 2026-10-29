@@ -117,7 +117,7 @@ def compare_tables(
                 )
                 status = (
                     "INCOMPARABLE_BENCHMARK"
-                    if paper_benchmark and generated_proxy_exists
+                    if paper_benchmark and generated_proxy_exists and current is None
                     else (
                         "MATCH" if pd.notna(observed) and abs(delta) <= tolerance
                         else ("MISMATCH" if pd.notna(observed) else "MISSING")
