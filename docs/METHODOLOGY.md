@@ -41,7 +41,7 @@ Equilibrium-implied expected returns are:
 \Pi = \lambda \Sigma w_{eq}
 \]
 
-The public implementation defaults to **equal equilibrium weights** (`equal_weight_proxy`). It does not currently construct a historical market-capitalization-implied prior. A different equilibrium-weight series can be supplied directly when historical capitalization or AUM data are available. Manuscript language that calls the current default a market-cap-weighted prior must therefore be corrected.
+The public implementation defaults to **equal equilibrium weights** (`equal_weight_proxy`). It does not currently construct a historical market-capitalization-implied prior. A static normalized equilibrium-weight series can be supplied, or a date-indexed DataFrame of historical capitalization/AUM weights can be supplied when the underlying evidence exists. For dated priors, the backtest selects the latest valid row no later than the last training observation, never a future AUM observation. The selected weights and prior source date are written to each market's `equilibrium_prior_history.csv`. The default pipeline **still uses equal-weight proxies** because the dated market-cap/AUM evidence is unavailable; dated-prior support does not reconstruct missing historical research data. Manuscript language that calls the current default a market-cap-weighted prior must therefore be corrected.
 
 Absolute ETF views use:
 
