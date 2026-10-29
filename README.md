@@ -52,6 +52,16 @@ The table below preserves the values reported in the manuscript's Table 2 and th
 
 **Comparability note.** The paper and repository do not yet have a fully reconciled calculation trail for every published metric. The historical figures are preserved to avoid silently replacing the manuscript's results with numbers from a different run. Metric definitions, effective sample dates, benchmark construction and the equilibrium prior must be reconciled before claiming exact computational reproduction.
 
+## Latest corrected empirical audit (29 October 2026)
+
+The corrected branch was executed end-to-end using freshly retrieved public ETF prices. **29 tests passed**, but the generated historical comparisons **do not reproduce the manuscript**: 59 numeric comparisons differ and 12 lack equivalent benchmark rows across the three historical paper-result CSVs. This is an empirical-reconciliation failure, not a software-test failure. The 2026-10-29 results include self-financing portfolio returns, drift-adjusted turnover, corrected ASI averaging, two separately named crisis conventions, dated-prior support, and complete run/date manifests.
+
+- [Latest empirical audit and calculated results](docs/EMPIRICAL_AUDIT_2026-10-29.md)
+- [Committee correction register and manuscript errata](docs/REVIEWER_CORRECTIONS.md)
+- [GitHub Actions audit run and temporary generated-output artifact](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40936030819)
+
+The 2026-10-13 diagnostic numbers below are **prior-run historical diagnostics** and are not outputs of the latest accounting logic. Neither set should be mistaken for a reproduction of the paper.
+
 ## Current local diagnostic run - not the paper results
 
 A local pipeline run was recorded on 2026-10-13 using checksum-identified adjusted-close price snapshots. Its outputs are under the ignored results/generated directory and are not committed as canonical research results. The values differ materially from the historical paper-release table.
