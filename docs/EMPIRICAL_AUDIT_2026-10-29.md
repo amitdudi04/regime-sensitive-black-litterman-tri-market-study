@@ -6,7 +6,7 @@
 - Audited code snapshot: `b9867048b9c042d8f2123812592d1fb26f2b9a28`. Later source-documentation updates do not retroactively change this run.
 - Source: Yahoo Finance adjusted-close ETF series via yfinance; data retrieved during the workflow on 2026-10-29.
 - Data provenance: SHA-256 checksums and retrieval timestamps are in the `dataset_manifest.csv` and `RUN_MANIFEST.json` workflow artifacts. Raw provider input data are **not** archived publicly.
-- Validation: the 28-test unit suite and complete tri-market/crisis/tau pipeline succeeded. A successful pipeline is **not** numerical paper replication.
+- Validation: the 29-test unit suite and complete tri-market/crisis/tau pipeline succeeded. A successful pipeline is **not** numerical paper replication.
 - Paper comparison: **71 numeric reference cells** checked across the historical tri-market, crisis and tau CSVs; **0 match, 59 differ, 12 lack an equivalent generated row** (the historical benchmark rows differ in definition).
 - Missing beyond that check: paper factor-regression Table 5, SOE/private Table 6, regime Table 7, and the historical bootstrap inference cannot be certified from the retained paper-run data. See `REVIEWER_CORRECTIONS.md`.
 
