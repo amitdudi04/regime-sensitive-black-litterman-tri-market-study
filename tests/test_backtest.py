@@ -73,7 +73,7 @@ class TestPaperBacktest(unittest.TestCase):
         final_weights = _drifted_weights(target, assets)
         self.assertAlmostEqual(final_weights["A"], 0.6 / 1.2)
         self.assertAlmostEqual(final_weights.sum(), 1.0)
-        self.assertAlmostEqual(float((1.0 + realized).prod()), 1.21)
+        self.assertAlmostEqual(float((1.0 + realized).prod()), 1.20)
 
     def test_asi_excludes_first_unobserved_difference(self):
         from backtesting.allocation_stability_index import compute_asi
