@@ -40,6 +40,28 @@ class TestCrisisAnalysis(unittest.TestCase):
         self.assertEqual(metrics["Crisis Last Trading Day"], dates[24].date().isoformat())
         self.assertEqual(metrics["Frozen Weights"], {"A": 0.6, "B": 0.4})
 
+    def test_self_financing_buy_hold_crisis_reports_initial_loss(self):
+        dates = pd.bdate_range("2024-01-01", periods=14)
+        a = np.array([0.001, -0.001] * 6 + [-0.5, 1.0], dtype=float)
+        b = np.array([-0.001, 0.001] * 6 + [0.0, 0.0], dtype=float)
+        assets = pd.DataFrame({"A": a, "B": b}, index=dates)
+        weights = pd.DataFrame(
+            [[0.5, 0.5]],
+            index=[dates[11]],
+            columns=["A", "B"],
+        )
+        record = calculate_crisis_metrics(
+            assets,
+            weights,
+            dates[12].date().isoformat(),
+            dates[13].date().isoformat(),
+            pre_crisis_window=10,
+        )
+        self.assertAlmostEqual(record["Buy-Hold Max Drawdown"], -0.25)
+        self.assertEqual(record["Buy-Hold Recovery Trading Days"], 1)
+        self.assertEqual(record["Buy-Hold Trough Date"], dates[12].date().isoformat())
+        self.assertEqual(record["Buy-Hold Recovery Date"], dates[13].date().isoformat())
+
 
 if __name__ == "__main__":
     unittest.main()
