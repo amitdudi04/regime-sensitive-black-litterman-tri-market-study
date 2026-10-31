@@ -1,0 +1,38 @@
+{
+  "status": "PASS_MANUSCRIPT_CHECKS",
+  "pdf_pages": 36,
+  "logical_tables": 8,
+  "table_panels": 11,
+  "figures": 8,
+  "native_equations": 15,
+  "table_cells_checked": 800,
+  "prose_and_caption_paragraphs_matched_docx_to_pdf": 166,
+  "traceability_records": 833,
+  "references": 26,
+  "unresolved_citations": 0,
+  "uncited_references": 0,
+  "frozen_phase3_files_byte_compared": 29,
+  "original_pdf_sha256": "38621c631b7645124dacbde12fd18892baee95830eb2d6ff91079d3d86785a07",
+  "docx_sha256": "50c17ef24d0f24ec06b798e426cc95aa44c401d7e12057cd71a660e06127890a",
+  "pdf_sha256": "7eb078d2bf96edf95304e451d989575712ae6e4a946d1930566cff464f436aff",
+  "protected_branch_baselines": {
+    "main": "1a82c7599029eb305e60b355b90ac7b80966126f",
+    "audit/reconcile-crisis-and-tau-pipeline": "77f77d8c6e4fe90d9e81091309fe55d9ce0978ae",
+    "research/revised-paper-phase1-validation": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d",
+    "research/revised-paper-phase2-experiments": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1",
+    "research/revised-paper-phase3-final-results": "da5d40acfc0e71cac51f0fd8bc288606c6c7aa71"
+  },
+  "original_pdf_pages": 36,
+  "author_approval_complete": false,
+  "numerical_experiments_rerun": false,
+  "full_89_test_suite_rerun": false,
+  "ssrn_submitted": false,
+  "visual_review": {
+    "all_final_pages_inspected": true,
+    "pages": 36,
+    "dpi": 130,
+    "conversion": "native Microsoft Word PDF via packaged document rasterizer and bundled Poppler",
+    "reviewed_pdf_sha256": "7eb078d2bf96edf95304e451d989575712ae6e4a946d1930566cff464f436aff",
+    "findings": "All pages reviewed at full rendered size; table/figure content and notes visible, native equations legible, numbering continuous, no blank or clipped pages. Separate landscape exhibits intentionally retain whitespace."
+  }
+}
