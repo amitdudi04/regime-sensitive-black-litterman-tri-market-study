@@ -1,0 +1,100 @@
+{
+  "status": "POLICY_REVIEW_REQUIRED",
+  "prepared_date": "2026-11-01",
+  "branch": "research/revised-paper-phase7-academic-finalization",
+  "base_commit": "8acbd1218adafe974415557a9338300268e973c7",
+  "checksum_algorithm": "SHA-256",
+  "self_hash_excluded": true,
+  "files": {
+    "ACADEMIC_LANGUAGE_REVIEW.md": {
+      "sha256": "13ea7676630fc8351ac93b013a1c1d3619ea9735bf365525dca2f82deb39c4ae",
+      "bytes": 7672
+    },
+    "Black_Litterman_Academic_Revision_Final.docx": {
+      "sha256": "d5e899d8de6735a65bae152a00b32d09d77ce030a45a6871e15fe5248773baf6",
+      "bytes": 1052209
+    },
+    "Black_Litterman_Academic_Revision_Final.pdf": {
+      "sha256": "232acbba3462e33a3404ae0a0eb48222b5660e497673675fb5a426bd09b88d4f",
+      "bytes": 1266071
+    },
+    "ORIGINAL_VS_REVISED_FORMAT_AUDIT.md": {
+      "sha256": "ec40d64da1f23c26aa4bc360339c6018f33fe12f6f96b8a2d04897852b663c6c",
+      "bytes": 7058
+    },
+    "PAPERPAL_AND_SIMILARITY_REVIEW.md": {
+      "sha256": "77c8bc37e73664f44f9347946b13f29869f9bffeef5f6d5a2a0dd0b7dc1c2ca9",
+      "bytes": 3439
+    },
+    "SSRN_FORMAT_AND_POLICY_CHECK.md": {
+      "sha256": "83f58e538ff227a4b2daf748689657ecf53c87dd947dc8dbe244bf6e77931306",
+      "bytes": 7883
+    }
+  },
+  "validation": {
+    "pages": 46,
+    "paragraphs_matched": 215,
+    "edited_paragraphs": 71,
+    "table_panels": 11,
+    "logical_tables": 8,
+    "table_cells": 800,
+    "traceability_records": 833,
+    "source_cell_records": 811,
+    "editable_equations": 15,
+    "unchanged_figures": 8,
+    "unchanged_references": 26,
+    "embedded_fonts": {
+      "/BCDEEE+TimesNewRomanPSMT": true,
+      "/BCDFEE+TimesNewRomanPS-BoldMT": true,
+      "/BCDGEE+Calibri-Bold": true,
+      "/BCDHEE+TimesNewRomanPS-BoldMT": true,
+      "/BCDIEE+TimesNewRomanPSMT": true,
+      "/BCDJEE+CambriaMath": true
+    },
+    "pdf_bytes": 1266071,
+    "docx_sha256": "d5e899d8de6735a65bae152a00b32d09d77ce030a45a6871e15fe5248773baf6",
+    "pdf_sha256": "232acbba3462e33a3404ae0a0eb48222b5660e497673675fb5a426bd09b88d4f",
+    "original_sha256": "38621c631b7645124dacbde12fd18892baee95830eb2d6ff91079d3d86785a07",
+    "protected_branch_baselines": {
+      "main": "1a82c7599029eb305e60b355b90ac7b80966126f",
+      "audit/reconcile-crisis-and-tau-pipeline": "77f77d8c6e4fe90d9e81091309fe55d9ce0978ae",
+      "research/revised-paper-phase1-validation": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d",
+      "research/revised-paper-phase2-experiments": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1",
+      "research/revised-paper-phase3-final-results": "da5d40acfc0e71cac51f0fd8bc288606c6c7aa71",
+      "research/revised-paper-phase4-manuscript": "74674ec8e6e9cfd33dbcd666ff5e7bdab813b626",
+      "research/revised-paper-phase5-submission-review": "d8ae7f0bdedebb5871b6936f743d2ba4d689471f",
+      "research/revised-paper-phase6-final-clearance": "8acbd1218adafe974415557a9338300268e973c7"
+    },
+    "preserved_historical_files": 58,
+    "numeric_prose_changes": [
+      {
+        "paragraph": 5,
+        "old": "Revised version: 31 October 2026",
+        "new": "Revised version: 1 November 2026"
+      },
+      {
+        "paragraph": 49,
+        "old": "Frozen input snapshots and their retrieval metadata are retained locally with SHA-256 fingerprints. Phase 4 uses the committed Phase 3 tables and figures rather than obtaining a new market-data vintage. Exact input, source-run and output identities are described in Section 10. The separate crisis-history request permits a US 2008 stress test and is not silently added to the main 2010-requested rolling experiment.",
+        "new": "Frozen input snapshots and their retrieval metadata are retained locally with SHA-256 fingerprints. The manuscript uses the committed Phase 3 tables and figures without obtaining a new market-data vintage. Exact input, source-run and output identities are described in Section 10. The separate crisis-history request permits a US 2008 stress test and is not silently added to the main 2010-requested rolling experiment."
+      },
+      {
+        "paragraph": 69,
+        "old": "Within each 252-session training window, a 60-session rolling standard deviation is computed for each asset. The latest cross-asset average volatility is compared with the median of the cross-asset averages available inside that same training window. Tau is 0.01 when the latest value exceeds that median and 0.05 otherwise. Only prior observations enter the decision. A smaller tau gives less weight to the historical tilt relative to the prior in this construction. The rule was not selected in Phase 4 to improve performance.",
+        "new": "Within each 252-session training window, a 60-session rolling standard deviation is computed for each asset. The latest cross-asset average volatility is compared with the median of the cross-asset averages available inside that same training window. Tau is 0.01 when the latest value exceeds that median and 0.05 otherwise. Only prior observations enter the decision. A smaller tau gives less weight to the historical tilt relative to the prior in this construction. The rule was not tuned during manuscript preparation to improve performance."
+      },
+      {
+        "paragraph": 183,
+        "old": "Table 7 and Figure 7 present Phase 1's US four-factor diagnostic. Market beta is 1.063528 for BL and 1.148195 for Markowitz. No direct cross-strategy test of beta equality is supplied, so the estimates are not called statistically indistinguishable. The US BL SMB coefficient is positive and its HML coefficient is positive in the retained fit; the Markowitz size loading is negative, while its HML coefficient has substantial statistical uncertainty. Full coefficients and HAC inference are reported rather than inferring their signs from a figure alone.",
+        "new": "Table 7 and Figure 7 present Phase 1's US four-factor diagnostic. Market beta is 1.063528 for BL and 1.148195 for Markowitz. No direct cross-strategy test of beta equality is supplied, so the estimates are not called statistically indistinguishable. The US BL SMB and HML coefficients are positive in the retained fit; the Markowitz size loading is negative, while its HML coefficient has substantial statistical uncertainty. Table 7 reports the full coefficients and HAC inference."
+      }
+    ]
+  },
+  "visual_review": {
+    "original_pages": 36,
+    "final_pages_rendered": 46,
+    "all_final_page_content_inspected": true,
+    "final_iteration_method": "All draft pages visually inspected; final 46 pages rerendered. Pixel-identical body regions verified except page 31, which was reinspected; sequential page numbers checked."
+  },
+  "paperpal": "PAPERPAL_NOT_EXECUTED — EXTERNAL REPORT REQUIRED",
+  "ssrn_actions": "None"
+}
