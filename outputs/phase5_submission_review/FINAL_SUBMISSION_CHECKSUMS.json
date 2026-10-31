@@ -1,0 +1,211 @@
+{
+  "status": "READY_FOR_AUTHOR_APPROVAL",
+  "review_date": "2026-10-31",
+  "manuscript_source_revision_commit": "74674ec8e6e9cfd33dbcd666ff5e7bdab813b626",
+  "phase5_base_commit": "74674ec8e6e9cfd33dbcd666ff5e7bdab813b626",
+  "phase5_branch": "research/revised-paper-phase5-submission-review",
+  "empirical_publication_freeze_commit": "da5d40acfc0e71cac51f0fd8bc288606c6c7aa71",
+  "phase5_commit_note": "Final Phase 5 preparation commit is reported in the delivery message; no self-referential commit hash is embedded in its own checksum file.",
+  "manuscript_corrections": [],
+  "manuscript_regenerated": false,
+  "author_approval_received": false,
+  "ssrn_submitted": false,
+  "protected_branch_baselines": {
+    "main": "1a82c7599029eb305e60b355b90ac7b80966126f",
+    "audit/reconcile-crisis-and-tau-pipeline": "77f77d8c6e4fe90d9e81091309fe55d9ce0978ae",
+    "research/revised-paper-phase1-validation": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d",
+    "research/revised-paper-phase2-experiments": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1",
+    "research/revised-paper-phase3-final-results": "da5d40acfc0e71cac51f0fd8bc288606c6c7aa71",
+    "research/revised-paper-phase4-manuscript": "74674ec8e6e9cfd33dbcd666ff5e7bdab813b626"
+  },
+  "verification": {
+    "pdf_pages": 36,
+    "logical_tables": 8,
+    "physical_table_panels": 11,
+    "figures": 8,
+    "editable_equations": 15,
+    "saved_table_cells_checked": 800,
+    "source_cell_precision_records_checked": 811,
+    "traceability_records_checked": 833,
+    "source_rows_covered": {
+      "table_01_dataset_definitions.csv": 3,
+      "table_02_principal_performance.csv": 9,
+      "table_03_concentration_robustness.csv": 12,
+      "table_04_transaction_cost_sensitivity.csv": 60,
+      "table_05_statistical_comparisons.csv": 12,
+      "table_06_crisis_stress_tests.csv": 6,
+      "table_07_us_factor_exposures.csv": 10,
+      "table_08_tau_sensitivity.csv": 5
+    },
+    "substantive_docx_pdf_paragraphs_matched": 166,
+    "all_statistical_intervals_include_zero": true,
+    "no_paired_sharpe_p_below_005": true,
+    "phase3_phase4_files_byte_preserved": 45,
+    "phase4_visual_review_pdf_hash_matched": true,
+    "phase5_cached_render_pages_visually_rechecked": [
+      1,
+      8,
+      9,
+      10,
+      21,
+      25,
+      31,
+      35,
+      36
+    ]
+  },
+  "metadata_qualification": "SSRN direct access returned 403; indexed official record shows affiliation differing from manuscript. Author confirmation pending.",
+  "files": {
+    "phase4_manuscript/Black_Litterman_Revised_Working_Paper_2026.docx": {
+      "sha256": "50c17ef24d0f24ec06b798e426cc95aa44c401d7e12057cd71a660e06127890a",
+      "bytes": 1051930,
+      "role": "unchanged Phase 4 reference file"
+    },
+    "phase4_manuscript/Black_Litterman_Revised_Working_Paper_2026.pdf": {
+      "sha256": "7eb078d2bf96edf95304e451d989575712ae6e4a946d1930566cff464f436aff",
+      "bytes": 1370718,
+      "role": "unchanged Phase 4 reference file"
+    },
+    "phase4_manuscript/MANUSCRIPT_RESULT_TRACEABILITY.csv": {
+      "sha256": "a914ba10c69384435c369be0549f5d44e43533c820e7502b291f2872b6d20ced",
+      "bytes": 301493,
+      "role": "unchanged Phase 4 reference file"
+    },
+    "phase4_manuscript/PHASE4_MANUSCRIPT_VALIDATION.md": {
+      "sha256": "669788b005c66a71c6bb417faf276295ac62cc7fbdecff1ade7b348af4c8b956",
+      "bytes": 7449,
+      "role": "unchanged Phase 4 reference file"
+    },
+    "phase4_manuscript/MANUSCRIPT_AUDIT.json": {
+      "sha256": "8b255327c59861cbd639590a694eb10a8634188c105232d0be53388d05146539",
+      "bytes": 1847,
+      "role": "unchanged Phase 4 reference file"
+    },
+    "phase4_manuscript/MANUSCRIPT_REVISION_CHANGELOG.md": {
+      "sha256": "265dd84f2ebd33593fd1ad4e8d4947c39b58091cfcc921b545c483d8834f6c88",
+      "bytes": 12987,
+      "role": "unchanged Phase 4 reference file"
+    },
+    "phase4_manuscript/REFERENCE_VERIFICATION_AND_AUTHOR_REVIEW.md": {
+      "sha256": "eb751f8693b36239157db873da4d71cc67921bbd5e694640971e6b618bd001f1",
+      "bytes": 6345,
+      "role": "unchanged Phase 4 reference file"
+    },
+    "phase4_manuscript/FINANCE_REVIEWER_CHALLENGE_CHECKLIST.md": {
+      "sha256": "0a819bcf8d01a1992a3e1dc5fa52c67136dccb7422b0dc981597e0fb9cb08fc4",
+      "bytes": 9075,
+      "role": "unchanged Phase 4 reference file"
+    },
+    "phase5_submission_review/FINAL_PUBLICATION_READINESS.md": {
+      "sha256": "8be54fb144cdbf7a2243b9828b7b2c8e3cb3d5b20c4a037328cc0b1a640ed989",
+      "bytes": 10505,
+      "role": "new Phase 5 preparation document"
+    },
+    "phase5_submission_review/SSRN_REVISION_SUMMARY.md": {
+      "sha256": "bfc5af07f2652cb379f56efaf760451d1b0c2db601cdef5f85f9fe70689cf15b",
+      "bytes": 2287,
+      "role": "new Phase 5 preparation document"
+    },
+    "phase5_submission_review/AUTHOR_APPROVAL_CHECKLIST.md": {
+      "sha256": "4096fdf59be83e3a4d60111e479f1fe87b0a83b50a7997acac8c5c2e4c79c345",
+      "bytes": 7440,
+      "role": "new Phase 5 preparation document"
+    }
+  },
+  "evidence_source_files": {
+    "docs/phase1/dataset_manifest.csv": {
+      "sha256": "f0cf281d5ea534614c344efb6cd654c83b528a1cc60e5047c97c9fe844c34a06",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "docs/phase1/RUN_MANIFEST.json": {
+      "sha256": "83abdf1512bbd5397aaac1334316e5048ca3517122a54dd77517ac971a352839",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase2_results/PHASE2_RUN_MANIFEST.json": {
+      "sha256": "6f0b676972d8319e6320cfec1bf42620752958916523ac6fb607a2f82e4260d4",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/PHASE3_RUN_MANIFEST.json": {
+      "sha256": "07f9041af5415f92a1cd25f2d80dd1ffc47ed1fc6af99486f974a2b96019090d",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "outputs/phase4_manuscript/source/manuscript.md": {
+      "sha256": "47ba72e8cf3464bd8c9a5544e83f39c7a1586f2794984029e30f6ba68871cf64",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "outputs/phase4_manuscript/source/references.json": {
+      "sha256": "2024cc4639e4bad8b8fb5aba66297a1574222a4f560d3289cfa02246081d33c0",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/table_01_dataset_definitions.csv": {
+      "sha256": "1c5c34f01480155238afedbf6031c156e16f88b2105316499ad15e2447e5ce4e",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/table_02_principal_performance.csv": {
+      "sha256": "bcffbd33f4313bfee0a5e32f21de0d0b2e5462b2f55d2af991516a07f5accd32",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/table_03_concentration_robustness.csv": {
+      "sha256": "3ea27c3fa460ea954c5f8059a51159dbabc534b4d4a609fe697aedf0d304572c",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/table_04_transaction_cost_sensitivity.csv": {
+      "sha256": "7c4e837e8c362420d6705cbd7437ae42273c0b2cb00eaea911b67c4759b1c8aa",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/table_05_statistical_comparisons.csv": {
+      "sha256": "af01e4103dc324ae671e0398b4f7036e93897875429786a5ba8f796b0bf05805",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/table_06_crisis_stress_tests.csv": {
+      "sha256": "281d15dff46a504574ca0707198992d896e1ce7602620e2357a6fb2bec11bd5b",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/table_07_us_factor_exposures.csv": {
+      "sha256": "aeae18a6177d533597bf23d86e6668f7204972a347511b6c83db879306976678",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    },
+    "results/phase3_final/table_08_tau_sensitivity.csv": {
+      "sha256": "79d23a32935cbe13b9f514b9bd32d8fb5a3ef79c3b8a5a9516cea781f0a1a06b",
+      "included_in_zip": false,
+      "access": "versioned repository at recorded source revision"
+    }
+  },
+  "checksum_scope": "SHA-256 of exact file bytes. The checksum file itself and enclosing ZIP are excluded to avoid circularity. ZIP carries existing Phase 4 manuscript/support files as unchanged reference copies.",
+  "frozen_price_snapshot_identities": [
+    {
+      "Market": "US",
+      "Price Data Source": "Yahoo Finance via yfinance",
+      "Price Snapshot Path": "results/generated/price_data/us_adjusted_close.csv",
+      "Price Snapshot SHA256": "835a01e377ce0c50c1cdeb7b5ad8653680f83ee4c7c5b6158fcc2f8d0c0fdfc9",
+      "Price Snapshot Timestamp UTC": "2026-10-31T14:32:51.400745+00:00"
+    },
+    {
+      "Market": "China",
+      "Price Data Source": "Yahoo Finance via yfinance",
+      "Price Snapshot Path": "results/generated/price_data/china_adjusted_close.csv",
+      "Price Snapshot SHA256": "9db82332709b7fd366b96461b32d474ecd509383121edb9ed8f3ad677dd3b4a1",
+      "Price Snapshot Timestamp UTC": "2026-10-31T14:33:06.346995+00:00"
+    },
+    {
+      "Market": "India",
+      "Price Data Source": "Yahoo Finance via yfinance",
+      "Price Snapshot Path": "results/generated/price_data/india_adjusted_close.csv",
+      "Price Snapshot SHA256": "655f98c5bfae2a37da7809a51e80249f4853beaac5db2ac5ffe8f1c1a8af5bb2",
+      "Price Snapshot Timestamp UTC": "2026-10-31T14:33:10.732222+00:00"
+    }
+  ]
+}
