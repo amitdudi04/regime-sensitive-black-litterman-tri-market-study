@@ -3,6 +3,8 @@
 **Portfolio stability, turnover, and out-of-sample risk**  
 Research implementation by Amit Kumar Dudi
 
+The [Phase 1 financial validation](docs/PHASE1_FINANCIAL_VALIDATION.md) records 71 passing tests, independent financial identities, complete current-data execution, a frozen-input baseline comparison and deterministic repeatability. Its `READY_WITH_LIMITATIONS` decision applies to the revised research implementation; original-paper reproduction remains unestablished.
+
 This study compares equilibrium-anchored Black–Litterman allocation with historical-mean Markowitz optimization in ETF baskets representing the United States, China, and India. It asks whether more stable portfolio targets translate into lower trading turnover, and whether that stability is accompanied by better investment performance.
 
 The repository contains a corrected, test-validated **2026 diagnostic implementation** and an **earlier research manuscript**: *Black–Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets* (March 2026, SSRN 6479462). The manuscript's reported results have **not** been numerically reproduced by the current code. They are retained separately, not represented as verified outputs of the corrected study.

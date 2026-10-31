@@ -1,0 +1,270 @@
+[
+  {
+    "file": "bootstrap_sharpe_differences.csv",
+    "baseline_rows": 3,
+    "corrected_rows": 3,
+    "max_abs_delta_common_numeric": 6.258624674071456e-08,
+    "new_columns": [
+      "Null Centering",
+      "Percentile CI 95 Lower",
+      "Percentile CI 95 Upper"
+    ],
+    "removed_columns": []
+  },
+  {
+    "file": "crisis_summary.csv",
+    "baseline_rows": 6,
+    "corrected_rows": 6,
+    "max_abs_delta_common_numeric": 1.1218595830086997e-08,
+    "new_columns": [
+      "Buy-Hold Peak Date",
+      "Buy-Hold Peak Wealth At Trough",
+      "Buy-Hold Recovery Duration",
+      "Buy-Hold Recovery Target",
+      "Primary Investment Convention"
+    ],
+    "removed_columns": []
+  },
+  {
+    "file": "dataset_manifest.csv",
+    "baseline_rows": 3,
+    "corrected_rows": 3,
+    "max_abs_delta_common_numeric": 1.7763568394002505e-15,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "factor_regression_us.csv",
+    "baseline_rows": 2,
+    "corrected_rows": 2,
+    "max_abs_delta_common_numeric": 7.013147742895853e-05,
+    "new_columns": [
+      "HML_p_value",
+      "MKT_p_value",
+      "MOM_p_value",
+      "SMB_p_value"
+    ],
+    "removed_columns": []
+  },
+  {
+    "file": "regime_performance_expost.csv",
+    "baseline_rows": 6,
+    "corrected_rows": 6,
+    "max_abs_delta_common_numeric": 2.819271558429648e-07,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "tau_sensitivity.csv",
+    "baseline_rows": 5,
+    "corrected_rows": 5,
+    "max_abs_delta_common_numeric": 7.358462239537289e-08,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "tri_market_summary.csv",
+    "baseline_rows": 9,
+    "corrected_rows": 9,
+    "max_abs_delta_common_numeric": 7.647414323325163e-08,
+    "new_columns": [
+      "Annualized Gross Return",
+      "Average Target Weight Turnover",
+      "Sum Cost Fractions",
+      "Total Costs Per Initial NAV"
+    ],
+    "removed_columns": []
+  },
+  {
+    "file": "china/daily_oos_returns.csv",
+    "baseline_rows": 2553,
+    "corrected_rows": 2553,
+    "max_abs_delta_common_numeric": 1.2245529592939952e-08,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "china/equilibrium_prior_history.csv",
+    "baseline_rows": 41,
+    "corrected_rows": 41,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "china/optimizer_convergence.csv",
+    "baseline_rows": 41,
+    "corrected_rows": 41,
+    "max_abs_delta_common_numeric": null,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "china/regime_probabilities_expost.csv",
+    "baseline_rows": 2553,
+    "corrected_rows": 2553,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "china/tau_timeline.csv",
+    "baseline_rows": 41,
+    "corrected_rows": 41,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "china/turnover.csv",
+    "baseline_rows": 41,
+    "corrected_rows": 41,
+    "max_abs_delta_common_numeric": 1.6081800912337574e-06,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "china/weights_black_litterman.csv",
+    "baseline_rows": 41,
+    "corrected_rows": 41,
+    "max_abs_delta_common_numeric": 1.015300142126474e-06,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "china/weights_markowitz.csv",
+    "baseline_rows": 41,
+    "corrected_rows": 41,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "india/daily_oos_returns.csv",
+    "baseline_rows": 2991,
+    "corrected_rows": 2991,
+    "max_abs_delta_common_numeric": 9.182986909078705e-09,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "india/equilibrium_prior_history.csv",
+    "baseline_rows": 48,
+    "corrected_rows": 48,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "india/optimizer_convergence.csv",
+    "baseline_rows": 48,
+    "corrected_rows": 48,
+    "max_abs_delta_common_numeric": null,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "india/regime_probabilities_expost.csv",
+    "baseline_rows": 2991,
+    "corrected_rows": 2991,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "india/tau_timeline.csv",
+    "baseline_rows": 48,
+    "corrected_rows": 48,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "india/turnover.csv",
+    "baseline_rows": 48,
+    "corrected_rows": 48,
+    "max_abs_delta_common_numeric": 1.7733471827929836e-06,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "india/weights_black_litterman.csv",
+    "baseline_rows": 48,
+    "corrected_rows": 48,
+    "max_abs_delta_common_numeric": 7.101534879871974e-07,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "india/weights_markowitz.csv",
+    "baseline_rows": 48,
+    "corrected_rows": 48,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "us/daily_oos_returns.csv",
+    "baseline_rows": 3521,
+    "corrected_rows": 3521,
+    "max_abs_delta_common_numeric": 6.835760255410883e-08,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "us/equilibrium_prior_history.csv",
+    "baseline_rows": 56,
+    "corrected_rows": 56,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "us/optimizer_convergence.csv",
+    "baseline_rows": 56,
+    "corrected_rows": 56,
+    "max_abs_delta_common_numeric": null,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "us/regime_probabilities_expost.csv",
+    "baseline_rows": 3521,
+    "corrected_rows": 3521,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "us/tau_timeline.csv",
+    "baseline_rows": 56,
+    "corrected_rows": 56,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "us/turnover.csv",
+    "baseline_rows": 56,
+    "corrected_rows": 56,
+    "max_abs_delta_common_numeric": 2.216506514135519e-06,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "us/weights_black_litterman.csv",
+    "baseline_rows": 56,
+    "corrected_rows": 56,
+    "max_abs_delta_common_numeric": 8.237182859471837e-06,
+    "new_columns": [],
+    "removed_columns": []
+  },
+  {
+    "file": "us/weights_markowitz.csv",
+    "baseline_rows": 56,
+    "corrected_rows": 56,
+    "max_abs_delta_common_numeric": 0.0,
+    "new_columns": [],
+    "removed_columns": []
+  }
+]

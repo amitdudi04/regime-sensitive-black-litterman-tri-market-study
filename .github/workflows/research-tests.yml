@@ -5,6 +5,9 @@ on:
     paths:
       - "**.py"
       - "requirements.txt"
+      - "requirements-phase1-lock.txt"
+      - "docs/PHASE1_FINANCIAL_VALIDATION.md"
+      - "docs/phase1/**"
       - ".github/workflows/research-tests.yml"
   push:
     branches:
@@ -13,6 +16,9 @@ on:
     paths:
       - "**.py"
       - "requirements.txt"
+      - "requirements-phase1-lock.txt"
+      - "docs/PHASE1_FINANCIAL_VALIDATION.md"
+      - "docs/phase1/**"
       - ".github/workflows/research-tests.yml"
   workflow_dispatch:
 

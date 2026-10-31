@@ -35,3 +35,11 @@ class TestDatedOwnership(unittest.TestCase):
     def test_missing_original_group_evidence_fails_closed(self):
         with self.assertRaises(ValueError):
             evaluate_dated_ownership(self.returns, self.evidence.iloc[:1])
+
+    def test_invalid_observed_value_in_partly_missing_row_is_rejected(self):
+        # A NaN in a different security must not hide this observed invalid return.
+        for invalid in (np.inf, -1.0, -2.0):
+            returns = self.returns.copy()
+            returns.iloc[0] = [invalid, np.nan]
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                evaluate_dated_ownership(returns, self.evidence)

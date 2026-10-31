@@ -1,0 +1,8 @@
+{
+  "sha256": "341cc4e8fb216821c5eaacded9fdf4cca33f124cdba4d0eda9ff17251ffcf641",
+  "retrieved_at_utc": "2026-10-31T14:29:32.838486+00:00",
+  "source": "Kenneth French US daily FF3 and momentum, HTTPS",
+  "requested_start": "2011-01-04",
+  "requested_end": "2024-12-31",
+  "units": "decimal daily returns, source percent divided by 100"
+}

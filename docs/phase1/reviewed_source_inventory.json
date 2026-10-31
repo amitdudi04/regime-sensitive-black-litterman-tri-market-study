@@ -1,0 +1,212 @@
+[
+  {
+    "file": ".github/workflows/empirical-reproduction.yml",
+    "sha256": "166dd4517e89eb417b6cbe47023b36bf1bce467a1b591b9540978916ad85cb9f",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": ".github/workflows/research-tests.yml",
+    "sha256": "271d6eeb5c29cc2120b49d70998c905aa666a1f127a735d3719d8a7b8c37263d",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "__main__.py",
+    "sha256": "db3fed4c0983d64371abb444d37285d76744ffbf3fedbbe6ffbaf1441aa071c9",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "analysis/crisis_analysis.py",
+    "sha256": "b0c0a3c370183a16b352594a4dad73c3e2657079e4c00bd47ed128082ef6e650",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "analysis/factor_regression.py",
+    "sha256": "d075ca907b96e6d10e482609287191c2ea27f1fef9ca343925934a741d3d59b7",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "analysis/ownership_research.py",
+    "sha256": "85a7a95c751dbadfc94bc556d6bab2f2a1b95d4b2f64acc4bd7f4eb9e153f9df",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "analysis/regime_detection.py",
+    "sha256": "f2ba9df294de70d46b7b476f8ac9e01144d8fc1c8fe1a3e96c207bba664d30f5",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "analysis/soe_private_analysis.py",
+    "sha256": "6d29a5b74eb617475ee442a146be65906820aa77f0155ed4c18c99cd08f64508",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "analysis/statistical_tests.py",
+    "sha256": "88a156f2023807dd5f49c1e67f2e0bf9d0b306e95ad6a2f2bf634d7cd7eb874a",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "analysis/supplementary_diagnostics.py",
+    "sha256": "f34508854dc2ab74ac7df5c9190faf64a1aa6a833a9b7f4c3280cb32c6232d83",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "analysis/tau_sensitivity.py",
+    "sha256": "cadf9fd20777e7649399f08926f8b4f2025d47fb66e3fcfdb11411266939fddd",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "backtesting/allocation_stability_index.py",
+    "sha256": "7fa1a0b89c9bc9e7feb59be8b5707da37577969b8cf9f9d295d2c7a49d0706ff",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "backtesting/crisis_freeze.py",
+    "sha256": "3e755a7faa4ae299c086b8ef4192bbedb408ae4f83ab8fab759ce0bb36f60dbb",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "backtesting/paper_backtest.py",
+    "sha256": "576c0e5eb913374abe0d86d1eeb64fbbe16ca61f4d246f02d76c8ec38655105c",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "config/project_config.yaml",
+    "sha256": "328447ec702a537e504c184d3e9e7185c4b65ef52c7d244dbf012e5573a7ecb8",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "core/__init__.py",
+    "sha256": "ca4dd59ca89c31589e36fe5d200c78221bd05bcdea59bf6dff46c90d746dddde",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "core/covariance_estimators.py",
+    "sha256": "ae2ab3ec34e99dadac0bc90e507245c2953ea35ba8cbfc032a062fb2ac632e92",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "core/data_loader.py",
+    "sha256": "734ab921c8b739207b822a18cbc892728247eaccfc3cd4db9e6a9c59abddaf92",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "core/return_calculations.py",
+    "sha256": "d7602475a27c77e537763302e39580a0315cf0df325f6d073361afaadafdf729",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "core/validation.py",
+    "sha256": "58519ea718043bb9cb81490363e9abbc412c39bd319b490c37aaf13c72e1bd42",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "main.py",
+    "sha256": "73b52c8f2242bba0453f7bd2973f05257c32378206b85bf84388efeaabb009f8",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "models/black_litterman_model.py",
+    "sha256": "21379f798e2a3d87cc7d449144c52b12a23fd5f3e2722520b03f3a064b7874b9",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "models/optimizer.py",
+    "sha256": "b9b6ae441eda95626cdeeb11036e36e7180be1ab2ebbdeeafc03838819d30616",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "pipelines/run_tri_market_pipeline.py",
+    "sha256": "fd00ff3c8298de5d80f06ede7f5177c50550f8da1c78ab95b4039db08ace47c9",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "pipelines/tri_market_pipeline.py",
+    "sha256": "0e4d612fa3e57389c125bf2dc368d33469d95dacbd63afff349aaa4b024613ca",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "requirements.txt",
+    "sha256": "822a15c36e7a89611a409476adf4c125c3f228b5ca037ed4c6758ef16c334b9f",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "scripts/audit_paper_arithmetic.py",
+    "sha256": "18b864221568e281bd650cbc3549d4821a4dee21ca484644fe89fec6a915ca91",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "scripts/generate_research_figures.py",
+    "sha256": "ac42168969a8ebbb60d84964337981d2895dd70b02da2d73e08f314fecfafd23",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "scripts/validate_generated_outputs.py",
+    "sha256": "690dacddc78b3d178abb4c3c563edc6d04ca00cf62f642fb67dcb8b9c78b451a",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "scripts/verify_paper_results.py",
+    "sha256": "b16c8afc4ba7d908d3b29d47fd843f608cbe6b162b9f7c766d3b388b880a3d4d",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_backtest.py",
+    "sha256": "bc349f4d5a39556b84e3eb3fc10f61e14ce7bb371f865c4bb1b9a3baaa6561ef",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_black_litterman.py",
+    "sha256": "be598fc70cf4fbab2c5ef41bcadb21f8e83a53c2c42af257e3f1589258de2b69",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_crisis_analysis.py",
+    "sha256": "6a13741769d099bfe93551fe720a3d3370f3285e14b6e28c50f62a78ea23448f",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_crisis_freeze.py",
+    "sha256": "12cb891287784e24b07ad2c297bbf07e1c93d687b44a91d37c5cdd07a9d1fde7",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_data_loader.py",
+    "sha256": "535ba5175c6436b15ced83d3d1e5be8fb5d367525855b372b2f45fe1fb35565a",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_financial_validation.py",
+    "sha256": "4ced7d8b92ae34be75ba6e11e17ce312b4f620158d0d691067a90229b1b5709f",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_optimizer.py",
+    "sha256": "b64455ad8893f0993c0fcc4d6906b1a3dbd13fcb8b12b95d60e4e365052937a1",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_ownership_research.py",
+    "sha256": "c75cc912f89e506201c06b38c278146a08c7546122f50aa9c6b125489bc8cb98",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_paper_reconciliation.py",
+    "sha256": "33b3e4eaafd853da6475e2a58b7530ea5a50b76392cc22f1876a09e1fcfad787",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_pipeline_benchmark.py",
+    "sha256": "aaeb293fb844d99b4745543c89892c97168f4634790e01b970b0ed7b1aa60a3d",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_supplementary_diagnostics.py",
+    "sha256": "24ef453b6af8c9219e467f5896e605f00e15a055b747da06df5399826bda7411",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  },
+  {
+    "file": "tests/test_tau_sensitivity.py",
+    "sha256": "3bc313d08ad5e1fc0dc71ca23c6569fab0bde87a068815b1556052062cb009e8",
+    "review": "source inspection; numerical path or test/workflow dependency"
+  }
+]
