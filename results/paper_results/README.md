@@ -10,7 +10,7 @@ This directory preserves the machine-readable result tables from the previous pa
 
 The values in these historical CSVs agree with the corresponding manuscript tables at displayed precision. This is a transcription check only; it does not prove that the current public implementation reproduces the original calculations.
 
-Other manuscript findings (factor exposure in Table 5, SOE/private results in Table 6, regime results in Table 7, and statistical validation in Section 13) do not have matching historical CSV files in this directory. The current factor diagnostic differs from Table 5, and matching SOE/private, regime and bootstrap result artifacts were not saved by the current run. These findings are documented as paper-reported, not independently reproduced, in the results reconciliation.
+Other manuscript findings (factor exposure in Table 5, SOE/private results in Table 6, regime results in Table 7, and statistical validation in Section 13) do not have matching historical CSV files in this directory. The corrected October 30 pipeline generates different US factor regressions plus *new* ex-post regime and paired-bootstrap diagnostics. Those outputs do not reconstruct the paper's Table 5, Table 7 or Section 13; the dated SOE/private stock-level evidence needed for Table 6 remains unavailable. These findings are documented as paper-reported, not independently reproduced, in the results reconciliation.
 
 ## Important distinction
 
@@ -18,4 +18,4 @@ The historical tables are intentionally retained unchanged. The current local di
 
 The unresolved differences include the equilibrium prior (market-capitalization-implied in the manuscript versus equal-weight by default in the current implementation), simple versus continuously compounded return conventions, benchmark definitions, turnover/ASI calculations, effective market sample dates and crisis outputs. See [the results reconciliation](../../docs/RESULTS_RECONCILIATION.md) for the comparison and status of each issue.
 
-No model code or numerical output is changed by this note.
+
