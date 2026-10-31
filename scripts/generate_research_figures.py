@@ -64,7 +64,7 @@ def performance_figure():
     plt.bar(x + width / 2, mv, width, label="Markowitz")
     plt.xticks(x, markets)
     plt.ylabel("Annualized Sharpe ratio")
-    plt.title("Out-of-sample risk-adjusted performance")
+    plt.title("Corrected ETF backtest: net OOS Sharpe (RF = 0)")
     plt.legend()
     _save("sharpe_by_market.png")
 
@@ -103,7 +103,7 @@ def asi_figure():
     plt.bar(x + width / 2, mv, width, label="Markowitz")
     plt.xticks(x, markets)
     plt.ylabel("Mean L1 weight change")
-    plt.title("Allocation Stability Index")
+    plt.title("Corrected ETF backtest: target-weight stability")
     plt.legend()
     _save("allocation_stability_index.png")
 
@@ -129,7 +129,7 @@ def rolling_sharpe_figures(window=252):
 
         plt.axhline(0.0, linewidth=0.8)
         plt.ylabel("Rolling annualized Sharpe")
-        plt.title(f"{market.upper()} — {window}-day rolling Sharpe")
+        plt.title(f"{market.upper()} corrected ETF OOS — {window}-day Sharpe (RF = 0)")
         plt.legend()
         _save(f"{market}_rolling_sharpe.png")
 
@@ -159,7 +159,7 @@ def factor_figure():
 
     plt.xticks(x, labels)
     plt.ylabel("Factor beta")
-    plt.title("US four-factor exposure")
+    plt.title("Corrected US ETF strategy: four-factor exposure")
     plt.legend()
     _save("factor_exposure.png")
 
