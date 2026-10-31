@@ -1,13 +1,13 @@
-# Published Results and Current-Run Reconciliation
+# Manuscript and Archived October 13 Diagnostic — Historical Reconciliation
 
-**Status: published values preserved; computational reproduction is unresolved.**
+**Historical comparison only.** This document records the March paper against the *October 13, 2026* preliminary diagnostic; it is **not** the current corrected-pipeline result. See [the October 30 validated diagnostic](EMPIRICAL_AUDIT_2026-10-30.md) for newer calculations and [the corrections register](REVIEWER_CORRECTIONS.md) for unresolved manuscript claims.
 
 **Diagnostic version warning (2026-10-30):** All numerical values labeled *Current* below were generated on 2026-10-13 **before** the audit branch corrected buy-and-hold daily portfolio accounting and the first-observation ASI denominator. They are prior-run diagnostics, **not validated outputs of the latest code**. The paper-reference numbers are preserved unchanged. Recompute all return-derived, turnover-derived, Sharpe, factor, tau, and allocation values from the original checksum-verified input snapshots before updating the comparisons. Crisis weighted-log diagnostics are a separate convention and must not be represented as the revised buy-and-hold wealth path.
 
 This document separates three things that must not be conflated:
 
 1. **Published-paper values:** figures printed in the supplied March 2026 manuscript and retained in results/paper_results/.
-2. **Current diagnostic values:** outputs generated locally on 2026-10-13 and retained in the ignored results/generated/ directory.
+2. **October 13 diagnostic values:** outputs generated locally on 2026-10-13 and retained in the ignored results/generated/ directory.
 3. **Reproduction status:** whether the current implementation has been shown to reproduce the paper's methodology and numerical results. It has not.
 
 The manuscript's Table 2, Table 4 and Table 8 values were checked against the corresponding historical CSVs. The displayed figures agree, subject to rounding. This confirms transcription consistency between the paper and historical CSVs; it does **not** establish that the current implementation reproduces the calculations.
@@ -23,9 +23,9 @@ The manuscript's Table 2, Table 4 and Table 8 values were checked against the co
 
 ## 1. Tri-market performance
 
-The paper-reported values below match the historical tri_market_summary.csv. Current-run values are from the local generated summary.
+The paper-reported values below match the historical tri_market_summary.csv. October 13 values are from the local generated summary.
 
-| Market | Model | Paper return | Current return | Paper volatility | Current volatility | Paper Sharpe | Current Sharpe | Paper ASI | Current ASI |
+| Market | Model | Paper return | Oct 13 return | Paper volatility | Oct 13 volatility | Paper Sharpe | Oct 13 Sharpe | Paper ASI | Oct 13 ASI |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|
 | US | Black-Litterman | 12.99% | 15.45% | 20.00% | 19.14% | 0.650 | 0.807 | 0.001632 | 0.009242 |
 | US | Markowitz | 13.24% | 15.90% | 21.57% | 21.35% | 0.614 | 0.745 | 0.015365 | 0.790682 |
@@ -38,7 +38,7 @@ The paper also reports maximum drawdowns of -38.04% (US BL), -33.95% (US Markowi
 
 ### Turnover comparison
 
-| Market | Model | Paper turnover | Current average rebalance turnover |
+| Market | Model | Paper turnover | Oct 13 average rebalance turnover |
 |---|---|---:|---:|
 | US | Black-Litterman | 0.20% | 2.87% |
 | US | Markowitz | 1.58% | 80.29% |
@@ -61,11 +61,11 @@ The paper also reports maximum drawdowns of -38.04% (US BL), -33.95% (US Markowi
 
 The configured end date is exclusive: 2025-01-01 means the last possible date is 2024-12-31. The common China ETF basket does not provide observations back to 2010, and the India basket also starts later than 2010. The paper's stated 2010-2025 coverage must not be read as proof that every current ETF basket has identical coverage.
 
-**Benchmark note.** The paper describes market/index-style benchmarks, while the current diagnostic uses adjusted-close ETF proxies SPY, ASHR and INDA. Each proxy is also a constituent of the optimized basket. These are not equivalent benchmark definitions, and the current proxy results must not be substituted for the historical benchmark rows.
+**Benchmark note.** The paper describes market/index-style benchmarks, while the October 13 diagnostic uses adjusted-close ETF proxies SPY, ASHR and INDA. Each proxy is also a constituent of the optimized basket. These are not equivalent benchmark definitions, and the current proxy results must not be substituted for the historical benchmark rows.
 
 ## 3. Crisis results
 
-| Crisis | Model | Paper max drawdown | Current max drawdown | Paper volatility spike | Current volatility spike | Paper recovery days | Current recovery days |
+| Crisis | Model | Paper max drawdown | Oct 13 max drawdown | Paper volatility spike | Oct 13 volatility spike | Paper recovery days | Oct 13 recovery days |
 |---|---|---:|---:|---:|---:|---:|---:|
 | 2008 US GFC | Black-Litterman | -62.57% | -53.47% | 1.94x | 2.40x | 1,093 | 277 |
 | 2008 US GFC | Markowitz | -62.18% | -46.99% | 1.93x | 2.01x | 1,056 | 272 |
@@ -80,7 +80,7 @@ The manuscript defines recovery against the portfolio value at crisis start, wit
 
 ## 4. Tau sensitivity
 
-| Tau | Paper-reported Sharpe | Current fixed-tau Sharpe |
+| Tau | Paper-reported Sharpe | Oct 13 fixed-tau Sharpe |
 |---:|---:|---:|
 | 0.01 | 0.3993 | 0.8077 |
 | 0.05 | 0.3983 | 0.8069 |
@@ -88,20 +88,20 @@ The manuscript defines recovery against the portfolio value at crisis start, wit
 | 0.15 | 0.3929 | 0.8050 |
 | 0.20 | 0.3926 | 0.8041 |
 
-The current diagnostic uses a fixed tau per run, with tau_low_vol and tau_high_vol set equal, on the same US out-of-sample window. The historical sensitivity table does not retain enough metadata to confirm the original market, exact sample, prior construction, net/gross return convention or calculation path. The two series therefore remain **not comparable / unresolved**.
+The October 13 diagnostic uses a fixed tau per run, with tau_low_vol and tau_high_vol set equal, on the same US out-of-sample window. The historical sensitivity table does not retain enough metadata to confirm the original market, exact sample, prior construction, net/gross return convention or calculation path. The two series therefore remain **not comparable / unresolved**.
 
 ## 5. Other manuscript findings not reproduced by the current run
 
 ### Factor exposure (paper Table 5)
 
-The manuscript reports a US four-factor regression with annualized alpha, market/size/value/momentum betas and R-squared. The current diagnostic factor_regression_us.csv uses 3,521 aligned observations and HAC maxlags=5. Its coefficients differ materially from the paper table.
+The manuscript reports a US four-factor regression with annualized alpha, market/size/value/momentum betas and R-squared. The October 13 diagnostic factor_regression_us.csv uses 3,521 aligned observations and HAC maxlags=5. Its coefficients differ materially from the paper table.
 
-| Model | Paper annualized alpha | Current annualized alpha | Paper alpha t-stat | Current alpha t-stat | Paper MKT beta | Current MKT beta | Paper MOM beta | Current MOM beta | Paper R-squared | Current R-squared |
+| Model | Paper annualized alpha | Oct 13 annualized alpha | Paper alpha t-stat | Oct 13 alpha t-stat | Paper MKT beta | Oct 13 MKT beta | Paper MOM beta | Oct 13 MOM beta | Paper R-squared | Oct 13 R-squared |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Black-Litterman | -4.27% | 0.50% | -1.213 | 0.869 | 0.821 | 1.0658 | 0.0144 | 0.0045 | 0.6346 | 0.9858 |
 | Markowitz | -7.38% | -1.13% | -1.418 | -0.552 | 0.904 | 1.1482 | 0.1150 | 0.2239 | 0.4860 | 0.8826 |
 
-The paper also reports SMB and HML betas that differ from the current diagnostic: paper BL SMB 0.0525 and HML -0.0012; current BL SMB 0.0755 and HML 0.0331. Paper Markowitz SMB -0.0217 and HML 0.0117; current Markowitz SMB -0.0467 and HML -0.0221. The original paper does not provide enough retained run metadata here to establish matching sample dates, exact factor data vintage and HAC lag settings.
+The paper also reports SMB and HML betas that differ from the October 13 diagnostic: paper BL SMB 0.0525 and HML -0.0012; current BL SMB 0.0755 and HML 0.0331. Paper Markowitz SMB -0.0217 and HML 0.0117; current Markowitz SMB -0.0467 and HML -0.0221. The original paper does not provide enough retained run metadata here to establish matching sample dates, exact factor data vintage and HAC lag settings.
 
 **Internal paper note.** The Table 5 BL momentum t-statistic appears as +0.856 in the table, while the narrative later gives -0.856. Both descriptions indicate a non-significant loading, but the sign inconsistency should be checked against the final manuscript source rather than silently resolved in repository documentation.
 
@@ -121,7 +121,7 @@ The manuscript reports a volatility-suppression statistic of -2.678 (p = 0.0106)
 | Maximum drawdown | -43.63% | -39.11% |
 | Average turnover | 7.32% | 15.79% |
 
-The paper reports a test statistic of -0.563 and p-value of 0.572. The current repository helper provides descriptive return and volatility summaries for explicitly mapped groups; it is not a complete reproduction of the paper's ownership-level hypothesis test, turnover, drawdown and Sharpe calculations. No matching generated SOE/private result artifact is present in the current run.
+The paper reports a test statistic of -0.563 and p-value of 0.572. The current repository helper provides descriptive return and volatility summaries for explicitly mapped groups; it is not a complete reproduction of the paper's ownership-level hypothesis test, turnover, drawdown and Sharpe calculations. The October 30 audit adds a dated-classification analysis helper but still lacks the original Chinese stock-level ownership inputs; paper Table 6 is unreproduced.
 
 **Interpretation note.** The paper itself does not reject the null at conventional significance levels (p = 0.572). The descriptive differences should not be presented as statistically established SOE/private outperformance or downside protection.
 
@@ -132,7 +132,7 @@ The paper reports a test statistic of -0.563 and p-value of 0.572. The current r
 | Low volatility | 1.282 | 1.397 | 17.27% | 19.80% |
 | High volatility | -0.934 | -1.045 | -31.22% | -34.71% |
 
-The current regime helper uses smoothed state probabilities for ex-post descriptive classification. The current run does not save a matching regime-performance table or the sample counts needed to confirm the paper values. Smoothed probabilities use the full sample and are not suitable as real-time trading signals without a separate filtered-probability design.
+The current regime helper uses smoothed state probabilities for ex-post descriptive classification. The October 13 diagnostic did not save the matching regime table. New October 30 ex-post regime outputs exist, but they do not reproduce the manuscript's Table 7. Smoothed probabilities use the full sample and are not suitable as real-time trading signals without a separate filtered-probability design.
 
 **Interpretation note.** The table is descriptive unless a corresponding statistical test is specified and retained. The manuscript's phrase "statistically improved downside performance" should not be repeated as a verified statistical conclusion based on Table 7 alone.
 
@@ -153,7 +153,7 @@ The manuscript's data section describes continuously compounded returns. The cur
 
 ### Benchmark definition
 
-The manuscript's prose refers to a market-capitalization-weighted ETF benchmark, while the historical results table labels index-style benchmarks. The current diagnostic uses SPY, ASHR and INDA as investable ETF proxies that also appear in the optimized baskets. The paper's benchmark prose, table and current proxy definitions are not interchangeable.
+The manuscript's prose refers to a market-capitalization-weighted ETF benchmark, while the historical results table labels index-style benchmarks. The October 13 diagnostic uses SPY, ASHR and INDA as investable ETF proxies that also appear in the optimized baskets. The paper's benchmark prose, table and current proxy definitions are not interchangeable.
 
 ### Optimization and concentration
 
@@ -177,6 +177,6 @@ The current run assumes the portfolio starts from cash, records 100% L1 initial 
 | Paper benchmark descriptions vs current ETF proxies | Methodology discrepancy | Disclose explicitly |
 | Full computational reproduction | Not established | Do not claim the current code reproduces the paper |
 
-**Reviewer-facing conclusion:** the repository preserves the numerical values published in the manuscript and makes the current diagnostic differences visible. The paper-to-CSV transcription check passes for the principal performance, crisis and tau tables; the current implementation's computational reproduction of those values remains unresolved.
+**Reviewer-facing conclusion:** the repository preserves the numerical values published in the manuscript and makes the October 13 diagnostic differences visible. The paper-to-CSV transcription check passes for the principal performance, crisis and tau tables; the current implementation's computational reproduction of those values remains unresolved.
 
 No model code or numerical output files are changed by this document.
