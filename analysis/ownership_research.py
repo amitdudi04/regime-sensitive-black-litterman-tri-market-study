@@ -26,7 +26,8 @@ def evaluate_dated_ownership(
         raise ValueError("Security returns require a unique DatetimeIndex")
     if returns.empty or returns.columns.has_duplicates or len(returns.columns) < 2:
         raise ValueError("Provide at least two distinct security return columns")
-    if not np.isfinite(returns.dropna().to_numpy()).all() or (returns.dropna() <= -1).any().any():
+    observed = returns.to_numpy()[~np.isnan(returns.to_numpy())]
+    if not np.isfinite(observed).all() or (observed <= -1).any():
         raise ValueError("Observed simple returns must be finite and greater than -100%")
     required = {"security_id", "available_at", "group"}
     evidence = pd.DataFrame(ownership_events).copy()

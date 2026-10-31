@@ -1,12 +1,16 @@
 """Generate charts from the latest tri-market research run."""
 
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scripts.validate_generated_outputs import verify_run_files
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +20,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 
 def _require(path: Path) -> Path:
+    verify_run_files(RESULTS)
     if not path.exists():
         raise FileNotFoundError(
             f"Required input is missing: {path}. "

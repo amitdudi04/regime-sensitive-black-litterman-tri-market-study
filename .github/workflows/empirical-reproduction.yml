@@ -5,12 +5,18 @@ on:
   push:
     branches:
       - audit/reconcile-crisis-and-tau-pipeline
+      - research/revised-paper-phase1-validation
     paths:
       - ".github/workflows/empirical-reproduction.yml"
       - "analysis/crisis_analysis.py"
       - "analysis/supplementary_diagnostics.py"
       - "analysis/factor_regression.py"
       - "analysis/ownership_research.py"
+      - "core/**"
+      - "models/**"
+      - "backtesting/**"
+      - "tests/**"
+      - "config/**"
       - "pipelines/tri_market_pipeline.py"
       - "scripts/verify_paper_results.py"
       - "scripts/validate_generated_outputs.py"
@@ -27,11 +33,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Install declared project dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements-phase1-lock.txt
       - name: Validate source and synthetic numerical tests
         run: python -m unittest discover -s tests -v
       - name: Run all three market studies and crisis and tau diagnostics

@@ -3,6 +3,7 @@ import time
 import numpy as np
 import pandas as pd
 import yfinance as yf
+from core.validation import validate_panel
 
 
 def _extract_adjusted_close(data: pd.DataFrame, tickers):
@@ -16,29 +17,22 @@ def _extract_adjusted_close(data: pd.DataFrame, tickers):
         level0 = data.columns.get_level_values(0)
         if "Adj Close" in level0:
             prices = data["Adj Close"].copy()
-        elif "Close" in level0:
-            prices = data["Close"].copy()
         else:
-            raise ValueError("Yahoo Finance response does not contain Adj Close or Close data.")
+            raise ValueError("Required Adj Close field unavailable; raw Close is not an adjusted proxy")
     else:
         if "Adj Close" in data.columns:
             prices = data[["Adj Close"]].copy()
             prices.columns = [tickers[0]]
-        elif "Close" in data.columns:
-            prices = data[["Close"]].copy()
-            prices.columns = [tickers[0]]
         else:
-            # yfinance may return ticker-labelled columns for a single field.
-            available = [ticker for ticker in tickers if ticker in data.columns]
-            if not available:
-                raise ValueError("Yahoo Finance response does not contain a recognized price column.")
-            prices = data[available].copy()
+            raise ValueError("Required Adj Close field unavailable; ambiguous field-only data rejected")
 
     if isinstance(prices, pd.Series):
         prices = prices.to_frame(name=tickers[0])
 
     prices = prices.reindex(columns=[ticker for ticker in tickers if ticker in prices.columns])
-    prices = prices.sort_index().replace([np.inf, -np.inf], np.nan)
+    # Provider ordering can be normalized; duplicate dates and invalid prices cannot.
+    prices = prices.sort_index()
+    validate_panel(prices, kind="prices", allow_missing=True)
 
     # Keep row-level missing values until the complete requested universe is assembled.
     # The final downloader drops dates on the common observed trading calendar only after
@@ -111,4 +105,14 @@ def download_market_data(tickers, start_date, end_date):
         raise RuntimeError(
             f"No common observed trading dates for {requested} between {start_date} and {end_date}"
         )
+    validate_panel(result, kind="prices")
+    if (result.index < pd.Timestamp(start_date)).any() or (result.index >= pd.Timestamp(end_date)).any():
+        raise ValueError("Provider returned dates outside the requested interval")
+    result.attrs["alignment"] = {
+        ticker: {"first_observed": frame[ticker].first_valid_index().date().isoformat(),
+                 "last_observed": frame[ticker].last_valid_index().date().isoformat(),
+                 "observed_count": int(frame[ticker].notna().sum()),
+                 "missing_rows_before_common_alignment": int(frame[ticker].isna().sum())}
+        for ticker, frame in downloaded.items()
+    }
     return result

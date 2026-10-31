@@ -8,6 +8,7 @@ import pandas as pd
 
 from backtesting.crisis_freeze import define_crisis_intervals, execute_crisis_freeze
 from backtesting.paper_backtest import _buy_and_hold_daily_returns
+from core.validation import validate_panel
 
 CRISIS_MARKET = {
     "2008_US_GFC": "US",
@@ -25,7 +26,7 @@ def calculate_crisis_metrics(
     pre_crisis_window: int = 252,
 ) -> dict[str, object]:
     """Calculate crisis metrics using frozen target weights and an explicit V(t0) target."""
-    assets = pd.DataFrame(asset_returns).copy().sort_index()
+    assets = validate_panel(asset_returns)
     weights = pd.DataFrame(weight_history).copy().sort_index()
     assets.index = pd.DatetimeIndex(pd.to_datetime(assets.index))
     weights.index = pd.DatetimeIndex(pd.to_datetime(weights.index))
@@ -131,6 +132,14 @@ def calculate_crisis_metrics(
             else buy_hold_recovery_date.date().isoformat()
         ),
         "Buy-Hold Wealth Convention": "self-financing, no interim rebalancing, V(before first crisis return)=1",
+        "Primary Investment Convention": "Buy-Hold fields; historical weighted-log fields are diagnostics only",
+        "Buy-Hold Recovery Target": "crisis-start wealth 1; not the running peak",
+        "Buy-Hold Recovery Duration": "trading-index positions from crisis-window MDD trough to recovery",
+        "Buy-Hold Peak Wealth At Trough": float(buy_hold_peak[buy_hold_trough_pos]),
+        "Buy-Hold Peak Date": (
+            "BEFORE_FIRST_CRISIS_RETURN" if buy_hold_peak[buy_hold_trough_pos] == 1.0
+            else pd.Timestamp(buy_hold_crisis_wealth.iloc[:buy_hold_trough_pos + 1].idxmax()).date().isoformat()
+        ),
 
         "Volatility Spike": (
             crisis_volatility / baseline_volatility if baseline_volatility > 0 else np.nan

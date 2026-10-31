@@ -1,4 +1,5 @@
 import pandas as pd
+from core.validation import normalized_weights
 
 
 def define_crisis_intervals():
@@ -26,6 +27,9 @@ def execute_crisis_freeze(
     if weights.empty:
         raise ValueError("A non-empty portfolio weight history is required")
     weights.index = pd.DatetimeIndex(pd.to_datetime(weights.index))
+    if weights.index.hasnans or weights.index.has_duplicates or weights.index.tz is not None:
+        raise ValueError("Crisis weights require unique dated observations")
+    normalized_weights(weights)
     start = pd.Timestamp(crisis_start)
     end = pd.Timestamp(crisis_end)
     if end < start:

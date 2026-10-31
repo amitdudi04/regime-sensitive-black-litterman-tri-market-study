@@ -48,7 +48,8 @@ class TestPaperBacktest(unittest.TestCase):
         base = run_paper_backtest(returns, self._config())["daily_returns"]
 
         changed = returns.copy()
-        changed.iloc[320:] = changed.iloc[320:] * 50.0
+        # Keep synthetic simple returns above -100% under the explicit input contract.
+        changed.iloc[320:] = changed.iloc[320:] * 10.0
         altered = run_paper_backtest(changed, self._config())["daily_returns"]
 
         cutoff = returns.index[319]

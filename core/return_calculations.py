@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from core.validation import validate_panel
 
 
 def _clean_returns(values):
@@ -8,9 +9,11 @@ def _clean_returns(values):
 
 def compute_simple_returns(price_df: pd.DataFrame) -> pd.DataFrame:
     """Arithmetic returns used for portfolio P&L, turnover and wealth compounding."""
-    return _clean_returns(price_df.pct_change())
+    prices = validate_panel(price_df, kind="prices")
+    return prices.pct_change(fill_method=None).iloc[1:]
 
 
 def compute_log_returns(price_df: pd.DataFrame) -> pd.DataFrame:
     """Continuously compounded returns retained for diagnostics/econometric use."""
-    return _clean_returns(np.log(price_df / price_df.shift(1)))
+    prices = validate_panel(price_df, kind="prices")
+    return np.log(prices / prices.shift(1)).iloc[1:]

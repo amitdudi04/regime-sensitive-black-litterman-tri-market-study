@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from core.covariance_estimators import estimate_covariance
+from core.validation import validate_panel, normalized_weights
 from models.black_litterman_model import (
     compute_black_litterman_posterior,
     compute_implied_equilibrium_returns,
@@ -26,6 +27,20 @@ class BacktestConfig:
     view_uncertainty_scale: float = 10.0
     min_weight: float = 0.0
     max_weight: float = 1.0
+
+    def __post_init__(self):
+        if (not isinstance(self.window_size, int) or self.window_size < 2
+                or not isinstance(self.rebalance_freq, int) or self.rebalance_freq < 1):
+            raise ValueError("Window and rebalance frequency must be positive integers (window >=2)")
+        values = [self.risk_aversion, self.tau_low_vol, self.tau_high_vol,
+                  self.transaction_cost_rate, self.view_blend, self.view_uncertainty_scale,
+                  self.min_weight, self.max_weight]
+        if (not np.isfinite(values).all() or min(self.risk_aversion, self.tau_low_vol,
+                self.tau_high_vol, self.view_uncertainty_scale) <= 0
+                or not 0 <= self.transaction_cost_rate < 0.5
+                or not 0 <= self.view_blend <= 1
+                or not 0 <= self.min_weight <= self.max_weight <= 1):
+            raise ValueError("Invalid financial backtest configuration")
 
 
 def _regime_tau(train_returns: pd.DataFrame, cfg: BacktestConfig) -> float:
@@ -55,7 +70,9 @@ def _buy_and_hold_daily_returns(asset_returns: pd.DataFrame, target_weights: pd.
     Positions drift after each close. No trades take place between scheduled
     rebalances; performance is computed before explicit trading costs.
     """
+    asset_returns = validate_panel(asset_returns)
     weights = pd.Series(target_weights, index=asset_returns.columns, dtype=float).copy()
+    normalized_weights(weights.to_frame().T)
     values = []
     for _, asset_row in asset_returns.iterrows():
         portfolio_return = float(weights.dot(asset_row))
@@ -95,7 +112,7 @@ def run_paper_backtest(
     annualized covariance matrix. No future observation enters a training window.
     """
     cfg = config or BacktestConfig()
-    returns_df = returns_df.dropna(how="any").sort_index()
+    returns_df = validate_panel(returns_df)
 
     if len(returns_df) <= cfg.window_size:
         raise ValueError("Not enough observations for the requested rolling window")
@@ -113,10 +130,11 @@ def run_paper_backtest(
         # than the last observed training day, never a subsequent AUM snapshot.
         if not isinstance(equilibrium_weights.index, pd.DatetimeIndex):
             raise ValueError("Dated equilibrium priors require a DatetimeIndex")
-        if not set(assets).issubset(equilibrium_weights.columns):
+        if equilibrium_weights.columns.has_duplicates or set(assets) != set(equilibrium_weights.columns):
             raise ValueError("Dated equilibrium prior is missing one or more assets")
         equilibrium_weights = equilibrium_weights.loc[:, assets].sort_index()
-        if equilibrium_weights.empty or equilibrium_weights.index.has_duplicates:
+        if (equilibrium_weights.empty or equilibrium_weights.index.has_duplicates
+                or equilibrium_weights.index.hasnans or equilibrium_weights.index.tz is not None):
             raise ValueError("Dated equilibrium priors must be nonempty with unique dates")
         prior_matrix = equilibrium_weights.to_numpy(dtype=float)
         if (

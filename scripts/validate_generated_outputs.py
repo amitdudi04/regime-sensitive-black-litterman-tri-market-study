@@ -6,9 +6,21 @@ from pathlib import Path
 import argparse
 import json
 import re
+import hashlib
 
 import numpy as np
 import pandas as pd
+
+
+def verify_run_files(root):
+    manifest = json.loads((root / "RUN_MANIFEST.json").read_text(encoding="utf-8"))
+    if not manifest.get("run_id") or not manifest.get("output_sha256"):
+        raise ValueError("Missing completed-run identity or output fingerprints")
+    for relative, digest in manifest["output_sha256"].items():
+        path = root / relative
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+            raise ValueError(f"Output does not belong to the completed run: {relative}")
+    return manifest
 
 
 def validate_outputs(root: Path) -> dict[str, object]:
@@ -22,6 +34,7 @@ def validate_outputs(root: Path) -> dict[str, object]:
     absent = [name for name in needed if not (root / name).is_file()]
     if absent:
         raise ValueError(f"Required diagnostic outputs missing: {absent}")
+    run = verify_run_files(root)
     summary = pd.read_csv(root / "tri_market_summary.csv")
     manifest = pd.read_csv(root / "dataset_manifest.csv")
     regime = pd.read_csv(root / "regime_performance_expost.csv")
@@ -54,6 +67,20 @@ def validate_outputs(root: Path) -> dict[str, object]:
     if set(manifest["Market"]) != expected_markets:
         raise ValueError("Dataset manifest missing a market")
     for market in expected_markets:
+        daily = pd.read_csv(root / market.lower() / "daily_oos_returns.csv", index_col=0, parse_dates=True)
+        turnover = pd.read_csv(root / market.lower() / "turnover.csv", index_col=0, parse_dates=True)
+        for model, prefix in (("Black-Litterman", "black_litterman"), ("Markowitz", "markowitz")):
+            net, gross = daily[prefix + "_net"], daily[prefix + "_gross"]
+            costs = turnover[model] * run["transaction_cost_rate"]
+            factors = pd.Series(1.0, index=daily.index)
+            factors.loc[costs.index] = 1 - costs
+            if not np.allclose(1 + net, (1 + gross) * factors, atol=1e-12, rtol=0):
+                raise ValueError(f"Cost accounting fails for {market} {model}")
+            wealth = (1 + net).cumprod()
+            mdd = (wealth / np.maximum.accumulate(np.r_[1.0, wealth.to_numpy()])[1:] - 1).min()
+            reported = strategies.loc[strategies.Market.eq(market) & strategies.Model.eq(model)].iloc[0]
+            if not np.isclose(mdd, reported["Max Drawdown"], atol=1e-10):
+                raise ValueError("Summary drawdown does not reconcile to daily wealth")
         sample = strategies[strategies["Market"].eq(market)]
         if sample["Metric Sample Start"].nunique() != 1 or sample["Metric Sample End"].nunique() != 1:
             raise ValueError(f"BL and Markowitz have different OOS windows for {market}")
@@ -88,6 +115,8 @@ def validate_outputs(root: Path) -> dict[str, object]:
         lambda x: bool(re.fullmatch(r"[0-9a-f]{64}", x))
     ).all():
         raise ValueError("Missing aligned Kenneth French factor-data fingerprint")
+    if not np.isfinite(factor[["Alpha", "Alpha_t_stat", "R_squared", "MKT_beta", "SMB_beta", "HML_beta", "MOM_beta"]].to_numpy()).all():
+        raise ValueError("Nonfinite regression estimates")
     paper_status = json.loads((root / "paper_reconciliation.json").read_text(encoding="utf-8"))
     if paper_status.get("paper_computation_reproduced") is not False:
         raise ValueError("Paper reproduction must never be inferred from this validation")

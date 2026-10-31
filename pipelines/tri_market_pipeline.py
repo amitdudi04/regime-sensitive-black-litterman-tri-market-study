@@ -1,5 +1,9 @@
 import hashlib
 import json
+import platform
+import subprocess
+import importlib.metadata
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -14,11 +18,31 @@ from analysis.tau_sensitivity import run_tau_sensitivity
 from backtesting.paper_backtest import BacktestConfig, run_paper_backtest
 from core.data_loader import download_market_data
 from core.return_calculations import compute_simple_returns
+from core.validation import validate_panel
+from backtesting.allocation_stability_index import compute_asi
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = PROJECT_ROOT / "results" / "generated"
 CONFIG_PATH = PROJECT_ROOT / "config" / "project_config.yaml"
+
+
+def source_hash():
+    digest = hashlib.sha256()
+    files = sorted(PROJECT_ROOT.rglob("*.py")) + [CONFIG_PATH, PROJECT_ROOT / "requirements.txt",
+                                                  PROJECT_ROOT / "requirements-phase1-lock.txt"]
+    for path in files:
+        if ".git" in path.parts or "__pycache__" in path.parts:
+            continue
+        digest.update(str(path.relative_to(PROJECT_ROOT)).replace("\\", "/").encode())
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
+def _total_costs(net_returns, turnover, rate):
+    """Sum costs in units of initial NAV, using wealth immediately before each trade."""
+    wealth = (1 + net_returns).cumprod().shift(1, fill_value=1.0)
+    return float((wealth.reindex(turnover.index) * turnover * rate).sum())
 
 MARKETS = {
     "US": {
@@ -59,6 +83,8 @@ def _load_or_download_prices(market, tickers, start, end, *, prefer_local_snapsh
             and metadata.get("tickers") == list(tickers)
         )
         if same_request:
+            if metadata.get("price_field") != "Adj Close (auto_adjust=False)":
+                raise ValueError("Cached snapshot has ambiguous price adjustment provenance; reacquire explicitly")
             actual_hash = hashlib.sha256(snapshot_path.read_bytes()).hexdigest()
             if actual_hash != metadata.get("sha256"):
                 raise ValueError(
@@ -70,9 +96,13 @@ def _load_or_download_prices(market, tickers, start, end, *, prefer_local_snapsh
                 raise ValueError(f"Local price snapshot has an invalid schema for {market}")
             prices.index = pd.DatetimeIndex(prices.index)
             prices.index.name = None
+            validate_panel(prices, kind="prices")
+            if (prices.index < pd.Timestamp(start)).any() or (prices.index >= pd.Timestamp(end)).any():
+                raise ValueError("Cached prices outside requested dates")
             return prices.sort_index(), metadata
 
     prices = download_market_data(tickers, start, end)
+    validate_panel(prices, kind="prices")
     if prices.empty or list(prices.columns) != list(tickers) or prices.isna().any().any():
         raise ValueError(f"Downloaded adjusted-close price matrix is incomplete for {market}")
 
@@ -82,7 +112,12 @@ def _load_or_download_prices(market, tickers, start, end, *, prefer_local_snapsh
     metadata = {
         "market": market,
         "source": "Yahoo Finance via yfinance",
-        "price_field": "Adj Close, falling back to Close only if adjusted close is unavailable",
+        "price_field": "Adj Close (auto_adjust=False)",
+        "corporate_actions": "provider adjusted for dividends and splits; USD-listed ETF exposure",
+        "alignment": prices.attrs.get("alignment", "NOT_AVAILABLE"),
+        "per_ticker": {ticker: {"first_common_date": prices.index.min().date().isoformat(),
+                                  "last_common_date": prices.index.max().date().isoformat(),
+                                  "common_observations": len(prices)} for ticker in tickers},
         "requested_start": str(start),
         "requested_end_exclusive": str(end),
         "tickers": list(tickers),
@@ -109,7 +144,7 @@ def _performance(series):
     sharpe = ann_return / ann_vol if ann_vol > 0 else np.nan
 
     wealth = (1.0 + series).cumprod()
-    drawdown = wealth / wealth.cummax() - 1.0
+    drawdown = wealth / np.maximum.accumulate(np.r_[1.0, wealth.to_numpy()])[1:] - 1.0
 
     return {
         "Annualized Return": ann_return,
@@ -123,9 +158,7 @@ def _performance(series):
 
 
 def _asi(weights):
-    if weights is None or len(weights) < 2:
-        return np.nan
-    return float(weights.diff().abs().sum(axis=1, min_count=1).dropna().mean())
+    return compute_asi(weights)
 
 
 def _benchmark_returns(ticker, start, end, target_index):
@@ -158,6 +191,9 @@ def _aligned_benchmark_series(market_returns, ticker, start, end, target_index):
 
 
 def run_tri_market_study():
+    initial_source_hash = source_hash()
+    # Remove the completion marker first. Interrupted runs cannot validate as complete.
+    (RESULTS_DIR / "RUN_MANIFEST.json").unlink(missing_ok=True)
     project_cfg = _load_project_config()
     requested_start = str(project_cfg["requested_start"])
     requested_end = str(project_cfg["requested_end"])
@@ -264,6 +300,10 @@ def run_tri_market_study():
                     "Initial Deployment Turnover": initial_deployment_turnover,
                     "Initial Deployment Cost (bps)": initial_deployment_cost_bps,
                     "ASI": _asi(weights),
+                    "Annualized Gross Return": float(daily[col.replace("_net", "_gross")].mean() * 252),
+                    "Average Target Weight Turnover": _asi(weights),
+                    "Sum Cost Fractions": float(packet["turnover"][model].sum() * cfg.transaction_cost_rate),
+                    "Total Costs Per Initial NAV": _total_costs(daily[col], packet["turnover"][model], cfg.transaction_cost_rate),
                 }
             )
 
@@ -391,6 +431,19 @@ def run_tri_market_study():
     pd.DataFrame(bootstrap_rows).to_csv(RESULTS_DIR / "bootstrap_sharpe_differences.csv", index=False)
 
     run_manifest = {
+        "run_id": str(uuid.uuid4()),
+        "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT, text=True).strip(),
+        "git_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=PROJECT_ROOT, text=True).strip()),
+        "source_sha256": initial_source_hash,
+        "configuration_sha256": hashlib.sha256(CONFIG_PATH.read_bytes()).hexdigest(),
+        "configuration": project_cfg,
+        "environment": {"python": platform.python_version(), "os": platform.platform(),
+                        "packages": {d.metadata["Name"]: d.version for d in importlib.metadata.distributions()}},
+        "random_seeds": {"bootstrap": 42, "markov": "deterministic fit; no random search"},
+        "output_sha256": {str(p.relative_to(RESULTS_DIR)).replace("\\", "/"): hashlib.sha256(p.read_bytes()).hexdigest()
+                          for p in RESULTS_DIR.rglob("*.csv")
+                          if not any(part in ("price_data", "factor_data") for part in p.parts)
+                          and p.name not in ("paper_reconciliation.csv", "paper_arithmetic_audit.csv")},
         "requested_sample_start": requested_start,
         "requested_sample_end_exclusive": requested_end,
         "crisis_sample_start_requested": crisis_data_start,
@@ -455,6 +508,8 @@ def run_tri_market_study():
             "original_paper_reproduced": False,
         }
     }
+    if source_hash() != initial_source_hash:
+        raise RuntimeError("Source changed during execution; run cannot be certified")
     with open(RESULTS_DIR / "RUN_MANIFEST.json", "w", encoding="utf-8") as handle:
         json.dump(run_manifest, handle, indent=2)
 

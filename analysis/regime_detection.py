@@ -22,6 +22,8 @@ def fit_markov_regime_model(market_returns):
         switching_variance=True,
     )
     res = model.fit(disp=False)
+    if not res.mle_retvals.get("converged", False):
+        raise RuntimeError("Markov model did not converge; state inference unavailable")
 
     vol_0 = float(res.params.get("sigma2[0]", np.nan))
     vol_1 = float(res.params.get("sigma2[1]", np.nan))
@@ -32,6 +34,10 @@ def fit_markov_regime_model(market_returns):
     low_vol_state = 1 - high_vol_state
 
     smoothed = res.smoothed_marginal_probabilities
+    if (not np.isfinite(smoothed.to_numpy()).all()
+            or (smoothed < -1e-10).any().any() or (smoothed > 1 + 1e-10).any().any()
+            or not np.allclose(smoothed.sum(axis=1), 1, atol=1e-7)):
+        raise RuntimeError("Invalid smoothed state probabilities")
     classifications = pd.DataFrame(index=returns_clean.index)
     classifications["Prob_Low_Vol"] = smoothed[low_vol_state]
     classifications["Prob_High_Vol"] = smoothed[high_vol_state]

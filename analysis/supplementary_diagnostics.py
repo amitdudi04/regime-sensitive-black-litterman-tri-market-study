@@ -71,6 +71,9 @@ def run_supplementary_diagnostics(
         "OOS End": df.index.max().date().isoformat(),
         "Return Convention": "simple net returns; RF=0; arithmetic annualization",
         "Historical Paper Test Reproduction": False,
+        "Percentile CI 95 Lower": result["percentile_ci_95"][0],
+        "Percentile CI 95 Upper": result["percentile_ci_95"][1],
+        "Null Centering": result["null_centering"],
     }])
     probabilities = classifications.copy()
     probabilities.insert(0, "Market", market)
