@@ -1,51 +1,52 @@
 # Research Architecture
 
-The project is organized around a single end-to-end tri-market pipeline.
-
-## Data flow
+The executable pipeline and its diagnostics use the same ETF price histories, but the historical crisis analysis is a separate experiment. See [the methodology](METHODOLOGY.md) for exact return and weight conventions.
 
 ```text
-ETF prices
-   ↓
-common-date alignment
-   ↓
-simple daily returns
-   ↓
-252-day rolling estimation window
-   ↓
-Ledoit-Wolf covariance
-   ↓
-┌───────────────────────────────┐
-│ Markowitz: historical means   │
-│ Black-Litterman: posterior    │
-└───────────────────────────────┘
-   ↓
-same long-only optimizer
-   ↓
-63-day out-of-sample holding period
-   ↓
-drift-adjusted turnover and transaction costs
-   ↓
-portfolio returns and weight histories
-   ↓
-performance, ASI and US factor analysis
+Yahoo Finance ETF prices (record retrieval metadata and SHA-256)
+    |
+    +--> Common-date alignment --> Simple daily returns
+             |
+             +--> 252-session rolling estimation / Ledoit–Wolf covariance
+             |      +--> Markowitz: historical mean expected returns
+             |      +--> Black–Litterman: equilibrium prior + dated/absolute views
+             |                tau chosen using trailing observed volatility
+             |      +--> Shared long-only optimizer
+             |      +--> 63-session buy-and-hold intervals (weights drift)
+             |      +--> Initial and rebalance costs --> Net portfolio returns
+             |
+             +--> Performance, target-weight ASI, drift-adjusted turnover
+             +--> US Kenneth French factor regression (HAC)
+             +--> Ex-post Markov regime classification + paired Sharpe bootstrap
+             +--> Separate 2008/2015/2020 crisis and fixed-tau diagnostics
+             |
+             +--> results/generated/ and dataset/run manifests
+                         |
+                         +--> scripts/verify_paper_results.py
+                         |       Paper mismatch / incomparable benchmark report
+                         +--> scripts/validate_generated_outputs.py
+                                 Numerical-format and finance-invariant validation
 ```
 
 ## Main modules
 
-- `core/data_loader.py` — market-data download and alignment.
-- `core/return_calculations.py` — daily return calculations.
-- `core/covariance_estimators.py` — Ledoit-Wolf covariance estimation.
-- `models/black_litterman_model.py` — equilibrium returns and posterior calculation.
-- `models/optimizer.py` — common long-only portfolio optimizer.
-- `backtesting/paper_backtest.py` — rolling out-of-sample comparison.
-- `analysis/factor_regression.py` — US four-factor regression with HAC standard errors.
-- `analysis/regime_detection.py` — two-state Markov-switching analysis.
-- `backtesting/crisis_freeze.py` — fixed-weight crisis-window helper.
-- `pipelines/tri_market_pipeline.py` — end-to-end study runner.
+| Location | Purpose |
+|---|---|
+| `core/` | Market-data download, adjusted-price handling, daily returns and shrinkage covariance |
+| `models/` | Black–Litterman posterior and long-only portfolio optimization |
+| `backtesting/paper_backtest.py` | Walk-forward training, dated equilibrium prior selection, buy-and-hold P&L and trading costs |
+| `analysis/crisis_analysis.py` | Paper-style weighted-log diagnostic **separate from** frozen-holdings buy-and-hold crisis paths |
+| `analysis/tau_sensitivity.py` | US fixed-tau scenario backtests |
+| `analysis/factor_regression.py` | US daily factor regression, HAC inference and factor-data provenance |
+| `analysis/regime_detection.py`, `analysis/supplementary_diagnostics.py` | Descriptive ex-post states and paired block-bootstrap Sharpe comparisons |
+| `analysis/ownership_research.py` | Optional dated SOE/private stock-level analysis; original evidence not supplied |
+| `pipelines/tri_market_pipeline.py` | Orchestration and output manifests |
+| `scripts/verify_paper_results.py` | Explicit numerical comparisons against historical paper CSVs |
+| `scripts/validate_generated_outputs.py` | Check generated table schemas and internal finance arithmetic |
+| `.github/workflows/` | Synthetic tests and public-data empirical checks |
 
-## Results
+## Output provenance
 
-Tables reported in the research paper are stored in `results/paper_results/`.
+`results/paper_results/` contains historical **transcriptions of the manuscript's tables**, not verified outputs of the revised pipeline. `results/generated/` contains regenerated outputs and is excluded from version control. Raw provider data snapshots are also excluded: their recorded hashes identify a particular run but do not guarantee later fresh downloads yield the same data.
 
-Running the pipeline produces a separate local directory, `results/generated/`, containing the latest output tables, daily returns, weights and figures. The generated directory is excluded from version control.
+For the verified October 30 snapshot and its still-unresolved differences from the manuscript, see [corrected-pipeline results](EMPIRICAL_AUDIT_2026-10-30.md).
