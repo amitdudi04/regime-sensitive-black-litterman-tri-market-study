@@ -19,9 +19,9 @@ The configured main download starts on 2010-01-01 and ends **before** 2025-01-01
 
 Both strategies use the same Ledoit–Wolf covariance estimate, 252-session training windows, long-only fully invested optimization, and rebalancing every 63 trading sessions. Portfolio weights **drift naturally between rebalances**. The current model applies 10 basis points per unit of L1 traded-weight turnover, including a separately reported initial investment from cash.
 
-Markowitz uses rolling historical means. Black–Litterman uses the equilibrium-implied vector \\(\\Pi = \\lambda\\Sigma w_{eq}\\) and absolute views \\(Q = \\Pi + 0.10(\\mu_{hist}-\\Pi)\\). **The default equilibrium weights are equal-weight proxies, not observed capitalization weights.** Dated, historical capitalization/AUM weights can be supplied as-of the training cutoff, but the original manuscript's historical capitalization input data have not been recovered.
+Markowitz uses rolling historical means. Black–Litterman uses the equilibrium-implied vector \(\Pi = \lambda\Sigma w_{eq}\) and absolute views \(Q = \Pi + 0.10(\mu_{hist}-\Pi)\). **The default equilibrium weights are equal-weight proxies, not observed capitalization weights.** Dated, historical capitalization/AUM weights can be supplied as-of the training cutoff, but the original manuscript's historical capitalization input data have not been recovered.
 
-“Regime-sensitive” refers to an **ex-ante training-window volatility rule used to choose** \\(\\tau\\). The separate Markov-switching analysis uses **ex-post smoothed** states for description; it does not drive trading decisions.
+“Regime-sensitive” refers to an **ex-ante training-window volatility rule used to choose** \(\tau\). The separate Markov-switching analysis uses **ex-post smoothed** states for description; it does not drive trading decisions.
 
 ## Corrected-pipeline findings
 
