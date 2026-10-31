@@ -121,4 +121,3 @@ Evidence-based review for an MSc Finance research portfolio. All answers describ
 30. **Has the author already approved all scholarship and disclosures?**
 
    No. This is an author-review draft. Funding/conflicts, AI use and oversight, author metadata, reference-review items and final interpretations require approval before submission. No SSRN upload occurred. Evidence: Declarations; validation report.
-

@@ -154,7 +154,7 @@ challenges=[
 ]
 review='# Finance reviewer challenge checklist\n\nEvidence-based review for an MSc Finance research portfolio. All answers describe the existing frozen design; no additional experiment is implied.\n\n'
 for i,(q,a,e) in enumerate(challenges,1):review+=f'{i}. **{q}**\n\n   {a} Evidence: {e}.\n\n'
-(out/'FINANCE_REVIEWER_CHALLENGE_CHECKLIST.md').write_text(review,encoding='utf-8')
+(out/'FINANCE_REVIEWER_CHALLENGE_CHECKLIST.md').write_text(review.rstrip()+'\n',encoding='utf-8')
 
 refmd='# Citation and reference audit\n\nChecked on 31 October 2026 against publisher records, primary author copies, Crossref publisher metadata and, for the Grinold/Kahn edition, an authoritative library catalogue. Citation completeness is mechanical; verification is of metadata and the cited methodological scope, not a claim to have independently reproduced each cited study.\n\n'
 refmd+='All 26 listed works are cited and all in-text citation keys resolve; no duplicate keys. Ledoit/Wolf 2004a and 2004b are disambiguated. Foundational relevant scholarship is retained; directly relevant additions cover 1/N, constraints, the implemented covariance estimator, inference and HAC.\n\n| Work | Verification finding | Source |\n|---|---|---|\n'
