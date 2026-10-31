@@ -1,8 +1,10 @@
-# Black–Litterman Audit — Final Verified Public-Data Run (2026-10-30)
+# Corrected-Pipeline Diagnostic Results — October 2026
 
-**Disposition:** corrected Python diagnostic pipeline and numerical/format checks **PASS**; exact reconstruction of the March 2026 manuscript **NOT ESTABLISHED**. The manuscript and historical `results/paper_results/` files are preserved without modification.
+**Scope:** an executed, internally validated October 2026 ETF backtest using the corrected implementation; **not** an independent reconstruction of the March 2026 manuscript. The manuscript and historical `results/paper_results/` files are preserved without modification.
 
 ## Execution and numerical status
+
+The software checks use reconstructed output files and explicitly declared metric conventions. Their success cannot certify missing original inputs, historical source vintages or published inference.
 
 - Code snapshot: `b278d5ff14db0b4c80e87c1603196af5c7483f2c`.
 - [GitHub Actions full empirical validation](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40942721530): **SUCCESS**.
