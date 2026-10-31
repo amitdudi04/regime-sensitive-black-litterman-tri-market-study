@@ -335,13 +335,16 @@ This is a change register only. No revised manuscript is written, no historical 
 
 
 def validate_bundle(out,e=None):
-    from scripts.phase3_figures import figure_payloads, verify_figure_annotations
+    from scripts.phase3_figures import figure_payloads, verify_figure_annotations, expected_annotations
     out=Path(out)
     m=json.loads((out/"PHASE3_RUN_MANIFEST.json").read_text(encoding="utf-8"))
     e=load_evidence() if e is None else e
     if m["source_runs"]!={"Phase 1":e["p1"]["run_id"],"Phase 2":e["p2"]["run_id"]}:
         raise ValueError("Stale Phase 3 source-run identity")
     if m["inputs"]!=e["inputs"]: raise ValueError("Source files changed after Phase 3 freeze")
+    expected_source={"scripts/phase3_final_results.py","scripts/phase3_figures.py","requirements-phase1-lock.txt"}
+    if set(m["source_sha256"])!=expected_source: raise ValueError("Incomplete executed-source fingerprints")
+    for path,expected in m["source_sha256"].items(): require_output_hash((ROOT/path).read_bytes(),expected,path)
     tables=build_tables(e); validate_numeric_links(e,tables)
     for number,expected in tables.items():
         actual=pd.read_csv(out/table_filename(number))
@@ -354,7 +357,13 @@ def validate_bundle(out,e=None):
         record=m["figures"][name]
         if record["payload_sha256"]!=payload_hash(p): raise ValueError("Figure uses stale/wrong sample or scenario")
         if record["source_files"]!=p["source"] or record["phase"]!=p["phase"]: raise ValueError("Figure provenance mismatch")
-        verify_figure_annotations(out/"figures"/(name+".svg"),record["annotations"])
+        labels=expected_annotations(p)
+        if record["annotations"]!=labels: raise ValueError("Figure annotation registry differs from expected source values")
+        if record["files"]!=[name+".png",name+".svg"]: raise ValueError("Missing/misnamed figure formats")
+        verify_figure_annotations(out/"figures"/(name+".svg"),labels)
+    required={table_filename(n) for n in range(1,9)}|{"FINAL_RESEARCH_TABLES.md","FINAL_EMPIRICAL_FINDINGS.md","MANUSCRIPT_CHANGE_REGISTER.md"}
+    required|={f"figures/{name}.{suffix}" for name in payloads for suffix in ("png","svg")}
+    if set(m["outputs"])!=required: raise ValueError("Incomplete final-output fingerprints")
     for relative,expected in m["outputs"].items():
         if sha((out/relative).read_bytes())!=expected: raise ValueError(f"Final output changed: {relative}")
     return {"status":"PASS","tables":len(tables),"table_rows":{str(k):len(v) for k,v in tables.items()},
@@ -370,6 +379,7 @@ def build_bundle(out=OUT):
     from scripts.phase3_figures import figure_payloads, render_figures
     out=Path(out)
     if out.exists() and any(out.iterdir()): raise FileExistsError("Preserve prior Phase 3 evidence; choose a new empty output directory")
+    source_dirty=bool(subprocess.check_output(["git","status","--porcelain"],cwd=ROOT,text=True).strip())
     e=load_evidence(); tables=build_tables(e); validate_numeric_links(e,tables)
     out.mkdir(parents=True,exist_ok=True)
     for n,frame in tables.items(): frame.to_csv(out/table_filename(n),index=False,lineterminator="\n",float_format="%.17g")
@@ -378,7 +388,7 @@ def build_bundle(out=OUT):
     write_findings(out,e,tables,plots); write_change_register(out)
     manifest={"run_id":str(uuid.uuid4()),"completed_at_utc":datetime.now(timezone.utc).isoformat(),
         "executed_source_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
-        "git_dirty":bool(subprocess.check_output(["git","status","--porcelain"],cwd=ROOT,text=True).strip()),
+        "git_dirty":source_dirty,"git_status_scope":"captured before creating new publication outputs",
         "base_phase2_commit":P2,"phase1_evidence_commit":P1,
         "source_sha256":{str(p.relative_to(ROOT)).replace('\\','/'):sha(p.read_bytes()) for p in
             (Path(__file__),ROOT/"scripts/phase3_figures.py",ROOT/"requirements-phase1-lock.txt")},

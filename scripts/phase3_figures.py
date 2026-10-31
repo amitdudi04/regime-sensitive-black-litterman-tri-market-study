@@ -162,3 +162,13 @@ def verify_figure_annotations(path, annotations):
     text=" ".join("".join(n.itertext()) for n in tree.getroot().iter() if n.tag.endswith("text"))
     for label in annotations:
         if label not in text: raise ValueError(f"Figure annotation does not match generated table/payload: {label}")
+
+
+def expected_annotations(payload):
+    if payload.get("kind") in ("bars","factors"):
+        models=payload.get("models",list(MODELS[:2]))
+        groups=list(MARKETS) if payload["kind"]=="bars" else payload["terms"]
+        key="market" if payload["kind"]=="bars" else "term"
+        return [next(r["annotation"] for r in payload["rows"] if r["model"]==model and r[key]==group) for model in models for group in groups]
+    if payload.get("kind")=="forest": return [r["annotation"] for r in payload["rows"]]
+    return payload.get("annotations",[])

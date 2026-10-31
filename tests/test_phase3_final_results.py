@@ -105,12 +105,21 @@ class TestPhase3Publication(unittest.TestCase):
             out=Path(temp);(out/"figures").mkdir()
             for n,frame in tables.items():frame.to_csv(out/table_filename(n),index=False)
             (out/"FINAL_RESEARCH_TABLES.md").write_text(readable_tables(tables),encoding="utf-8")
+            (out/"FINAL_EMPIRICAL_FINDINGS.md").write_text("Synthetic fixture")
+            (out/"MANUSCRIPT_CHANGE_REGISTER.md").write_text("Synthetic fixture")
             (out/"figures/test.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"/>')
+            (out/"figures/test.png").write_bytes(b"synthetic-test-only")
             manifest={"source_runs":{"Phase 1":"p1","Phase 2":"p2"},"inputs":{},"figures":{"test":{
-                "payload_sha256":payload_hash(payload["test"]),"source_files":["synthetic"],"phase":"Test","annotations":[]}},
-                "outputs":{}}
+                "payload_sha256":payload_hash(payload["test"]),"source_files":["synthetic"],"phase":"Test","annotations":[],"files":["test.png","test.svg"]}},
+                "source_sha256":{p:sha((ROOT/p).read_bytes()) for p in ("scripts/phase3_final_results.py","scripts/phase3_figures.py","requirements-phase1-lock.txt")},
+                "outputs":{str(p.relative_to(out)).replace('\\','/'):sha(p.read_bytes()) for p in out.rglob('*') if p.is_file()}}
             path=out/"PHASE3_RUN_MANIFEST.json";path.write_text(json.dumps(manifest))
             self.assertEqual(validate_bundle(out,e)["status"],"PASS")
+            incomplete=json.loads(json.dumps(manifest));incomplete["outputs"]={}
+            path.write_text(json.dumps(incomplete))
+            with self.assertRaisesRegex(ValueError,"Incomplete final-output"):
+                validate_bundle(out,e)
+            path.write_text(json.dumps(manifest))
             bad=pd.read_csv(out/table_filename(2));bad.loc[0,"Net Annualized Return"]+=.01
             bad.to_csv(out/table_filename(2),index=False)
             manifest["outputs"][table_filename(2)]=sha((out/table_filename(2)).read_bytes())
