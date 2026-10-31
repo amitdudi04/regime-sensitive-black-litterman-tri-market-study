@@ -1,163 +1,74 @@
-# Regime-Sensitive Black-Litterman Portfolio Allocation
+# Black–Litterman and Markowitz Across Three ETF Markets
 
-A rolling out-of-sample comparison of Black-Litterman and classical mean-variance (Markowitz) allocation across US, China and India ETF baskets.
+**Portfolio stability, turnover, and out-of-sample risk**  
+Research implementation by Amit Kumar Dudi
 
-**Author:** Amit Kumar Dudi
+This study compares equilibrium-anchored Black–Litterman allocation with historical-mean Markowitz optimization in ETF baskets representing the United States, China, and India. It asks whether more stable portfolio targets translate into lower trading turnover, and whether that stability is accompanied by better investment performance.
 
-**Research manuscript used as the published-results reference:** *Black-Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets* (March 2026; SSRN 6479462).
+The repository contains a corrected, test-validated **2026 diagnostic implementation** and an **earlier research manuscript**: *Black–Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets* (March 2026, SSRN 6479462). The manuscript's reported results have **not** been numerically reproduced by the current code. They are retained separately, not represented as verified outputs of the corrected study.
 
-## Research question
+## Data and method
 
-Does equilibrium anchoring in the Black-Litterman framework reduce target-weight instability and trading turnover relative to a historical-mean Markowitz optimizer, and how do the approaches compare in performance and selected crisis windows?
+| Market | Investable ETFs | Corrected main out-of-sample window |
+|---|---|---|
+| US | SPY, QQQ, IWM, XLF, XLK | 2011-01-04 to 2024-12-31 |
+| China | ASHR, KWEB, MCHI, FXI | 2014-11-07 to 2024-12-31 |
+| India | INDA, EPI, SMIN, INDY | 2013-02-13 to 2024-12-31 |
 
-## Asset universes
+The configured main download starts on 2010-01-01 and ends **before** 2025-01-01. ETF listing histories and the 252-session estimation window shorten the effective out-of-sample periods. The 2008 US crisis is evaluated in a distinct historical crisis sample, not as part of the main backtest.
 
-| Market | ETFs |
-|---|---|
-| United States | SPY, QQQ, IWM, XLF, XLK |
-| China | ASHR, KWEB, MCHI, FXI |
-| India | INDA, EPI, SMIN, INDY |
+Both strategies use the same Ledoit–Wolf covariance estimate, 252-session training windows, long-only fully invested optimization, and rebalancing every 63 trading sessions. Portfolio weights **drift naturally between rebalances**. The current model applies 10 basis points per unit of L1 traded-weight turnover, including a separately reported initial investment from cash.
 
-The configured main sample requests 2010-01-01 through 2024-12-31 (the configured end date, 2025-01-01, is exclusive). Effective common-history dates differ by market because the ETFs did not all trade over the same period.
+Markowitz uses rolling historical means. Black–Litterman uses the equilibrium-implied vector \\(\\Pi = \\lambda\\Sigma w_{eq}\\) and absolute views \\(Q = \\Pi + 0.10(\\mu_{hist}-\\Pi)\\). **The default equilibrium weights are equal-weight proxies, not observed capitalization weights.** Dated, historical capitalization/AUM weights can be supplied as-of the training cutoff, but the original manuscript's historical capitalization input data have not been recovered.
 
-## Method in the current public implementation
+“Regime-sensitive” refers to an **ex-ante training-window volatility rule used to choose** \\(\\tau\\). The separate Markov-switching analysis uses **ex-post smoothed** states for description; it does not drive trading decisions.
 
-- 252-trading-day estimation window and 63-trading-day rebalance interval.
-- Ledoit-Wolf covariance shrinkage.
-- Long-only, fully invested portfolios, with weights permitted from 0% to 100%.
-- Historical-mean expected returns for Markowitz.
-- Black-Litterman posterior expected returns using an identity view matrix and the view blend: Q = Pi + 0.10 * (mu_hist - Pi).
-- Proportional transaction costs of 10 basis points per unit of L1 turnover.
-- Rolling out-of-sample evaluation and separate crisis and fixed-tau diagnostics.
+## Corrected-pipeline findings
 
-**Important implementation distinction:** the public implementation currently defaults to an equal-weight equilibrium prior. The manuscript describes a market-capitalization-implied prior. The published paper results therefore must not be described as reproduced by the current implementation until this difference and the related output discrepancies are resolved.
+These are results from the [October 2026 corrected-pipeline audit](docs/EMPIRICAL_AUDIT_2026-10-30.md), not values reproduced from the March manuscript. The table reports **net arithmetic annualized simple returns**, zero-risk-free-rate Sharpe ratios, drift-adjusted rebalance turnover, and mean L1 changes in target allocations (ASI).
 
-## Published-paper performance results
+| Market | Method | Annualized return | Sharpe | Mean rebalance L1 turnover | ASI |
+|---|---|---:|---:|---:|---:|
+| US | Black–Litterman | 15.41% | 0.807 | 2.87% | 0.00941 |
+| US | Markowitz | 15.89% | 0.744 | 80.29% | 0.80506 |
+| China | Black–Litterman | 5.82% | 0.202 | 3.58% | 0.00148 |
+| China | Markowitz | 4.53% | 0.150 | 70.73% | 0.71241 |
+| India | Black–Litterman | 10.87% | 0.504 | 1.72% | 0.00235 |
+| India | Markowitz | 13.21% | 0.584 | 58.34% | 0.58526 |
 
-The table below preserves the values reported in the manuscript's Table 2 and the historical tri-market CSV. These are **paper-release reference values**, not outputs verified by the current implementation.
+The revised Black–Litterman strategy changes target weights less frequently and incurs substantially lower modeled turnover in all three baskets. Its Sharpe ratio is higher in the US and China, but **lower in India**. The comparison does not show universal return or drawdown dominance. Markowitz is sometimes highly concentrated because the optimization permits up to 100% in one ETF.
 
-| Market | Model | Return | Volatility | Sharpe | Turnover | ASI | Max drawdown |
-|---|---|---:|---:|---:|---:|---:|---:|
-| US | Black-Litterman | 12.99% | 20.00% | 0.650 | 0.20% | 0.001632 | -38.04% |
-| US | Markowitz | 13.24% | 21.57% | 0.614 | 1.58% | 0.015365 | -33.95% |
-| US | Benchmark | 13.19% | 19.83% | 0.665 | - | - | -37.87% |
-| China | Black-Litterman | 1.20% | 28.45% | 0.042 | 0.08% | 0.000391 | -68.07% |
-| China | Markowitz | 2.64% | 30.19% | 0.088 | 1.12% | 0.010772 | -68.58% |
-| China | Benchmark | 1.20% | 28.74% | 0.042 | - | - | -68.66% |
-| India | Black-Litterman | 7.60% | 21.34% | 0.356 | 0.07% | 0.000322 | -53.67% |
-| India | Markowitz | 9.76% | 22.18% | 0.440 | 0.82% | 0.007822 | -50.07% |
-| India | Benchmark | 7.54% | 21.33% | 0.353 | - | - | -53.78% |
+A new paired 20-session circular-block bootstrap (2,000 iterations; seed 42) gives BL-minus-Markowitz Sharpe p-values of **0.5370 (US), 0.6915 (China), and 0.2735 (India)**. None is below 0.05; these tests are distinct from the manuscript's original volatility and ASI hypotheses. Markov-state performance is **descriptive and ex-post**, not a trading validation.
 
-**Interpretation note.** In the published table, Black-Litterman has lower reported ASI and turnover in all three markets. It does not dominate every return or drawdown metric: Markowitz has a higher reported Sharpe ratio in China and India, the US benchmark Sharpe is higher than the Black-Litterman Sharpe, and Black-Litterman has a worse maximum drawdown than Markowitz in the US and India. These are historical reported findings, not evidence of universal superiority.
+## Published paper versus current implementation
 
-**Comparability note.** The paper and repository do not yet have a fully reconciled calculation trail for every published metric. The historical figures are preserved to avoid silently replacing the manuscript's results with numbers from a different run. Metric definitions, effective sample dates, benchmark construction and the equilibrium prior must be reconciled before claiming exact computational reproduction.
+The manuscript reports different returns, risk metrics, factor coefficients, crisis outcomes, and tau sensitivity. Automated comparison of its historical performance, crisis and tau reference CSVs against the revised pipeline found **59 numerical mismatches** and **12 benchmark values that are not directly comparable because different instruments were used**, across 71 checked cells. No cell qualified as an exact match under the specified comparison tolerance.
 
-## Latest independently validated diagnostic release (30 October 2026)
+This difference cannot be resolved by rounding or altering published tables. The original dated capitalization/AUM inputs, full historical price snapshots, optimizer allocations, and some original hypothesis-testing inputs have not been recovered. The paper also contains figure annotations and interpretations that need a documented manuscript revision. Until then, **do not cite the corrected figures as reproducing the March 2026 manuscript**.
 
-- [Final 35-test empirical run and research evidence](docs/EMPIRICAL_AUDIT_2026-10-30.md)
-- [Research acceptance gate: validated versus unavailable manuscript inputs](docs/RESEARCH_ACCEPTANCE_GATE.md)
-- [GitHub Actions: full pipeline, paper comparison, and finance invariant checks](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40942721530)
+The historical numbers are preserved unchanged in [`results/paper_results/`](results/paper_results/). For the full distinction between published, earlier diagnostic, and corrected-run findings, see [research reconciliation](docs/RESULTS_RECONCILIATION.md).
 
-**Validation result:** 35 unit tests passed and generated output schemas/finance invariants passed. Historical paper reproduction is **not established**. Across 71 reference-table comparisons, 59 are numerically different and 12 benchmark values are **incomparable because they represent different instruments**. The new report contains ex-post regimes, paired block-bootstrap uncertainty, US factor-input fingerprints, and explicit ownership-evidence requirements. None of these newly generated diagnostics should be substituted into the historical paper tables without a formally documented revision.
+## Reproduce and examine
 
-## Latest corrected empirical audit (29 October 2026)
+```bash
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python -m pipelines.run_tri_market_pipeline
+python -m scripts.verify_paper_results
+python -m scripts.validate_generated_outputs
+python scripts/generate_research_figures.py
+```
 
-The corrected branch was executed end-to-end using freshly retrieved public ETF prices. **29 tests passed**, but the generated historical comparisons **do not reproduce the manuscript**: 59 numeric comparisons differ and 12 lack equivalent benchmark rows across the three historical paper-result CSVs. This is an empirical-reconciliation failure, not a software-test failure. The 2026-10-29 results include self-financing portfolio returns, drift-adjusted turnover, corrected ASI averaging, two separately named crisis conventions, dated-prior support, and complete run/date manifests.
+The current test suite had **35 passing tests** in the [verified GitHub Actions run](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40942721530). That run completed the three-market pipeline, crisis and fixed-tau analyses, supplementary regime/Sharpe diagnostics, and output-invariant validation. Passing these checks demonstrates **internal consistency**, not historical-paper replication.
 
-- [Latest empirical audit and calculated results](docs/EMPIRICAL_AUDIT_2026-10-29.md)
-- [Committee correction register and manuscript errata](docs/REVIEWER_CORRECTIONS.md)
-- [GitHub Actions audit run and temporary generated-output artifact](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40936030819)
+Price data come from Yahoo Finance via `yfinance`. The pipeline records per-market effective dates, download timestamps, checksums and factor-data fingerprints. Raw downloaded snapshots are excluded from version control, so a later fresh-data run may not exactly reproduce the archived output; see [methodology and data limitations](docs/METHODOLOGY.md). The current factor regression is US-only. The separate ownership-analysis helper requires **real, dated Chinese stock classifications and returns** and does not reproduce the paper's SOE/private table without them.
 
-The 2026-10-13 diagnostic numbers below are **prior-run historical diagnostics** and are not outputs of the latest accounting logic. Neither set should be mistaken for a reproduction of the paper.
+## Further documentation
 
-## Current local diagnostic run - not the paper results
+- [Methodology and return conventions](docs/METHODOLOGY.md)
+- [Architecture and output flow](docs/ARCHITECTURE.md)
+- [Most recent validated diagnostic and numerical evidence](docs/EMPIRICAL_AUDIT_2026-10-30.md)
+- [Published-results reconciliation, including the archived October 13 diagnostic](docs/RESULTS_RECONCILIATION.md)
+- [Manuscript issues requiring evidence or formal revision](docs/REVIEWER_CORRECTIONS.md)
 
-A local pipeline run was recorded on 2026-10-13 using checksum-identified adjusted-close price snapshots. Its outputs are under the ignored results/generated directory and are not committed as canonical research results. The values differ materially from the historical paper-release table.
-
-Examples:
-
-| Market | Model | Paper ASI | Current diagnostic ASI | Status |
-|---|---|---:|---:|---|
-| US | Black-Litterman | 0.001632 | 0.009242 | Unresolved |
-| US | Markowitz | 0.015365 | 0.790682 | Unresolved |
-| China | Black-Litterman | 0.000391 | 0.001443 | Unresolved |
-| China | Markowitz | 0.010772 | 0.695031 | Unresolved |
-| India | Black-Litterman | 0.000322 | 0.002298 | Unresolved |
-| India | Markowitz | 0.007822 | 0.573067 | Unresolved |
-
-**Correction status (October 2026):** The 2026-10-13 diagnostic numbers above predate the subsequent buy-and-hold portfolio-accounting and ASI averaging corrections on this audit branch. They are retained only as historical diagnostic evidence, not estimates produced by the latest code. A fresh checksum-verified data run is required before publishing a new numerical comparison. The latest code uses drifted buy-and-hold weights within each 63-session interval, with trading costs at the scheduled rebalance dates.
-
-The current Markowitz run often places nearly all weight in one ETF. The configured optimizer permits up to 100% in one asset. No concentration cap or regularizer has been added to force agreement with the paper.
-
-### Crisis results reported in the paper
-
-| Crisis | Model | Max drawdown | Volatility spike | Recovery trading days |
-|---|---|---:|---:|---:|
-| 2008 US GFC | Black-Litterman | -62.57% | 1.94x | 1,093 |
-| 2008 US GFC | Markowitz | -62.18% | 1.93x | 1,056 |
-| 2015 China crash | Black-Litterman | -43.42% | 1.92x | 458 |
-| 2015 China crash | Markowitz | -43.82% | 1.95x | 459 |
-| 2020 India COVID | Black-Litterman | -47.44% | 3.39x | 176 |
-| 2020 India COVID | Markowitz | -47.48% | 3.40x | 176 |
-
-The current diagnostic crisis metrics also differ from these values. The current generator uses frozen pre-crisis target weights, a crisis-start wealth reference of 1.0, and weighted daily log returns; it records actual baseline observation counts. These definitions are documented in docs/METHODOLOGY.md. The differences remain unresolved, so the generated figures must not be substituted into the published table.
-
-### Tau sensitivity reported in the paper
-
-| Tau | Paper-reported Sharpe |
-|---:|---:|
-| 0.01 | 0.3993 |
-| 0.05 | 0.3983 |
-| 0.10 | 0.3949 |
-| 0.15 | 0.3929 |
-| 0.20 | 0.3926 |
-
-The current fixed-tau diagnostic produces materially different Sharpe ratios (approximately 0.808 to 0.804). The original paper's sample, prior, and calculation details have not been recovered sufficiently to treat the two series as comparable.
-
-## Other manuscript findings
-
-The manuscript also reports factor regressions, a circular-block-bootstrap validation, an SOE-versus-private comparison and regime-conditioned performance. The current diagnostic run does not reproduce or save matching result tables for all of these analyses. Their published values and limitations are recorded in [the results reconciliation](docs/RESULTS_RECONCILIATION.md); treat them as paper-reported rather than independently reproduced.
-
-## Research notes and limitations
-
-1. **Equilibrium prior:** the manuscript describes a market-capitalization-implied prior; the current default is equal weight.
-2. **Return convention:** the current main backtest uses simple returns for portfolio P&L. The crisis diagnostic uses weighted log returns. The manuscript describes continuously compounded returns in its data section, so these conventions need to be distinguished before claiming a full reproduction.
-3. **Benchmarks:** the current run uses SPY, ASHR and INDA adjusted-close ETF proxies, each also present in its optimized basket. The historical paper table labels index-style benchmarks. These are not equivalent benchmark definitions.
-4. **Sample coverage:** the current common China ETF history begins in November 2013 and India in February 2012; these baskets do not provide identical 2010-start coverage.
-5. **Turnover:** historical turnover excludes initial cash-to-portfolio deployment, while the current run records that deployment separately. The exact historical calculation has not been recovered.
-6. **Crisis results and tau sensitivity:** current diagnostics do not match the paper values and remain unresolved.
-7. **Inference:** crisis windows are selected historical events; transaction costs are proportional assumptions and do not model nonlinear market impact.
-
-See [the results reconciliation](docs/RESULTS_RECONCILIATION.md) for the detailed comparison and unresolved items, and [the methodology](docs/METHODOLOGY.md) for implementation conventions.
-
-## Run the pipeline
-
-Install dependencies:
-
-    pip install -r requirements.txt
-
-Run the tri-market pipeline:
-
-    python -m pipelines.run_tri_market_pipeline
-
-The pipeline writes local outputs to results/generated/, including result tables, date manifests, factor regression, crisis diagnostics, tau sensitivity and RUN_MANIFEST.json. Price snapshots and their hashes are retained locally and excluded from version control. A run creates diagnostic outputs; it does not automatically validate or replace the paper-release values.
-
-Generate figures from the latest local run:
-
-    python scripts/generate_research_figures.py
-
-Run tests:
-
-    python -m unittest discover -s tests -v
-
-## Repository layout
-
-- core/ - market data and return utilities
-- models/ - Black-Litterman model and optimizer
-- backtesting/ - rolling backtest and crisis helpers
-- analysis/ - factor, regime and statistical analysis
-- pipelines/ - end-to-end tri-market pipeline
-- results/paper_results/ - historical paper-release tables
-- results/generated/ - local diagnostic outputs (ignored by Git)
-- docs/ - methodology and results reconciliation
-- tests/ - numerical and chronology tests
+**Scope and limitations:** Small ETF baskets, unequal sample histories, an equal-weight default prior, proportional transaction-cost assumptions, selected historical stress events, and ex-post regime classifications limit generalization. The aim is to assess allocation stability and risk tradeoffs transparently—not to establish that Black–Litterman is superior in every market.
