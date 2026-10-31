@@ -1,4 +1,4 @@
-# Finance Committee Review: Correction Register and Manuscript Errata
+# Methodology Corrections and Manuscript Reconciliation
 
 This register is for the March 2026 manuscript, *Black–Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets*. It distinguishes corrected code from historically published figures. It does **not** constitute a rewritten manuscript, a data release, or a claim of numerical replication.
 
@@ -29,13 +29,15 @@ This register is for the March 2026 manuscript, *Black–Litterman vs. Markowitz
 
 ## C. Outputs and decision criteria
 
+The current benchmark comparator now identifies 12 historical rows as **incomparable** with the updated ETF proxy rows—not absent outputs. The most recent financial-invariant and empirical CI run is [October 30](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40942721530): 35 tests passed; 59 mismatches, 12 incomparable benchmarks, zero exact matches. The dated historical diagnostic in [RESULTS_RECONCILIATION.md](RESULTS_RECONCILIATION.md) predates these code changes.
+
 After running `python -m pipelines.run_tri_market_pipeline`, run:
 
 ```bash
 python -m scripts.verify_paper_results
 ```
 
-The resulting `results/generated/paper_reconciliation.csv` records `MATCH`, `MISMATCH` and `MISSING` for paper reference cells, including differences. `results/generated/paper_reconciliation.json` supplies a machine-readable summary. Use `--strict` to return failure unless every compared cell matches. Do **not** set `--strict` as a routine pipeline gate before resolving known method differences: failures are expected and academically informative.
+The resulting `results/generated/paper_reconciliation.csv` records `MATCH`, `MISMATCH`, `MISSING` and `INCOMPARABLE_BENCHMARK` for paper reference cells, including differences. `results/generated/paper_reconciliation.json` supplies a machine-readable summary. Use `--strict` to return failure unless every compared cell matches. Do **not** set `--strict` as a routine pipeline gate before resolving known method differences: failures are expected and academically informative.
 
 GitHub Actions `Empirical reproduction audit` attempts the entire diagnostic and publishes **summary outputs only**, not third-party raw price snapshots, as a temporary workflow artifact.
 
