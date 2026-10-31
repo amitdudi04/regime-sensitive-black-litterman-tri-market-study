@@ -70,5 +70,6 @@ Price data come from Yahoo Finance via `yfinance`. The pipeline records per-mark
 - [Most recent validated diagnostic and numerical evidence](docs/EMPIRICAL_AUDIT_2026-10-30.md)
 - [Published-results reconciliation, including the archived October 13 diagnostic](docs/RESULTS_RECONCILIATION.md)
 - [Manuscript issues requiring evidence or formal revision](docs/REVIEWER_CORRECTIONS.md)
+- [31 October paper-reproduction assessment: cost, wealth-curve and data discrepancies](docs/MANUSCRIPT_REPRODUCTION_ASSESSMENT_2026-10-31.md)
 
 **Scope and limitations:** Small ETF baskets, unequal sample histories, an equal-weight default prior, proportional transaction-cost assumptions, selected historical stress events, and ex-post regime classifications limit generalization. The aim is to assess allocation stability and risk tradeoffs transparently—not to establish that Black–Litterman is superior in every market.
