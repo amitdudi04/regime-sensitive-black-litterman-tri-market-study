@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "tables": 8,
+  "table_rows": {
+    "1": 3,
+    "2": 9,
+    "3": 12,
+    "4": 60,
+    "5": 12,
+    "6": 6,
+    "7": 10,
+    "8": 5
+  },
+  "figures": 8,
+  "formats": [
+    "PNG 300dpi",
+    "vector SVG"
+  ],
+  "numeric_table_daily_asi_links": "PASS",
+  "figure_payload_and_annotation_links": "PASS",
+  "phase_provenance_and_sample_disclosure": "PASS",
+  "new_optimization_or_bootstrap_runs": 0,
+  "blocked_figures": {
+    "07_crisis_drawdown_paths": "CRISIS_DAILY_PATH_UNAVAILABLE; verified summary only"
+  },
+  "manuscript_pdf": "NOT_AVAILABLE; change register documentary, not independently checked against PDF",
+  "readiness": "READY_WITH_LIMITATIONS"
+}

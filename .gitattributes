@@ -1,0 +1,2 @@
+# Publication artifacts are byte-frozen; preserve their recorded hashes on every checkout.
+results/phase3_final/** -text
