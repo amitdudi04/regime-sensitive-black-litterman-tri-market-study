@@ -2,7 +2,7 @@
 
 **Historical comparison only.** This document records the March paper against the *October 13, 2026* preliminary diagnostic; it is **not** the current corrected-pipeline result. See [the October 30 validated diagnostic](EMPIRICAL_AUDIT_2026-10-30.md) for newer calculations and [the corrections register](REVIEWER_CORRECTIONS.md) for unresolved manuscript claims.
 
-**Diagnostic version warning (2026-10-30):** All numerical values labeled *Current* below were generated on 2026-10-13 **before** the audit branch corrected buy-and-hold daily portfolio accounting and the first-observation ASI denominator. They are prior-run diagnostics, **not validated outputs of the latest code**. The paper-reference numbers are preserved unchanged. Recompute all return-derived, turnover-derived, Sharpe, factor, tau, and allocation values from the original checksum-verified input snapshots before updating the comparisons. Crisis weighted-log diagnostics are a separate convention and must not be represented as the revised buy-and-hold wealth path.
+**Historical-data note:** The figures below describe an October 13 run that predates corrected buy-and-hold accounting and ASI averaging. They are retained to explain the audit trail, **not to serve as the current result**. The latest revised implementation is documented in [the October 30 report](EMPIRICAL_AUDIT_2026-10-30.md). The March manuscript's values remain preserved.
 
 This document separates three things that must not be conflated:
 
@@ -107,7 +107,7 @@ The paper also reports SMB and HML betas that differ from the October 13 diagnos
 
 ### Statistical validation (paper Section 13)
 
-The manuscript reports a volatility-suppression statistic of -2.678 (p = 0.0106) and an ASI-reduction statistic of 2.927 (p = 0.0046), attributed to circular block bootstrap testing. The current run does not save a matching output table containing these statistics, sample definitions, block size, iteration count and random seed. The presence of bootstrap helper functions in the code is not evidence that these exact reported tests were reproduced.
+The manuscript reports a volatility-suppression statistic of -2.678 (p = 0.0106) and an ASI-reduction statistic of 2.927 (p = 0.0046), attributed to circular block bootstrap testing. Neither the October 13 run nor the later October 30 study reproduces the manuscript's *volatility and ASI* tests, because the original test inputs and run specifications are unavailable. October 30 adds a different paired Sharpe-ratio bootstrap with its own metadata. The presence of bootstrap helper functions in the code is not evidence that these exact reported tests were reproduced.
 
 **Interpretation note.** Keep these as paper-reported statistics until the exact test inputs and run configuration can be traced. Do not label them independently verified by the current pipeline. There is also a significance-threshold issue in the manuscript prose: p = 0.0106 is below 0.05 but above 0.01, so the reported volatility-suppression result is significant at 5%, not at 1%, under conventional cutoffs. The ASI result (p = 0.0046) is below both thresholds.
 
