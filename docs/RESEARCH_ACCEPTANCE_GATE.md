@@ -1,4 +1,4 @@
-# Black–Litterman Research Acceptance Gate
+# Reproducibility Status and Research Limitations
 
 **Scope:** the March 2026 SSRN research record versus the corrected public tri-market Python implementation. **The historical manuscript is preserved**. This document defines what *can* be verified and what remains blocked by missing evidence.
 
@@ -53,7 +53,7 @@ The generated paper comparison intentionally treats the three historical benchma
 - Do not say SOE/private outperformance was established from p = 0.572.
 - Correct Figure 1 versus Table 2 Sharpe annotations, factor t-statistic sign and descriptions of gross/net P&L and benchmark instruments.
 
-## 5. Acceptance decision
+## 5. Reproducibility status
 
 **Software and auditability:** can pass when unit CI, full pipeline and generated output validation pass.
 
@@ -61,4 +61,4 @@ The generated paper comparison intentionally treats the three historical benchma
 
 **Exact reproduction of the March 2026 manuscript:** **BLOCKED BY MISSING ORIGINAL EMPIRICAL INPUTS AND INCOMPATIBLE METHODOLOGY**. No optimizer parameter is tuned to force agreement, no published table is overwritten, and a passing workflow does not overturn this status.
 
-**Merge policy:** keep the audit PR draft and keep `main` unchanged unless the published-paper discrepancies are independently resolved or a revised study is explicitly adopted with a formal corresponding publication update.
+**Publication and branch distinction:** the corrected implementation can be assessed independently from the March manuscript. Changes to the public default branch should be made only with a clear version label and preserved paper-reference files; code validation alone cannot resolve manuscript evidence gaps.
