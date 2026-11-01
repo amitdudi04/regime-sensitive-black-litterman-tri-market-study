@@ -6,7 +6,16 @@ import pandas as pd
 R=Path(__file__).resolve().parents[1]
 def validate(private=False):
  O=R/'outputs/final_professor_challenge_resolution';m=json.loads((O/'FINAL_CHECKSUMS.json').read_text());sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
- for n,v in m['files'].items():assert sha(O/n)==v['sha256'],n
+ # The author-review PDF was deliberately removed from the public tree.
+ # Its historical hash remains in the immutable manifest; do not weaken checks for other evidence.
+ archived_not_distributed = {'FINAL_MANUSCRIPT.pdf'}
+ for n,v in m['files'].items():
+  p=O/n
+  if n in archived_not_distributed and not p.exists():
+   print('ARCHIVED_NOT_DISTRIBUTED:',n,'historical_sha256:',v['sha256'])
+   continue
+  assert p.exists(),f'Missing required public evidence: {n}'
+  assert sha(p)==v['sha256'],n
  for n,v in m['source_scripts'].items():assert sha(R/n.replace('\\','/'))==v,n
  frozen=R/'results/phase3_final'
  fm=json.loads((frozen/'PHASE3_RUN_MANIFEST.json').read_text())
