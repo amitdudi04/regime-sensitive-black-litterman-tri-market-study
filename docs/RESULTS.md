@@ -33,3 +33,22 @@ No historical table or figure value was corrected in this audit; new diagnostics
 
 
 [All publication tables and figures](../results/phase3_final/). [Final supplementary evidence](../outputs/final_professor_challenge_resolution/). Historical summaries elsewhere are version records, not competing current results.
+
+## Faculty-review resolution status
+
+The following items are deliberate research boundaries, not outstanding arithmetic defects:
+
+| Challenge | Evidence-backed conclusion | Residual limitation |
+|---|---|---|
+| Incremental BL value over 1/N | [Active-weight/posterior diagnostics](../outputs/final_professor_challenge_resolution/STAGE_A_IDENTIFICATION.md) show strong anchoring; improvement over 1/N was not established | Bayesian alpha is not identified |
+| Unrestricted Markowitz comparator | [Matched 40% bounds](../results/phase3_final/table_03_concentration_robustness.csv) substantially reduce concentration and turnover | One fixed cap does not characterize every feasible investment mandate |
+| Crisis selection history | [Reconstructed conditional paths](../outputs/final_professor_challenge_resolution/stage_b_crisis_reconciliation.csv) reconcile six summaries | Original pre-event weight-selection timestamps are missing; ex-ante construction cannot be independently certified |
+| Decision-level uncertainty | [Paired estimates](../outputs/final_professor_challenge_resolution/stage_b_decision_uncertainty.csv) use limited dependent rebalance observations | Unadjusted exploratory inference; apparent zero Monte Carlo p-values are finite zero-exceedance counts |
+| Sharpe uncertainty | [10/20/40-session block sensitivity](../outputs/final_professor_challenge_resolution/stage_b_sharpe_blocks.csv) does not reject zero Sharpe differences | Non-rejection does not establish equivalence; chosen bootstrap procedures remain approximate |
+| Factor fit | [Independent US OLS/HAC calculation](../outputs/final_professor_challenge_resolution/stage_b_factor_audit.csv) reproduces coefficients and high R-squared | Regression fit is not a causal explanation or proof of predictive alpha |
+| Cross-market interpretation | [Common-calendar check](../outputs/final_professor_challenge_resolution/stage_c_common_period.csv) shares 2,553 dates | ETF universes, composition and USD exposures differ; no national-market causal identification |
+| Modelled fees | [L1 accounting explanation](METHODOLOGY.md) distinguishes fee rate, half-L1 notional, deployment and terminal NAV | Not a realistic estimate of market impact or institution-specific trading expenses |
+| Public reproduction | [Reproducibility guidance](REPRODUCIBILITY.md) distinguishes public artifact tests from private data checks | Frozen raw vendor snapshots and derived daily caches are not distributed |
+| Publication status | [Current candidate](../outputs/final_professor_challenge_resolution/FINAL_MANUSCRIPT.pdf) is clearly identified | Author verification and SSRN/AI-policy clearance remain pending |
+
+**Release interpretation:** Public CI validates synthetic unit tests and committed artifact hashes, not a complete vendor-data reconstruction. A valid research finding may remain inconclusive: no model retuning, numerical fabrication, or removal of negative results is warranted.
