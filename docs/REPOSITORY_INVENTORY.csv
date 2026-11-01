@@ -199,3 +199,11 @@ tests/test_phase3_final_results.py,ESSENTIAL_TEST,RETAIN,"Preserve source, evide
 tests/test_pipeline_benchmark.py,ESSENTIAL_TEST,RETAIN,"Preserve source, evidence or referenced provenance; uncertain files retained"
 tests/test_supplementary_diagnostics.py,ESSENTIAL_TEST,RETAIN,"Preserve source, evidence or referenced provenance; uncertain files retained"
 tests/test_tau_sensitivity.py,ESSENTIAL_TEST,RETAIN,"Preserve source, evidence or referenced provenance; uncertain files retained"
+FINAL_REPOSITORY_PUBLICATION_REPORT.md,NECESSARY_DOCUMENTATION,RETAIN,Final publication validator or research navigation/documentation
+docs/REPOSITORY_INVENTORY.csv,NECESSARY_DOCUMENTATION,RETAIN,Final publication validator or research navigation/documentation
+docs/REPRODUCIBILITY.md,NECESSARY_DOCUMENTATION,RETAIN,Final publication validator or research navigation/documentation
+docs/RESEARCH_HISTORY.md,NECESSARY_DOCUMENTATION,RETAIN,Final publication validator or research navigation/documentation
+docs/RESULTS.md,NECESSARY_DOCUMENTATION,RETAIN,Final publication validator or research navigation/documentation
+results/final/README.md,NECESSARY_DOCUMENTATION,RETAIN,Final publication validator or research navigation/documentation
+results/historical/README.md,NECESSARY_DOCUMENTATION,RETAIN,Final publication validator or research navigation/documentation
+scripts/validate_publication.py,ESSENTIAL_SOURCE,RETAIN,Final publication validator or research navigation/documentation
