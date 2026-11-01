@@ -1,0 +1,11 @@
+# Final validation
+
+RESEARCH_READY_WITH_LIMITATIONS. A, B, C were committed in sequence before manuscript authoring. No main merge, reset, force-push or SSRN upload. No new market downloads or complete portfolio backtests. All previous tracked files except the additive .gitattributes rule remain unchanged.
+
+Checks executed: Phase 2 output/source hashes; three frozen prices; independent posterior solve; paired decision-date assertions and predetermined block resampling; 10/40 daily bootstrap sensitivity with 20 reused; independent cumulative-growth crisis reconstruction and six row matches to 1e-12; numpy OLS/HAC replication; common-date complete paths; four input hashes; analytical L1 and fee checks. No broad 89-test suite rerun.
+
+DOCX/PDF: 44 pages; every nonempty non-equation body paragraph found in PDF after Unicode/whitespace normalization. All 800 recorded table cells identical, all 11 table panels preserved, all 8 media files identical, 15 editable OMML equations canonical-identical, 26 reference texts identical. PDF is unencrypted, selectable and all used fonts embedded: {'/BCDEEE+TimesNewRomanPSMT': True, '/BCDFEE+TimesNewRomanPS-BoldMT': True, '/BCDGEE+Calibri-Bold': True, '/BCDHEE+TimesNewRomanPS-BoldMT': True, '/BCDIEE+TimesNewRomanPSMT': True, '/BCDJEE+CambriaMath': True}.
+
+Layout: retained US Letter/TNR/one-inch margins; body baseline reduced to readable 18 pt, author details 12 pt single spacing; abstract now fits page 1; unnecessary front-matter forced break removed; compatible consecutive section boundaries allow continuous flow. Table fonts were not reduced. All pages rendered; visual review included equations, exhibits, new audit prose and reference ending. Landscape transitions retain some whitespace to preserve readable wide exhibits. Final changes re-rendered and checked separately. No blank pages or observed clipping/overlap.
+
+Numerical traceability: inherited 833 records plus newly linked common-period and audit rows; exact CSV hashes and row identifiers retained. Missing crisis selection timeline and raw factor percent response are explicitly qualified. Personal declarations and AI-policy clearance remain pending; no Paperpal report or SSRN approval is claimed.
