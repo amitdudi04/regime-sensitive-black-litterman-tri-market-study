@@ -1,31 +1,11 @@
 name: Research tests
-
 on:
   pull_request:
-    paths:
-      - "**.py"
-      - "requirements.txt"
-      - "requirements-phase1-lock.txt"
-      - "docs/PHASE1_FINANCIAL_VALIDATION.md"
-      - "docs/phase1/**"
-      - ".github/workflows/research-tests.yml"
   push:
-    branches:
-      - main
-      - research/revised-paper-phase1-validation
-      - research/revised-paper-phase2-experiments
-      - research/revised-paper-phase3-final-results
-    paths:
-      - "**.py"
-      - "requirements.txt"
-      - "requirements-phase1-lock.txt"
-      - "docs/PHASE1_FINANCIAL_VALIDATION.md"
-      - "docs/PHASE2_RESULTS.md"
-      - "results/phase3_final/**"
-      - "docs/phase1/**"
-      - ".github/workflows/research-tests.yml"
+    branches: [main, publication/final-repository-consolidation]
   workflow_dispatch:
-
+permissions:
+  contents: read
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -33,10 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-phase1-lock.txt
-      - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-phase1-lock.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python -m scripts.validate_publication
+      - run: python -m scripts.phase3_final_results --validate-only

@@ -1,77 +1,98 @@
-# Black–Litterman and Markowitz Across Three ETF Markets
+# Blackâ€“Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets
 
-**Portfolio stability, turnover, and out-of-sample risk**  
-Research implementation by Amit Kumar Dudi
+*An empirical study of portfolio stability, trading turnover and risk-adjusted performance across US-listed ETF baskets.*  
+Researcher: **Amit Kumar Dudi**
 
-The [Phase 1 financial validation](docs/PHASE1_FINANCIAL_VALIDATION.md) records 71 passing tests, independent financial identities, complete current-data execution, a frozen-input baseline comparison and deterministic repeatability. Its `READY_WITH_LIMITATIONS` decision applies to the revised research implementation; original-paper reproduction remains unestablished.
+## 1. Research overview
 
-This study compares equilibrium-anchored Black–Litterman allocation with historical-mean Markowitz optimization in ETF baskets representing the United States, China, and India. It asks whether more stable portfolio targets translate into lower trading turnover, and whether that stability is accompanied by better investment performance.
+Historical-mean Markowitz optimization can amplify estimation error into concentrated, unstable allocations. Blackâ€“Litterman (BL) combines equilibrium-implied returns with views and their uncertainty, potentially stabilizing the resulting portfolio targets.
 
-The repository contains a corrected, test-validated **2026 diagnostic implementation** and an **earlier research manuscript**: *Black–Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets* (March 2026, SSRN 6479462). The manuscript's reported results have **not** been numerically reproduced by the current code. They are retained separately, not represented as verified outputs of the corrected study.
+This experiment evaluates that stabilization against both historical-mean Markowitz and periodically rebalanced equal weighting. It separates target changes from actual drift-adjusted trades, and arithmetic returns from compounded investment wealth. Matched constraints and proportional trading costs make benchmark choice an explicit part of the comparison. The BL prior is an equal-weight proxy and the views are a mild historical-return tilt; this is not a test of independent analyst forecasts.
 
-## Data and method
+## 2. Research questions
 
-| Market | Investable ETFs | Corrected main out-of-sample window |
-|---|---|---|
-| US | SPY, QQQ, IWM, XLF, XLK | 2011-01-04 to 2024-12-31 |
-| China | ASHR, KWEB, MCHI, FXI | 2014-11-07 to 2024-12-31 |
-| India | INDA, EPI, SMIN, INDY | 2013-02-13 to 2024-12-31 |
+Does BL reduce target instability and actual turnover? Does it improve investment outcomes beyond rebalanced 1/N? How much does a matched concentration cap change Markowitz? Do modeled fees alter rankings, and are Sharpe differences statistically established?
 
-The configured main download starts on 2010-01-01 and ends **before** 2025-01-01. ETF listing histories and the 252-session estimation window shorten the effective out-of-sample periods. The 2008 US crisis is evaluated in a distinct historical crisis sample, not as part of the main backtest.
+## 3. Data and methodology
 
-Both strategies use the same Ledoit–Wolf covariance estimate, 252-session training windows, long-only fully invested optimization, and rebalancing every 63 trading sessions. Portfolio weights **drift naturally between rebalances**. The current model applies 10 basis points per unit of L1 traded-weight turnover, including a separately reported initial investment from cash.
+| Exposure | US-listed ETFs | Main OOS period | Sessions |
+|---|---|---|---:|
+| US | SPY, QQQ, IWM, XLF, XLK | 2011-01-04â€“2024-12-31 | 3,521 |
+| China | ASHR, KWEB, MCHI, FXI | 2014-11-07â€“2024-12-31 | 2,553 |
+| India | INDA, EPI, SMIN, INDY | 2013-02-13â€“2024-12-31 | 2,991 |
 
-Markowitz uses rolling historical means. Black–Litterman uses the equilibrium-implied vector \(\Pi = \lambda\Sigma w_{eq}\) and absolute views \(Q = \Pi + 0.10(\mu_{hist}-\Pi)\). **The default equilibrium weights are equal-weight proxies, not observed capitalization weights.** Dated, historical capitalization/AUM weights can be supplied as-of the training cutoff, but the original manuscript's historical capitalization input data have not been recovered.
+Both optimizers use 252-session training windows, 63-session rebalancing, Ledoitâ€“Wolf covariance, risk aversion 3, and long-only fully invested portfolios. BL reverse-optimizes an **equal-weight equilibrium proxy**, not observed capitalization weights, and applies a 10% historical-return view tilt with large view uncertainty. Holdings drift without interim rebalancing. Costs apply multiplicatively at trades, including initial deployment. L1 turnover measures target minus drifted pretrade weights; ASI measures successive target differences. Main Sharpe ratios use RF=0. These are USD investor returns through US-listed ETF proxies, not domestic local-currency national-index returns. [Full methodology](docs/METHODOLOGY.md).
 
-“Regime-sensitive” refers to an **ex-ante training-window volatility rule used to choose** \(\tau\). The separate Markov-switching analysis uses **ex-post smoothed** states for description; it does not drive trading decisions.
+## 4. Main empirical results
 
-## Corrected-pipeline findings
+Net results at **10 bps per unit of L1 turnover**, from the [verified principal CSV](results/phase3_final/table_02_principal_performance.csv). Returns are annualized arithmetic means; drawdowns include initial NAV. Average turnover excludes initial cash deployment, which is charged separately. ASI is dimensionless.
 
-These are results from the [October 2026 corrected-pipeline audit](docs/EMPIRICAL_AUDIT_2026-10-30.md), not values reproduced from the March manuscript. The table reports **net arithmetic annualized simple returns**, zero-risk-free-rate Sharpe ratios, drift-adjusted rebalance turnover, and mean L1 changes in target allocations (ASI).
+| Market | Strategy | Net annual return | Sharpe | Max drawdown | Mean L1 turnover | ASI |
+|---|---|---:|---:|---:|---:|---:|
+|US|BL|15.4148%|0.806964|-35.0693%|2.8735%|0.009409|
+|US|Markowitz|15.8896%|0.744400|-31.1532%|80.2868%|0.805060|
+|US|1/N|15.4183%|0.807620|-35.0716%|2.6123%|0.000000|
+|China|BL|5.8193%|0.202377|-64.2506%|3.5751%|0.001479|
+|China|Markowitz|4.5276%|0.149513|-65.2639%|70.7290%|0.712407|
+|China|1/N|5.8210%|0.202381|-64.2611%|3.5848%|0.000000|
+|India|BL|10.8720%|0.503642|-49.7382%|1.7249%|0.002346|
+|India|Markowitz|13.2072%|0.583735|-47.5871%|58.3411%|0.585259|
+|India|1/N|10.8700%|0.503564|-49.7414%|1.7618%|0.000000|
 
-| Market | Method | Annualized return | Sharpe | Mean rebalance L1 turnover | ASI |
-|---|---|---:|---:|---:|---:|
-| US | Black–Litterman | 15.41% | 0.807 | 2.87% | 0.00941 |
-| US | Markowitz | 15.89% | 0.744 | 80.29% | 0.80506 |
-| China | Black–Litterman | 5.82% | 0.202 | 3.58% | 0.00148 |
-| China | Markowitz | 4.53% | 0.150 | 70.73% | 0.71241 |
-| India | Black–Litterman | 10.87% | 0.504 | 1.72% | 0.00235 |
-| India | Markowitz | 13.21% | 0.584 | 58.34% | 0.58526 |
 
-The revised Black–Litterman strategy changes target weights less frequently and incurs substantially lower modeled turnover in all three baskets. Its Sharpe ratio is higher in the US and China, but **lower in India**. The comparison does not show universal return or drawdown dominance. Markowitz is sometimes highly concentrated because the optimization permits up to 100% in one ETF.
+## 5. Key findings
 
-A new paired 20-session circular-block bootstrap (2,000 iterations; seed 42) gives BL-minus-Markowitz Sharpe p-values of **0.5370 (US), 0.6915 (China), and 0.2735 (India)**. None is below 0.05; these tests are distinct from the manuscript's original volatility and ASI hypotheses. Markov-state performance is **descriptive and ex-post**, not a trading validation.
+BL has substantially lower target instability and modeled turnover than unrestricted historical-mean Markowitz. It remains extremely close to rebalanced 1/N; incremental investment performance attributable to Bayesian updating is **not established**. A matched 40% target cap materially reduces Markowitz concentration and turnover. Risk-adjusted rankings vary across markets, and trading costs do not establish universal BL superiority.
 
-## Published paper versus current implementation
+Sharpe differences remain insignificant under tested approximate paired bootstraps. Exploratory decision-level BL-minus-Markowitz ASI and turnover intervals lie below zero under both caps, with only 40â€“55 paired decision differences. Serial dependence, multiplicity and finite simulation resolution limit inference: a reported Monte Carlo p=0 means no exceedances among the draws, not a true probability of zero. Stabilization is distinct from investment alpha. [Results and limitations](docs/RESULTS.md).
 
-The manuscript reports different returns, risk metrics, factor coefficients, crisis outcomes, and tau sensitivity. Automated comparison of its historical performance, crisis and tau reference CSVs against the revised pipeline found **59 numerical mismatches** and **12 benchmark values that are not directly comparable because different instruments were used**, across 71 checked cells. No cell qualified as an exact match under the specified comparison tolerance.
+## 6. Robustness checks
 
-This difference cannot be resolved by rounding or altering published tables. The original dated capitalization/AUM inputs, full historical price snapshots, optimizer allocations, and some original hypothesis-testing inputs have not been recovered. The paper also contains figure annotations and interpretations that need a documented manuscript revision. Until then, **do not cite the corrected figures as reproducing the March 2026 manuscript**.
+| Check | Evidence and interpretation |
+|---|---|
+| Matched 40% target cap | [Concentration](results/phase3_final/table_03_concentration_robustness.csv); introduced in revised research before recorded Phase 2 execution, without preregistration evidence |
+| Rebalanced 1/N | [BL active weights and tracking](outputs/final_professor_challenge_resolution/stage_a_diagnostics.csv); near-identical return paths |
+| 0/5/10/20 bps costs | [Sensitivity](results/phase3_final/table_04_transaction_cost_sensitivity.csv); metric- and market-dependent rankings |
+| Sharpe blocks 10/20/40 sessions | [Sensitivity](outputs/final_professor_challenge_resolution/stage_b_sharpe_blocks.csv); all intervals include zero, minimum p=.102 |
+| Decision-level ASI / turnover | [Paired inference](outputs/final_professor_challenge_resolution/stage_b_decision_uncertainty.csv); limited dependent decision sample |
+| Common-calendar period | [Results](outputs/final_professor_challenge_resolution/stage_c_common_period.csv); 2014-11-07â€“2024-12-31, 2,553 sessions; existing strategies sliced, not retrained |
+| US factors | [Independent OLS/HAC check and supplementary 1/N](outputs/final_professor_challenge_resolution/stage_b_factor_audit.csv); conditional US exposures |
+| Fixed tau | [Five settings](results/phase3_final/table_08_tau_sensitivity.csv); separate from adaptive training-only tau |
+| Historical crisis stresses | [Reconstruction](outputs/final_professor_challenge_resolution/stage_b_crisis_reconciliation.csv); conditional on archived vectors, selection timeline missing |
 
-The historical numbers are preserved unchanged in [`results/paper_results/`](results/paper_results/). For the full distinction between published, earlier diagnostic, and corrected-run findings, see [research reconciliation](docs/RESULTS_RECONCILIATION.md).
+## 7. Selected research figures
 
-## Reproduce and examine
+Verified source figures are retained without redrawing. The remaining figures are indexed in [results](docs/RESULTS.md).
 
-```bash
-python -m pip install -r requirements.txt
+![Compounded net wealth](results/phase3_final/figures/01_cumulative_wealth.png)
+
+![Allocation stability](results/phase3_final/figures/02_allocation_stability.png)
+
+[Trading turnover figure](results/phase3_final/figures/03_trading_turnover.png) · [Matched concentration figure](results/phase3_final/figures/04_matched_concentration.png)
+
+## 8. Research limitations
+
+Strong equal-weight anchoring and small overlapping ETF baskets limit generalization. Main samples differ in length; the common-calendar check does not equalize exposures. USD adjusted-price proxies do not isolate national-market efficiency or currency effects. Costs are stylized and bootstrap inference is approximate. Crisis reconstructions are conditional on recorded vectors because original pre-event selection histories are incomplete. Frozen raw snapshots remain private; redistribution permission is not established. Revised-study evidence does not exactly reproduce the original March numerical record.
+
+## 9. Reproducibility
+
+Python 3.12; use the recorded dependency lock. From the repository root:
+
+```sh
+python -m pip install -r requirements-phase1-lock.txt
+python -m scripts.validate_publication
 python -m unittest discover -s tests -v
-python -m pipelines.run_tri_market_pipeline
-python -m scripts.verify_paper_results
-python -m scripts.validate_generated_outputs
-python scripts/generate_research_figures.py
+python -m scripts.phase3_final_results --validate-only
 ```
 
-The current test suite had **35 passing tests** in the [verified GitHub Actions run](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40942721530). That run completed the three-market pipeline, crisis and fixed-tau analyses, supplementary regime/Sharpe diagnostics, and output-invariant validation. Passing these checks demonstrates **internal consistency**, not historical-paper replication.
+The first validator works on public frozen evidence; add `--private-inputs` to check the four retained local vendor snapshots. [Reproducibility instructions](docs/REPRODUCIBILITY.md) distinguish public checks, vendor-dependent study execution and rebuilding tables/figures without portfolio reruns.
 
-Price data come from Yahoo Finance via `yfinance`. The pipeline records per-market effective dates, download timestamps, checksums and factor-data fingerprints. Raw downloaded snapshots are excluded from version control, so a later fresh-data run may not exactly reproduce the archived output; see [methodology and data limitations](docs/METHODOLOGY.md). The current factor regression is US-only. The separate ownership-analysis helper requires **real, dated Chinese stock classifications and returns** and does not reproduce the paper's SOE/private table without them.
+## 10. Paper and research version
 
-## Further documentation
+The [SSRN working paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6479462) is the historical March version; the revised numerical findings have not been uploaded there. This repository contains later verified research and a [revised author-review manuscript](outputs/final_professor_challenge_resolution/FINAL_MANUSCRIPT.pdf). Author declarations and AI-policy clearance remain pending. [Research history and archives](docs/RESEARCH_HISTORY.md).
 
-- [Methodology and return conventions](docs/METHODOLOGY.md)
-- [Architecture and output flow](docs/ARCHITECTURE.md)
-- [Most recent validated diagnostic and numerical evidence](docs/EMPIRICAL_AUDIT_2026-10-30.md)
-- [Published-results reconciliation, including the archived October 13 diagnostic](docs/RESULTS_RECONCILIATION.md)
-- [Manuscript issues requiring evidence or formal revision](docs/REVIEWER_CORRECTIONS.md)
-- [31 October paper-reproduction assessment: cost, wealth-curve and data discrepancies](docs/MANUSCRIPT_REPRODUCTION_ASSESSMENT_2026-10-31.md)
+## 11. References and contact
 
-**Scope and limitations:** Small ETF baskets, unequal sample histories, an equal-weight default prior, proportional transaction-cost assumptions, selected historical stress events, and ex-post regime classifications limit generalization. The aim is to assess allocation stability and risk tradeoffs transparently—not to establish that Black–Litterman is superior in every market.
+Markowitz (1952), Black and Litterman (1992), Ledoit and Wolf (2004), and DeMiguel, Garlappi and Uppal (2009) motivate the design; full bibliographic entries appear in the manuscript. Suggested citation: Dudi, Amit Kumar. *Blackâ€“Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets*. Revised research repository, 2026.
+
+Contact: amitkumardudi04@gmail.com (retained repository contact). The existing [LICENSE](LICENSE) applies to the repository as stated; it does not grant rights to third-party vendor data. Material AI assistance and pending human verification are disclosed in the manuscript.
