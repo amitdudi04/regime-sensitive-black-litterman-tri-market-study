@@ -1,31 +1,21 @@
 name: Research tests
-
 on:
   pull_request:
-    paths:
-      - "**.py"
-      - "requirements.txt"
-      - ".github/workflows/research-tests.yml"
   push:
-    branches:
-      - main
-    paths:
-      - "**.py"
-      - "requirements.txt"
-      - ".github/workflows/research-tests.yml"
+    branches: [main, publication/final-repository-consolidation]
   workflow_dispatch:
-
+permissions:
+  contents: read
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-phase1-lock.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python -m scripts.validate_publication

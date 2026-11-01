@@ -1,84 +1,19 @@
 # Methodology
 
-## Market universe
+The revised specification uses the ETF baskets and sample windows in the README. All assets trade in USD through US-listed ETFs. Provider-adjusted closes yield simple returns on common observed dates within each basket; no filling. The rolling training sample contains 252 prior sessions, and decisions rebalance every 63 sessions.
 
-The study uses liquid ETF baskets representing three equity markets:
+Both strategies maximize annual-unit mean–variance utility w′mu − (3/2)w′Sigma w, with weights summing to one and nonnegative. Maximum target weights are either 1 or .4, matched across strategies. Covariance is centered Ledoit–Wolf shrinkage, annualized by 252. Markowitz expected returns are training daily means times 252.
 
-- US: SPY, QQQ, IWM, XLF, XLK
-- China: ASHR, KWEB, MCHI, FXI
-- India: INDA, EPI, SMIN, INDY
+BL uses Pi=3 Sigma w_eq, with equal ETF weights. P=I, Q=Pi+.10(mu_hist−Pi), Omega=diag(max(10 diag(Sigma),1e-12)). Posterior=Pi+tau Sigma P′(Omega+P tau Sigma P′)^(-1)(Q−P Pi), computed by a linear solve. The adaptive tau is .01 when latest training-window cross-asset 60-session volatility exceeds its training-window median, otherwise .05. This rule is prospective within the backtest; ex-post smoothed Markov states are descriptive only. Large Omega and mild views anchor portfolios near 1/N; tau does not cancel because Omega does not scale with tau.
 
-The requested sample is 2010-2025. Because some ETFs have shorter listing histories, each market uses the common observed history available across its basket.
+Holdings drift self-financing between trades. Gross daily return uses entering holdings, then holdings update by relative asset growth. L1 turnover T=sum abs(target−drifted pretrade weights); initial cash deployment T=1. Net growth=(1+r_gross)(1−cT), c=bps/10000. The optimizer ignores fees; cost sensitivity holds decisions fixed. Fully invested one-way turnover=T/2; equal fees require twice the coefficient under half-L1. Direct fees sum pretrade net NAV times cT, distinct from terminal wealth lost including foregone growth.
 
-## Rolling design
+ASI averages L1 distances between successive targets, excluding the undefined first difference. Performance uses arithmetic mean times 252, sample volatility times sqrt(252), RF=0 Sharpe and compounded wealth. Maximum drawdown includes initial NAV 1. Rebalanced 1/N shares dates, drift, costs and schedule.
 
-The backtest uses:
+Paired Sharpe circular-block inference uses common daily indices, 2,000 draws, seed 42, percentile intervals and approximate empirical-mean-centered p-values; blocks 10/20/40 sessions. Decision-level inference uses paired ASI contributions or actual turnover, excludes initial deployment, uses 3-decision blocks, 5,000 draws and seed 20261101. There are only 40–55 paired differences; no multiplicity adjustment. Zero Monte Carlo exceedances is not a zero population probability.
 
-- 252 trading days for estimation;
-- 63 trading days between rebalances;
-- Ledoit-Wolf covariance shrinkage;
-- long-only weights;
-- full investment;
-- 10 bps proportional transaction cost per unit of turnover.
+The 40% cap was introduced in revised research before recorded Phase 2 execution, not in the March study or a preregistration. Crisis stresses buy archived pre-event target vectors and hold without trading; wealth includes the first event return and initial 1. Recovery is the first return to crisis-start wealth after the event trough, measured in trading-index positions. Reconstructed paths reconcile six summaries, but the archived original selection timeline is missing; selection chronology cannot be independently established.
 
-No future observation is used when estimating a rebalance-date portfolio.
+US factor regressions use exact-date excess portfolio returns, decimal RF and MKT/SMB/HML/MOM, with intercept and lag-5 Bartlett HAC inference. Raw source percentages were divided once by 100 in cache construction. Independent OLS/HAC reproduces the estimates; 1/N is supplementary. No China/India factor interpretation follows. Five fixed-tau supplementary runs remain distinct from adaptive tau. Common-calendar results slice existing strategy returns on 2,553 shared dates without new training or initial deployment.
 
-## Markowitz portfolio
-
-Expected returns are estimated from the historical mean inside each rolling training window.
-
-The same covariance matrix, optimizer and weight constraints used for Black-Litterman are also used for Markowitz.
-
-## Black-Litterman portfolio
-
-Equilibrium-implied expected returns are:
-
-[
-Pi = lambda Sigma w_{eq}
-]
-
-The public implementation defaults to equal equilibrium weights. A different equilibrium-weight series can be supplied directly when historical capitalization or AUM data are available.
-
-Absolute ETF views use:
-
-[
-Q = Pi + 0.10(mu_{hist} - Pi)
-]
-
-with an identity view matrix and diagonal view uncertainty.
-
-The prior scaling parameter (	au) is conditioned using realized volatility observed inside the training window.
-
-## Turnover and transaction costs
-
-Before every rebalance, the previous portfolio is drifted using the realized asset returns from the preceding holding period.
-
-Turnover is then calculated from the difference between drifted pre-trade weights and new target weights. Transaction cost is charged once at the rebalance.
-
-## Allocation Stability Index
-
-ASI measures the mean L1 change in target weights between consecutive rebalances:
-
-[
-ASI_t = sum_i |w_{i,t} - w_{i,t-1}|
-]
-
-ASI is used as a stability measure; it is separate from trading turnover.
-
-## Factor analysis
-
-For the US portfolio, excess returns are regressed on MKT, SMB, HML and MOM factors from the Kenneth French Data Library.
-
-Inference uses Newey-West/HAC standard errors.
-
-## Regime analysis
-
-A two-state Markov-switching model is used to classify high- and low-volatility observations for conditional analysis.
-
-The model's smoothed probabilities are used for ex-post evaluation, not as a live portfolio signal.
-
-## Crisis analysis
-
-The crisis helper freezes the last portfolio weights observed before a specified crisis start date and holds those weights fixed through the crisis window.
-
-The study considers the 2008 US Global Financial Crisis, the 2015 China equity crash and the 2020 India COVID shock.
+Implementation: [backtest](../backtesting/paper_backtest.py), [BL model](../models/black_litterman_model.py), [Phase 2 experiments](../pipelines/phase2_experiments.py), [inference](../analysis/statistical_tests.py). [Source evidence index](../results/final/README.md).

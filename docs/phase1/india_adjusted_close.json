@@ -1,0 +1,67 @@
+{
+  "market": "India",
+  "source": "Yahoo Finance via yfinance",
+  "price_field": "Adj Close (auto_adjust=False)",
+  "corporate_actions": "provider adjusted for dividends and splits; USD-listed ETF exposure",
+  "alignment": {
+    "INDA": {
+      "first_observed": "2012-02-03",
+      "last_observed": "2024-12-31",
+      "observed_count": 3248,
+      "missing_rows_before_common_alignment": 994
+    },
+    "EPI": {
+      "first_observed": "2008-02-26",
+      "last_observed": "2024-12-31",
+      "observed_count": 4242,
+      "missing_rows_before_common_alignment": 0
+    },
+    "SMIN": {
+      "first_observed": "2012-02-09",
+      "last_observed": "2024-12-31",
+      "observed_count": 3244,
+      "missing_rows_before_common_alignment": 998
+    },
+    "INDY": {
+      "first_observed": "2009-11-20",
+      "last_observed": "2024-12-31",
+      "observed_count": 3802,
+      "missing_rows_before_common_alignment": 440
+    }
+  },
+  "per_ticker": {
+    "INDA": {
+      "first_common_date": "2012-02-09",
+      "last_common_date": "2024-12-31",
+      "common_observations": 3244
+    },
+    "EPI": {
+      "first_common_date": "2012-02-09",
+      "last_common_date": "2024-12-31",
+      "common_observations": 3244
+    },
+    "SMIN": {
+      "first_common_date": "2012-02-09",
+      "last_common_date": "2024-12-31",
+      "common_observations": 3244
+    },
+    "INDY": {
+      "first_common_date": "2012-02-09",
+      "last_common_date": "2024-12-31",
+      "common_observations": 3244
+    }
+  },
+  "requested_start": "2005-01-01",
+  "requested_end_exclusive": "2025-01-01",
+  "tickers": [
+    "INDA",
+    "EPI",
+    "SMIN",
+    "INDY"
+  ],
+  "effective_start": "2012-02-09",
+  "effective_end": "2024-12-31",
+  "observations": 3244,
+  "sha256": "655f98c5bfae2a37da7809a51e80249f4853beaac5db2ac5ffe8f1c1a8af5bb2",
+  "downloaded_at_utc": "2026-10-31T14:33:10.732222+00:00"
+}

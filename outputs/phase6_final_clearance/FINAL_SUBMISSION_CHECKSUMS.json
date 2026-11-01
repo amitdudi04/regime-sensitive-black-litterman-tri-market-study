@@ -1,0 +1,132 @@
+{
+  "status": "POLICY_REVIEW_REQUIRED",
+  "candidate_upload_approved": false,
+  "author_approval_received": false,
+  "ssrn_submitted": false,
+  "phase6_base_commit": "d8ae7f0bdedebb5871b6936f743d2ba4d689471f",
+  "phase6_branch": "research/revised-paper-phase6-final-clearance",
+  "frozen_empirical_evidence_commit": "da5d40acfc0e71cac51f0fd8bc288606c6c7aa71",
+  "frozen_publication_generation_source": "69112e3abc1997df04387e916e04285cb6cbf87d",
+  "manuscript_source": "Phase 4 editable DOCX preserved at Phase 5 base plus the targeted replacements/addition documented in PHASE6_FINAL_VALIDATION.md. No historical source file was overwritten.",
+  "phase6_commit_note": "Reported in final delivery; omitted here to avoid a commit referring to its own checksum contents.",
+  "protected_branch_baselines": {
+    "main": "1a82c7599029eb305e60b355b90ac7b80966126f",
+    "audit/reconcile-crisis-and-tau-pipeline": "77f77d8c6e4fe90d9e81091309fe55d9ce0978ae",
+    "research/revised-paper-phase1-validation": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d",
+    "research/revised-paper-phase2-experiments": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1",
+    "research/revised-paper-phase3-final-results": "da5d40acfc0e71cac51f0fd8bc288606c6c7aa71",
+    "research/revised-paper-phase4-manuscript": "74674ec8e6e9cfd33dbcd666ff5e7bdab813b626",
+    "research/revised-paper-phase5-submission-review": "d8ae7f0bdedebb5871b6936f743d2ba4d689471f"
+  },
+  "local_input_verification": {
+    "records": [
+      {
+        "type": "adjusted_price_snapshot",
+        "market": "US",
+        "path": "results/generated/price_data/us_adjusted_close.csv",
+        "exists": true,
+        "expected_sha256": "835a01e377ce0c50c1cdeb7b5ad8653680f83ee4c7c5b6158fcc2f8d0c0fdfc9",
+        "actual_sha256": "835a01e377ce0c50c1cdeb7b5ad8653680f83ee4c7c5b6158fcc2f8d0c0fdfc9",
+        "matches": true,
+        "source": "Yahoo Finance via yfinance",
+        "retrieved_at_utc": "2026-10-31T14:32:51.400745+00:00",
+        "redistributed": false
+      },
+      {
+        "type": "adjusted_price_snapshot",
+        "market": "China",
+        "path": "results/generated/price_data/china_adjusted_close.csv",
+        "exists": true,
+        "expected_sha256": "9db82332709b7fd366b96461b32d474ecd509383121edb9ed8f3ad677dd3b4a1",
+        "actual_sha256": "9db82332709b7fd366b96461b32d474ecd509383121edb9ed8f3ad677dd3b4a1",
+        "matches": true,
+        "source": "Yahoo Finance via yfinance",
+        "retrieved_at_utc": "2026-10-31T14:33:06.346995+00:00",
+        "redistributed": false
+      },
+      {
+        "type": "adjusted_price_snapshot",
+        "market": "India",
+        "path": "results/generated/price_data/india_adjusted_close.csv",
+        "exists": true,
+        "expected_sha256": "655f98c5bfae2a37da7809a51e80249f4853beaac5db2ac5ffe8f1c1a8af5bb2",
+        "actual_sha256": "655f98c5bfae2a37da7809a51e80249f4853beaac5db2ac5ffe8f1c1a8af5bb2",
+        "matches": true,
+        "source": "Yahoo Finance via yfinance",
+        "retrieved_at_utc": "2026-10-31T14:33:10.732222+00:00",
+        "redistributed": false
+      },
+      {
+        "type": "processed_daily_factor_cache",
+        "market": "US",
+        "path": "results/generated/factor_data/us_daily_2011-01-04_2024-12-31.csv",
+        "exists": true,
+        "expected_sha256": "341cc4e8fb216821c5eaacded9fdf4cca33f124cdba4d0eda9ff17251ffcf641",
+        "actual_sha256": "341cc4e8fb216821c5eaacded9fdf4cca33f124cdba4d0eda9ff17251ffcf641",
+        "matches": true,
+        "source": "Kenneth French US daily FF3 and momentum, HTTPS",
+        "retrieved_at_utc": "2026-10-31T14:29:32.838486+00:00",
+        "redistributed": false
+      }
+    ],
+    "all_four_match": true,
+    "check_scope": "Only local file existence and exact-byte SHA-256 against archived manifests. No download, return calculation, regression, bootstrap or backtest. The processed factor cache hash is distinct from the serialized aligned regression matrix fingerprint in Table 7.",
+    "public_distribution": "Snapshots are excluded from Git/public clearance package; existence locally does not establish public availability or redistribution permission."
+  },
+  "verification": {
+    "pdf_pages": 37,
+    "logical_tables": 8,
+    "physical_table_panels": 11,
+    "table_xml_unchanged": true,
+    "saved_table_cells_matched": 800,
+    "embedded_figures": 8,
+    "figure_bytes_unchanged": true,
+    "editable_equations": 15,
+    "equation_xml_unchanged": true,
+    "traceability_records_retained": 833,
+    "source_cell_records_matched": 811,
+    "docx_pdf_substantive_paragraphs_matched": 168,
+    "exact_metadata_abstract_matches_docx": true,
+    "metadata_abstract_matches_pdf_ignoring_layout": true,
+    "historical_files_byte_preserved": 50,
+    "visual_review": {
+      "pages_reviewed": 37,
+      "render_dpi": 130,
+      "layout_passed": true,
+      "phase4_pixel_identical_pages": 31,
+      "candidate_pdf_sha256": "48ca0e55aed6d2afd7031d433ad98c2f83d206380430f016dc19a3b833db0d3b",
+      "scope": "All final pages visually inspected; no observed clipping or overlap. Does not establish author or policy approval."
+    }
+  },
+  "files": {
+    "BIBLIOGRAPHY_RESOLUTION.md": {
+      "sha256": "a246963f88cf3b49c9326d54e256370e055594781578d3abcb2615fbe1846dd3",
+      "bytes": 4405
+    },
+    "Black_Litterman_Final_Revision.docx": {
+      "sha256": "b78673df06a19dbd5543d9a5ec67b5317b0eeaa5fe0e353c1a112dd763bf6eee",
+      "bytes": 1052642
+    },
+    "Black_Litterman_Final_Revision.pdf": {
+      "sha256": "48ca0e55aed6d2afd7031d433ad98c2f83d206380430f016dc19a3b833db0d3b",
+      "bytes": 1373956
+    },
+    "FINAL_AUTHOR_DECLARATIONS.md": {
+      "sha256": "11763e1673427e93a0be2311a16a8cbe2062c32532b896ea94134fed07f1d1da",
+      "bytes": 9495
+    },
+    "PHASE6_FINAL_VALIDATION.md": {
+      "sha256": "665a20ac98087a8bd09011b486cfeccc2b4c45bb60b227770691b6cebcce9c61",
+      "bytes": 10742
+    },
+    "SSRN_AI_POLICY_COMPLIANCE_REVIEW.md": {
+      "sha256": "0bf65945032aa2ef81ffc5bd00e6b86d145471af92a41678be94ba21e543d556",
+      "bytes": 7689
+    },
+    "SSRN_METADATA_AND_REVISED_ABSTRACT.md": {
+      "sha256": "90d9fd4992e9c2497c3e00cfbc0f60af001a8483e6c0961d37b024608a7a3d28",
+      "bytes": 5356
+    }
+  },
+  "checksum_scope": "Exact delivered file bytes; self and enclosing ZIP excluded to avoid circularity. Source revision is the verified Phase 5 base plus changes documented in validation; final Phase 6 commit is reported at delivery."
+}

@@ -1,0 +1,24 @@
+{
+  "base_commit": "f9015d2430f0b910ece5ad8963c9f41c1464b604",
+  "phase2_run": "ff8cacdc-95f8-458e-8d71-d12efbd9a9f9",
+  "inputs": {
+    "results\\generated\\phase2\\phase2_daily_returns.csv": "fcb24f46bee31cdeb59421a0ed7c21db85d5f388ec84ad05caebc38e8be83ee6",
+    "results\\generated\\phase2\\phase2_trading_decisions.csv": "3901e1d175e5746004d14769982dce2eabb20f4deaf451c65bd4109069c4cbf9",
+    "results\\generated\\phase2\\phase2_concentration_sensitivity.csv": "6ab57de7de3979c98cc67fe341ec93e27283e7e4abdfa3f1ddc38b257458b314",
+    "results\\generated\\phase2\\PHASE2_RUN_MANIFEST.json": "6f0b676972d8319e6320cfec1bf42620752958916523ac6fb607a2f82e4260d4"
+  },
+  "outputs": {
+    "stage_a_active_weights.csv": "6c82a84402075bac74725a1f86e5e0e684f5694ffa715dba4125446c69ecff8f",
+    "stage_a_cap_effects.csv": "657ad989cdb1b9987765baf1e32673ebd494a60c64ee14a1a17c5eb14759b71a",
+    "stage_a_diagnostics.csv": "ac7b45045bffb25a81c9c3fdb066c5b1016c208dde50af1c18956460b822e180",
+    "stage_a_posterior_diagnostics.csv": "1f54bfff970b6f32086bb9a936ce9c7c399894eca5d89acbced57827096333bc"
+  },
+  "checks": [
+    "All Phase 2 output hashes",
+    "All Phase 2 recorded source hashes",
+    "Three private frozen price hashes",
+    "Paired decision dates",
+    "Independent posterior linear solve"
+  ],
+  "stage": "A"
+}

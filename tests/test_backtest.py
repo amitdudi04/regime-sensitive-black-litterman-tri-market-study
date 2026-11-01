@@ -30,15 +30,26 @@ class TestPaperBacktest(unittest.TestCase):
 
         self.assertEqual(daily.index[0], returns.index[252])
         self.assertEqual(len(daily), len(returns) - 252)
-        self.assertEqual(packet["turnover"].iloc[0]["Black-Litterman"], 0.0)
-        self.assertEqual(packet["turnover"].iloc[0]["Markowitz"], 0.0)
+        self.assertAlmostEqual(packet["turnover"].iloc[0]["Black-Litterman"], 1.0, places=6)
+        self.assertAlmostEqual(packet["turnover"].iloc[0]["Markowitz"], 1.0, places=6)
+        self.assertAlmostEqual(
+            (1.0 + daily["black_litterman_gross"].iloc[0]) * (1.0 - self._config().transaction_cost_rate) - 1.0,
+            daily["black_litterman_net"].iloc[0],
+            places=10,
+        )
+        self.assertAlmostEqual(
+            (1.0 + daily["markowitz_gross"].iloc[0]) * (1.0 - self._config().transaction_cost_rate) - 1.0,
+            daily["markowitz_net"].iloc[0],
+            places=10,
+        )
 
     def test_future_data_does_not_change_earlier_oos_returns(self):
         returns = self._returns()
         base = run_paper_backtest(returns, self._config())["daily_returns"]
 
         changed = returns.copy()
-        changed.iloc[320:] = changed.iloc[320:] * 50.0
+        # Keep synthetic simple returns above -100% under the explicit input contract.
+        changed.iloc[320:] = changed.iloc[320:] * 10.0
         altered = run_paper_backtest(changed, self._config())["daily_returns"]
 
         cutoff = returns.index[319]
@@ -50,6 +61,69 @@ class TestPaperBacktest(unittest.TestCase):
             weights = packet["weights"][model]
             self.assertTrue((weights >= -1e-10).all().all())
             np.testing.assert_allclose(weights.sum(axis=1).values, 1.0, atol=1e-7)
+
+    def test_buy_and_hold_returns_drift_weights_without_interim_trades(self):
+        from backtesting.paper_backtest import _buy_and_hold_daily_returns, _drifted_weights
+
+        dates = pd.bdate_range("2024-01-01", periods=2)
+        assets = pd.DataFrame({"A": [0.20, 0.00], "B": [0.00, 0.20]}, index=dates)
+        target = pd.Series({"A": 0.5, "B": 0.5})
+        realized = _buy_and_hold_daily_returns(assets, target)
+        self.assertAlmostEqual(realized.iloc[0], 0.10)
+        self.assertAlmostEqual(realized.iloc[1], 0.20 / 2.20)
+        final_weights = _drifted_weights(target, assets)
+        self.assertAlmostEqual(final_weights["A"], 0.6 / 1.2)
+        self.assertAlmostEqual(final_weights.sum(), 1.0)
+        self.assertAlmostEqual(float((1.0 + realized).prod()), 1.20)
+
+    def test_dated_equilibrium_prior_never_uses_future_snapshots(self):
+        returns = self._returns()
+        dates = returns.index
+        priors = pd.DataFrame(
+            [[0.8, 0.1, 0.1], [0.1, 0.1, 0.8]],
+            index=[dates[250], dates[310]],
+            columns=["A", "B", "C"],
+        )
+        packet = run_paper_backtest(
+            returns, self._config(), equilibrium_weights=priors
+        )
+        history = packet["equilibrium_prior_history"]
+        self.assertEqual(packet["equilibrium_weight_method"], "dated_user_supplied")
+        self.assertAlmostEqual(history.iloc[0]["A"], 0.8)
+        self.assertAlmostEqual(history.iloc[1]["C"], 0.8)
+        self.assertEqual(history.iloc[0]["Prior As-Of Date"], dates[250].isoformat())
+        self.assertEqual(history.iloc[1]["Prior As-Of Date"], dates[310].isoformat())
+        future_only = pd.DataFrame(
+            [[0.3, 0.3, 0.4]],
+            index=[dates[320]],
+            columns=["A", "B", "C"],
+        )
+        with self.assertRaises(ValueError):
+            run_paper_backtest(
+                returns, self._config(), equilibrium_weights=future_only
+            )
+
+    def test_invalid_supplied_equilibrium_prior_is_rejected(self):
+        returns = self._returns()
+        for supplied in [
+            pd.Series({"A": -0.1, "B": 0.6, "C": 0.5}),
+            pd.Series({"A": 0.0, "B": 0.0, "C": 0.0}),
+            pd.Series({"A": np.nan, "B": 0.5, "C": 0.5}),
+        ]:
+            with self.subTest(prior=supplied.to_dict()):
+                with self.assertRaises(ValueError):
+                    run_paper_backtest(
+                        returns, self._config(), equilibrium_weights=supplied
+                    )
+
+    def test_asi_excludes_first_unobserved_difference(self):
+        from backtesting.allocation_stability_index import compute_asi
+
+        weights = pd.DataFrame(
+            [[0.5, 0.5], [0.7, 0.3], [0.6, 0.4]],
+            columns=["A", "B"],
+        )
+        self.assertAlmostEqual(compute_asi(weights), 0.3)
 
     def test_transaction_costs_do_not_improve_net_return(self):
         packet = run_paper_backtest(self._returns(), self._config(0.001))

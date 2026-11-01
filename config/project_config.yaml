@@ -1,5 +1,5 @@
 requested_start: "2010-01-01"
-requested_end: "2025-01-01"
+requested_end: "2025-01-01"  # exclusive; last possible calendar date is 2024-12-31
 window_size: 252
 rebalance_frequency: 63
 risk_aversion: 3.0
@@ -10,4 +10,7 @@ view_blend: 0.10
 view_uncertainty_scale: 10.0
 min_weight: 0.0
 max_weight: 1.0
-equilibrium_weight_default: equal_weight_proxy
+equilibrium_weight_default: equal_weight_proxy  # not a market-cap-implied prior
+crisis_data_start: "2005-01-01"  # separate crisis-history window
+prefer_local_price_snapshot: true  # reuse a verified local snapshot; set false to refresh
+tau_sensitivity_values: [0.01, 0.05, 0.10, 0.15, 0.20]  # fixed tau; low/high set equal per run

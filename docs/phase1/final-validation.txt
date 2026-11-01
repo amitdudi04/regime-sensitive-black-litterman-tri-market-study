@@ -1,0 +1,19 @@
+{
+  "internal_consistency": "PASS",
+  "paper_reproduction": "NOT_ESTABLISHED",
+  "markets": [
+    "China",
+    "India",
+    "US"
+  ],
+  "strategy_rows": 6,
+  "crisis_rows": 6,
+  "tau_rows": 5,
+  "regime_rows": 6,
+  "bootstrap_rows": 3,
+  "paper_comparison_cells": 71,
+  "paper_comparison_status": {
+    "MISMATCH": 59,
+    "INCOMPARABLE_BENCHMARK": 12
+  }
+}

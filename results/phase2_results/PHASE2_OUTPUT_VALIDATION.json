@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "strategy_rows": 9,
+  "concentration_rows": 12,
+  "cost_rows": 60,
+  "statistical_rows": 12,
+  "price_vintage": "verified frozen Phase 1; no downloads",
+  "gross_wealth_and_cost_identities": "PASS",
+  "table_return_decision_alignment": "PASS"
+}

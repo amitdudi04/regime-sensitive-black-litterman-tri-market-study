@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from core.covariance_estimators import estimate_covariance
+from core.validation import validate_panel, normalized_weights
 from models.black_litterman_model import (
     compute_black_litterman_posterior,
     compute_implied_equilibrium_returns,
@@ -27,6 +28,20 @@ class BacktestConfig:
     min_weight: float = 0.0
     max_weight: float = 1.0
 
+    def __post_init__(self):
+        if (not isinstance(self.window_size, int) or self.window_size < 2
+                or not isinstance(self.rebalance_freq, int) or self.rebalance_freq < 1):
+            raise ValueError("Window and rebalance frequency must be positive integers (window >=2)")
+        values = [self.risk_aversion, self.tau_low_vol, self.tau_high_vol,
+                  self.transaction_cost_rate, self.view_blend, self.view_uncertainty_scale,
+                  self.min_weight, self.max_weight]
+        if (not np.isfinite(values).all() or min(self.risk_aversion, self.tau_low_vol,
+                self.tau_high_vol, self.view_uncertainty_scale) <= 0
+                or not 0 <= self.transaction_cost_rate < 0.5
+                or not 0 <= self.view_blend <= 1
+                or not 0 <= self.min_weight <= self.max_weight <= 1):
+            raise ValueError("Invalid financial backtest configuration")
+
 
 def _regime_tau(train_returns: pd.DataFrame, cfg: BacktestConfig) -> float:
     """Ex-ante volatility rule; uses training data only."""
@@ -49,17 +64,38 @@ def _drifted_weights(previous_weights, previous_asset_returns):
     return drifted / total
 
 
+def _buy_and_hold_daily_returns(asset_returns: pd.DataFrame, target_weights: pd.Series) -> pd.Series:
+    """Self-financing buy-and-hold portfolio within a rebalance interval.
+
+    Positions drift after each close. No trades take place between scheduled
+    rebalances; performance is computed before explicit trading costs.
+    """
+    asset_returns = validate_panel(asset_returns)
+    weights = pd.Series(target_weights, index=asset_returns.columns, dtype=float).copy()
+    normalized_weights(weights.to_frame().T)
+    values = []
+    for _, asset_row in asset_returns.iterrows():
+        portfolio_return = float(weights.dot(asset_row))
+        values.append(portfolio_return)
+        portfolio_growth = 1.0 + portfolio_return
+        if portfolio_growth <= 0.0 or not np.isfinite(portfolio_growth):
+            raise RuntimeError("Portfolio value must remain positive")
+        weights = weights * (1.0 + asset_row) / portfolio_growth
+    return pd.Series(values, index=asset_returns.index, dtype=float)
+
+
 def _l1_turnover(target, pre_trade):
     if pre_trade is None:
-        # Initial portfolio deployment is not counted as rebalancing turnover.
-        return 0.0
+        # The first out-of-sample portfolio is deployed from cash, so charge the
+        # full one-way purchased weight rather than treating initial turnover as zero.
+        return float(target.abs().sum())
     return float((target - pre_trade).abs().sum())
 
 
 def run_paper_backtest(
     returns_df: pd.DataFrame,
     config: BacktestConfig | None = None,
-    equilibrium_weights: pd.Series | None = None,
+    equilibrium_weights: pd.Series | pd.DataFrame | None = None,
 ):
     """
     Chronological 252/63 walk-forward comparison of Markowitz and Black-Litterman.
@@ -76,7 +112,7 @@ def run_paper_backtest(
     annualized covariance matrix. No future observation enters a training window.
     """
     cfg = config or BacktestConfig()
-    returns_df = returns_df.dropna(how="any").sort_index()
+    returns_df = validate_panel(returns_df)
 
     if len(returns_df) <= cfg.window_size:
         raise ValueError("Not enough observations for the requested rolling window")
@@ -89,8 +125,38 @@ def run_paper_backtest(
             np.repeat(1.0 / n_assets, n_assets), index=assets, dtype=float
         )
         equilibrium_weight_method = "equal_weight_proxy"
+    elif isinstance(equilibrium_weights, pd.DataFrame):
+        # Dated as-of prior: for every rebalance use the last row known no later
+        # than the last observed training day, never a subsequent AUM snapshot.
+        if not isinstance(equilibrium_weights.index, pd.DatetimeIndex):
+            raise ValueError("Dated equilibrium priors require a DatetimeIndex")
+        if equilibrium_weights.columns.has_duplicates or set(assets) != set(equilibrium_weights.columns):
+            raise ValueError("Dated equilibrium prior is missing one or more assets")
+        equilibrium_weights = equilibrium_weights.loc[:, assets].sort_index()
+        if (equilibrium_weights.empty or equilibrium_weights.index.has_duplicates
+                or equilibrium_weights.index.hasnans or equilibrium_weights.index.tz is not None):
+            raise ValueError("Dated equilibrium priors must be nonempty with unique dates")
+        prior_matrix = equilibrium_weights.to_numpy(dtype=float)
+        if (
+            not np.isfinite(prior_matrix).all()
+            or (prior_matrix < 0.0).any()
+            or (prior_matrix.sum(axis=1) <= 0.0).any()
+        ):
+            raise ValueError("Dated prior weights must be finite, nonnegative, positive-sum")
+        equilibrium_weights = equilibrium_weights.div(
+            equilibrium_weights.sum(axis=1), axis=0
+        )
+        equilibrium_weight_method = "dated_user_supplied"
     else:
         equilibrium_weights = pd.Series(equilibrium_weights, index=assets, dtype=float)
+        if (
+            not np.isfinite(equilibrium_weights.to_numpy()).all()
+            or (equilibrium_weights < 0.0).any()
+            or float(equilibrium_weights.sum()) <= 0.0
+        ):
+            raise ValueError(
+                "Equilibrium weights must be finite, nonnegative and have positive sum"
+            )
         equilibrium_weights = equilibrium_weights / equilibrium_weights.sum()
         equilibrium_weight_method = "user_supplied"
 
@@ -106,6 +172,7 @@ def run_paper_backtest(
     turnover_records = []
     tau_records = []
     convergence_records = []
+    prior_records = []
 
     prev_weights = {"black_litterman": None, "markowitz": None}
     prev_asset_returns = None
@@ -121,8 +188,21 @@ def run_paper_backtest(
         historical_mean = train.mean() * 252.0
 
         tau = _regime_tau(train, cfg)
+        if isinstance(equilibrium_weights, pd.DataFrame):
+            eligible_prior = equilibrium_weights.loc[
+                equilibrium_weights.index <= train.index[-1]
+            ]
+            if eligible_prior.empty:
+                raise ValueError(
+                    "No equilibrium prior is observable before the rebalance training cutoff"
+                )
+            prior_weights = eligible_prior.iloc[-1]
+            prior_asof_date = eligible_prior.index[-1]
+        else:
+            prior_weights = equilibrium_weights
+            prior_asof_date = pd.NaT
         pi = compute_implied_equilibrium_returns(
-            cov, equilibrium_weights.values, cfg.risk_aversion
+            cov, prior_weights.values, cfg.risk_aversion
         )
 
         p = np.eye(n_assets)
@@ -161,15 +241,21 @@ def run_paper_backtest(
         mv_turnover = _l1_turnover(mv_weights, pre_trade_mv)
         bl_turnover = _l1_turnover(bl_weights, pre_trade_bl)
 
-        mv_gross = test.dot(mv_weights)
-        bl_gross = test.dot(bl_weights)
+        mv_gross = _buy_and_hold_daily_returns(test, mv_weights)
+        bl_gross = _buy_and_hold_daily_returns(test, bl_weights)
         mv_net = mv_gross.copy()
         bl_net = bl_gross.copy()
 
-        # Charge proportional rebalancing friction once, on the first day after trade.
+        # Deduct trading friction from available wealth at the rebalance, before
+        # earning the next day's gross asset return. This preserves exact
+        # multiplicative self-financing wealth accounting.
         if len(test):
-            mv_net.iloc[0] -= mv_turnover * cfg.transaction_cost_rate
-            bl_net.iloc[0] -= bl_turnover * cfg.transaction_cost_rate
+            mv_cost = mv_turnover * cfg.transaction_cost_rate
+            bl_cost = bl_turnover * cfg.transaction_cost_rate
+            if not 0 <= mv_cost < 1 or not 0 <= bl_cost < 1:
+                raise ValueError("Trading cost fraction must be in [0, 1)")
+            mv_net.iloc[0] = (1.0 - mv_cost) * (1.0 + mv_gross.iloc[0]) - 1.0
+            bl_net.iloc[0] = (1.0 - bl_cost) * (1.0 + bl_gross.iloc[0]) - 1.0
 
         daily["markowitz_gross"].extend(mv_gross.tolist())
         daily["markowitz_net"].extend(mv_net.tolist())
@@ -188,6 +274,16 @@ def run_paper_backtest(
             }
         )
         tau_records.append({"Date": rebalance_date, "Tau": tau})
+        prior_records.append(
+            {
+                "Date": rebalance_date,
+                "Prior As-Of Date": (
+                    pd.Timestamp(prior_asof_date).isoformat()
+                    if not pd.isna(prior_asof_date) else None
+                ),
+                **{str(asset): float(prior_weights[asset]) for asset in assets},
+            }
+        )
         convergence_records.append(
             {
                 "Date": rebalance_date,
@@ -224,6 +320,7 @@ def run_paper_backtest(
         "tau": tau_timeline,
         "convergence": convergence,
         "equilibrium_weights": equilibrium_weights,
+        "equilibrium_prior_history": pd.DataFrame(prior_records).set_index("Date"),
         "equilibrium_weight_method": equilibrium_weight_method,
         "config": cfg,
     }

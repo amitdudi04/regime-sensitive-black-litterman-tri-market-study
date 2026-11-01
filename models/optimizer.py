@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
+from core.validation import covariance_matrix
 
 
 def compute_mean_variance_weights(
@@ -21,12 +22,11 @@ def compute_mean_variance_weights(
     model-specific regularization.
     """
     expected_returns = pd.Series(expected_returns, dtype=float)
-    cov = pd.DataFrame(
-        cov_matrix,
-        index=expected_returns.index,
-        columns=expected_returns.index,
-        dtype=float,
-    )
+    cov = covariance_matrix(cov_matrix, expected_returns.index)
+    if (expected_returns.index.has_duplicates or not np.isfinite(expected_returns).all()
+            or not np.isfinite([risk_aversion, min_weight, max_weight]).all()
+            or risk_aversion <= 0 or not 0 <= min_weight <= max_weight <= 1):
+        raise ValueError("Invalid means, risk aversion, asset labels or long-only bounds")
 
     n = len(expected_returns)
     if n == 0:
@@ -63,6 +63,8 @@ def compute_mean_variance_weights(
         raise RuntimeError("Optimizer returned non-finite weights")
     if abs(float(weights.sum()) - 1.0) > 1e-7:
         raise RuntimeError("Optimizer returned a portfolio that is not fully invested")
+    if (weights < min_weight - 1e-7).any() or (weights > max_weight + 1e-7).any():
+        raise RuntimeError("Optimizer returned weights outside requested bounds")
     return weights
 
 

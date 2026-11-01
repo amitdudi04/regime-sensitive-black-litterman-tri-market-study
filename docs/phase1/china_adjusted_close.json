@@ -1,0 +1,67 @@
+{
+  "market": "China",
+  "source": "Yahoo Finance via yfinance",
+  "price_field": "Adj Close (auto_adjust=False)",
+  "corporate_actions": "provider adjusted for dividends and splits; USD-listed ETF exposure",
+  "alignment": {
+    "ASHR": {
+      "first_observed": "2013-11-06",
+      "last_observed": "2024-12-31",
+      "observed_count": 2806,
+      "missing_rows_before_common_alignment": 2227
+    },
+    "KWEB": {
+      "first_observed": "2013-08-01",
+      "last_observed": "2024-12-31",
+      "observed_count": 2874,
+      "missing_rows_before_common_alignment": 2159
+    },
+    "MCHI": {
+      "first_observed": "2011-03-31",
+      "last_observed": "2024-12-31",
+      "observed_count": 3461,
+      "missing_rows_before_common_alignment": 1572
+    },
+    "FXI": {
+      "first_observed": "2005-01-03",
+      "last_observed": "2024-12-31",
+      "observed_count": 5033,
+      "missing_rows_before_common_alignment": 0
+    }
+  },
+  "per_ticker": {
+    "ASHR": {
+      "first_common_date": "2013-11-06",
+      "last_common_date": "2024-12-31",
+      "common_observations": 2806
+    },
+    "KWEB": {
+      "first_common_date": "2013-11-06",
+      "last_common_date": "2024-12-31",
+      "common_observations": 2806
+    },
+    "MCHI": {
+      "first_common_date": "2013-11-06",
+      "last_common_date": "2024-12-31",
+      "common_observations": 2806
+    },
+    "FXI": {
+      "first_common_date": "2013-11-06",
+      "last_common_date": "2024-12-31",
+      "common_observations": 2806
+    }
+  },
+  "requested_start": "2005-01-01",
+  "requested_end_exclusive": "2025-01-01",
+  "tickers": [
+    "ASHR",
+    "KWEB",
+    "MCHI",
+    "FXI"
+  ],
+  "effective_start": "2013-11-06",
+  "effective_end": "2024-12-31",
+  "observations": 2806,
+  "sha256": "9db82332709b7fd366b96461b32d474ecd509383121edb9ed8f3ad677dd3b4a1",
+  "downloaded_at_utc": "2026-10-31T14:33:06.346995+00:00"
+}

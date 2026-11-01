@@ -1,0 +1,37 @@
+# Author approval checklist
+
+**All items below remain pending.** This file does not record consent, personal verification or completed submission. Approvals must come from Amit Kumar Dudi; completion of technical checks is not a substitute.
+
+- [ ] Approve the preserved Phase 4 DOCX/PDF identified by FINAL_SUBMISSION_CHECKSUMS.json, including the equal-weight prior, periodic 1/N comparison, matched cap, mixed results, nonsignificant inference and withdrawal of unsupported ownership findings. Confirm understanding that the historical March numerical results were not exactly reproduced.
+- [ ] Confirm the title, Amit Kumar Dudi, email amitkumardudi04@gmail.com, first-version March 2026 and revised date 31 October 2026. Confirm the correct current affiliation: the manuscript says Independent Researcher; the indexed SSRN record lists SRM INSTITUE OF SCIENCE AND TECHNOLOGY. Resolve that discrepancy before any upload. No affiliation or corrected institution spelling has been invented here.
+- [ ] Approve use of the following candidate abstract and keywords for the proposed SSRN metadata; the current online abstract is historical and has not been replaced.
+
+> This study compares Black-Litterman (BL) and historical-mean Markowitz allocation in small US-listed ETF baskets providing exposure to the United States, China and India. The revised experiment uses 252-session rolling estimation windows, Ledoit-Wolf covariance shrinkage, long-only fully invested portfolios, rebalancing every 63 sessions and self-financing buy-and-hold accounting between trades. BL uses an explicitly equal-weight equilibrium proxy and a mild historically derived view tilt. Periodically rebalanced equal-weight allocation provides a direct benchmark for this anchoring choice. Additional comparisons impose matched 40% maximum target weights and evaluate proportional trading costs of 0, 5, 10 and 20 basis points per unit of drift-adjusted L1 turnover. At 10 basis points, BL has substantially lower target instability and turnover than unrestricted Markowitz, but its returns and Sharpe ratios are nearly those of rebalanced 1/N. Matched concentration limits substantially reduce Markowitz concentration and instability; US and China Sharpe ratios improve, whereas India's declines. No statistically significant Sharpe-ratio differences were established under the specified paired bootstrap procedure. Cost rankings depend on whether performance is measured by arithmetic annualized return or compounded terminal wealth. Separate historical crisis tests are event-specific, and US factor and fixed-tau diagnostics retain their separate source provenance. The contribution is a transparent comparison of stabilization, concentration and implementation trade-offs across the three ETF baskets; the evidence does not establish universal BL superiority, incremental value over 1/N or causal benefits of Bayesian updating.
+
+> Keywords: Black–Litterman; mean–variance optimization; allocation stability; ETF portfolios; trading turnover; bootstrap inference.
+
+- [ ] Confirm whether there is any current funding or competing interest and approve truthful final wording. The exact candidate text requiring confirmation is:
+
+> Funding and competing interests: the March 2026 version reported no external funding and no conflict of interest. Confirmation that these declarations remain accurate for the revised study is required from the author before submission.
+
+If no funding or competing interests remain, the author may approve these proposed final statements, only if accurate: “This research received no external funding.” and “The author declares no competing interests relevant to this study.” Otherwise supply the actual funding/support and relevant relationships. Neither proposed statement has been inserted as a newly confirmed fact.
+
+- [ ] Approve or correct the exact AI assistance descriptions below, including actual extent of assistance and actual human oversight. Do not assert completed personal verification until that work has actually occurred. Confirm any applicable institutional and SSRN disclosure requirements at the time of submission.
+
+Front disclosure:
+
+> AI assistance disclosure: ChatGPT and Codex assisted with code inspection, validation support, empirical workflow preparation, research documentation, tables, figures and manuscript editing. The full draft declaration at the end of the paper requires author review and approval before submission.
+
+End declaration:
+
+> OpenAI ChatGPT and Codex tools assisted with code inspection, mathematical-validation support, numerical-test preparation, empirical workflow preparation, research documentation, table and figure generation, and manuscript editing. The revised empirical results were taken from the frozen verified source outputs; tools were not used to fabricate missing market, ownership or historical-paper data. The assistance extended beyond linguistic refinement, so the earlier declaration is not carried forward unchanged.
+
+> The author must review the revised manuscript, references, numerical interpretations, code/evidence record and this disclosure before submission. AI tools do not assume authorship or responsibility. No statement is made here that the author has already completed that review or personally verified every new result. The final author-approved declaration should accurately describe actual human oversight and comply with the applicable SSRN and institutional requirements at submission.
+
+- [ ] Confirm the bibliography versions actually consulted: Memmel (2003), Finance Letters 1:21–23 is now directly corroborated by the author's institution, while its journal original/issue/DOI remain unretrieved; retain the qualified citation unless genuine additional evidence is supplied. Meucci's October 2010 extended author version and May 2010 shorter Wiley chapter are distinct; approve the current author-version citation or request a properly identified chapter citation. Grinold/Kahn second edition has a 1999 release and ©2000; confirm the consulted copy supports the retained 2000 citation. No invented issue, page range or DOI is offered.
+- [ ] Approve or correct the exact candidate data-availability wording below and confirm lawful access/redistribution arrangements. Exact frozen snapshots are local and checksum identified; a fresh download may be different. No vendor permissions have been assumed.
+
+> Data availability: revised-study source code, result tables, figures, configuration and provenance are retained in the versioned repository and evidence package. Market prices originate from Yahoo Finance and US factor definitions from the Kenneth French Data Library. Raw vendor input redistribution is not asserted. Exact frozen-data access and matching checksums should accompany any claim of exact revised-study reproduction.
+
+- [ ] Confirm all final research interpretations, limitations and AI/funding/conflict/data statements after reading the manuscript and readiness report. If changes are requested, edit the source, export matching DOCX/PDF and replace the checksum candidate only after verification. This package remains an author-review candidate until that decision.
+- [ ] Author alone decides whether and when to revise existing SSRN record 6479462. No upload or record replacement is authorized by this checklist, and none has occurred. Do not start another research phase as part of this review.

@@ -1,0 +1,327 @@
+{
+  "run_id": "ff8cacdc-95f8-458e-8d71-d12efbd9a9f9",
+  "completed_at_utc": "2026-10-31T15:08:12.185562+00:00",
+  "phase1_base_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d",
+  "phase2_commit": "af84ddfbc93edc7a5143c654d6319d67e3139eef",
+  "git_dirty": false,
+  "source_sha256": {
+    "pipelines/phase2_experiments.py": "f2e21958838e99ab4afc332741b9fb7150e943b74913f2b6aeaa12e72fd688c4",
+    "scripts/validate_phase2_outputs.py": "4f9a5c02cfaf78f3a649b65b182d1b3bc2dc643fbbbc8924d98ceadfce3feb02",
+    "config/project_config.yaml": "328447ec702a537e504c184d3e9e7185c4b65ef52c7d244dbf012e5573a7ecb8",
+    "requirements-phase1-lock.txt": "3ef056fb000f318fc8bc1afdca808b433a9b27dc3b671c21dff4930a47592ccd"
+  },
+  "configuration": {
+    "window_size": 252,
+    "rebalance_freq": 63,
+    "risk_aversion": 3.0,
+    "tau_low_vol": 0.05,
+    "tau_high_vol": 0.01,
+    "transaction_cost_rate": 0.001,
+    "view_blend": 0.1,
+    "view_uncertainty_scale": 10.0,
+    "min_weight": 0.0,
+    "max_weight": 1.0
+  },
+  "cost_bps": [
+    0,
+    5,
+    10,
+    20
+  ],
+  "target_weight_caps": [
+    1.0,
+    0.4
+  ],
+  "bootstrap": {
+    "block_size": 20,
+    "iterations": 2000,
+    "seed": 42
+  },
+  "statistical_cost_bps": 10,
+  "frozen_phase1_inputs": {
+    "US": {
+      "market": "US",
+      "source": "Yahoo Finance via yfinance",
+      "price_field": "Adj Close (auto_adjust=False)",
+      "corporate_actions": "provider adjusted for dividends and splits; USD-listed ETF exposure",
+      "alignment": {
+        "SPY": {
+          "first_observed": "2005-01-03",
+          "last_observed": "2024-12-31",
+          "observed_count": 5033,
+          "missing_rows_before_common_alignment": 0
+        },
+        "QQQ": {
+          "first_observed": "2005-01-03",
+          "last_observed": "2024-12-31",
+          "observed_count": 5033,
+          "missing_rows_before_common_alignment": 0
+        },
+        "IWM": {
+          "first_observed": "2005-01-03",
+          "last_observed": "2024-12-31",
+          "observed_count": 5033,
+          "missing_rows_before_common_alignment": 0
+        },
+        "XLF": {
+          "first_observed": "2005-01-03",
+          "last_observed": "2024-12-31",
+          "observed_count": 5033,
+          "missing_rows_before_common_alignment": 0
+        },
+        "XLK": {
+          "first_observed": "2005-01-03",
+          "last_observed": "2024-12-31",
+          "observed_count": 5033,
+          "missing_rows_before_common_alignment": 0
+        }
+      },
+      "per_ticker": {
+        "SPY": {
+          "first_common_date": "2005-01-03",
+          "last_common_date": "2024-12-31",
+          "common_observations": 5033
+        },
+        "QQQ": {
+          "first_common_date": "2005-01-03",
+          "last_common_date": "2024-12-31",
+          "common_observations": 5033
+        },
+        "IWM": {
+          "first_common_date": "2005-01-03",
+          "last_common_date": "2024-12-31",
+          "common_observations": 5033
+        },
+        "XLF": {
+          "first_common_date": "2005-01-03",
+          "last_common_date": "2024-12-31",
+          "common_observations": 5033
+        },
+        "XLK": {
+          "first_common_date": "2005-01-03",
+          "last_common_date": "2024-12-31",
+          "common_observations": 5033
+        }
+      },
+      "requested_start": "2005-01-01",
+      "requested_end_exclusive": "2025-01-01",
+      "tickers": [
+        "SPY",
+        "QQQ",
+        "IWM",
+        "XLF",
+        "XLK"
+      ],
+      "effective_start": "2005-01-03",
+      "effective_end": "2024-12-31",
+      "observations": 5033,
+      "sha256": "835a01e377ce0c50c1cdeb7b5ad8653680f83ee4c7c5b6158fcc2f8d0c0fdfc9",
+      "downloaded_at_utc": "2026-10-31T14:32:51.400745+00:00"
+    },
+    "China": {
+      "market": "China",
+      "source": "Yahoo Finance via yfinance",
+      "price_field": "Adj Close (auto_adjust=False)",
+      "corporate_actions": "provider adjusted for dividends and splits; USD-listed ETF exposure",
+      "alignment": {
+        "ASHR": {
+          "first_observed": "2013-11-06",
+          "last_observed": "2024-12-31",
+          "observed_count": 2806,
+          "missing_rows_before_common_alignment": 2227
+        },
+        "KWEB": {
+          "first_observed": "2013-08-01",
+          "last_observed": "2024-12-31",
+          "observed_count": 2874,
+          "missing_rows_before_common_alignment": 2159
+        },
+        "MCHI": {
+          "first_observed": "2011-03-31",
+          "last_observed": "2024-12-31",
+          "observed_count": 3461,
+          "missing_rows_before_common_alignment": 1572
+        },
+        "FXI": {
+          "first_observed": "2005-01-03",
+          "last_observed": "2024-12-31",
+          "observed_count": 5033,
+          "missing_rows_before_common_alignment": 0
+        }
+      },
+      "per_ticker": {
+        "ASHR": {
+          "first_common_date": "2013-11-06",
+          "last_common_date": "2024-12-31",
+          "common_observations": 2806
+        },
+        "KWEB": {
+          "first_common_date": "2013-11-06",
+          "last_common_date": "2024-12-31",
+          "common_observations": 2806
+        },
+        "MCHI": {
+          "first_common_date": "2013-11-06",
+          "last_common_date": "2024-12-31",
+          "common_observations": 2806
+        },
+        "FXI": {
+          "first_common_date": "2013-11-06",
+          "last_common_date": "2024-12-31",
+          "common_observations": 2806
+        }
+      },
+      "requested_start": "2005-01-01",
+      "requested_end_exclusive": "2025-01-01",
+      "tickers": [
+        "ASHR",
+        "KWEB",
+        "MCHI",
+        "FXI"
+      ],
+      "effective_start": "2013-11-06",
+      "effective_end": "2024-12-31",
+      "observations": 2806,
+      "sha256": "9db82332709b7fd366b96461b32d474ecd509383121edb9ed8f3ad677dd3b4a1",
+      "downloaded_at_utc": "2026-10-31T14:33:06.346995+00:00"
+    },
+    "India": {
+      "market": "India",
+      "source": "Yahoo Finance via yfinance",
+      "price_field": "Adj Close (auto_adjust=False)",
+      "corporate_actions": "provider adjusted for dividends and splits; USD-listed ETF exposure",
+      "alignment": {
+        "INDA": {
+          "first_observed": "2012-02-03",
+          "last_observed": "2024-12-31",
+          "observed_count": 3248,
+          "missing_rows_before_common_alignment": 994
+        },
+        "EPI": {
+          "first_observed": "2008-02-26",
+          "last_observed": "2024-12-31",
+          "observed_count": 4242,
+          "missing_rows_before_common_alignment": 0
+        },
+        "SMIN": {
+          "first_observed": "2012-02-09",
+          "last_observed": "2024-12-31",
+          "observed_count": 3244,
+          "missing_rows_before_common_alignment": 998
+        },
+        "INDY": {
+          "first_observed": "2009-11-20",
+          "last_observed": "2024-12-31",
+          "observed_count": 3802,
+          "missing_rows_before_common_alignment": 440
+        }
+      },
+      "per_ticker": {
+        "INDA": {
+          "first_common_date": "2012-02-09",
+          "last_common_date": "2024-12-31",
+          "common_observations": 3244
+        },
+        "EPI": {
+          "first_common_date": "2012-02-09",
+          "last_common_date": "2024-12-31",
+          "common_observations": 3244
+        },
+        "SMIN": {
+          "first_common_date": "2012-02-09",
+          "last_common_date": "2024-12-31",
+          "common_observations": 3244
+        },
+        "INDY": {
+          "first_common_date": "2012-02-09",
+          "last_common_date": "2024-12-31",
+          "common_observations": 3244
+        }
+      },
+      "requested_start": "2005-01-01",
+      "requested_end_exclusive": "2025-01-01",
+      "tickers": [
+        "INDA",
+        "EPI",
+        "SMIN",
+        "INDY"
+      ],
+      "effective_start": "2012-02-09",
+      "effective_end": "2024-12-31",
+      "observations": 3244,
+      "sha256": "655f98c5bfae2a37da7809a51e80249f4853beaac5db2ac5ffe8f1c1a8af5bb2",
+      "downloaded_at_utc": "2026-10-31T14:33:10.732222+00:00"
+    }
+  },
+  "new_market_downloads": false,
+  "definitions": {
+    "returns": "simple daily; annual arithmetic mean x252; sample volatility x sqrt252; Sharpe RF=0",
+    "turnover": "Phase 1 L1 target minus drifted pretrade weights; initial deployment 1 separately",
+    "costs": "(1+r_net)=(1+r_gross)*(1-L1_turnover*bps/10000) at scheduled trades",
+    "cost_expenditure": "sum pretrade net NAV x fee fraction, in units of initial NAV; distinct from terminal wealth loss",
+    "equal_weight": "reset to 1/N every 63 sessions; no interim trades; OOS begins after 252 sessions",
+    "cap": "rebalance target bound, not continuously enforced holding cap; matched BL/MV",
+    "HHI": "sum squared weights; mean targets across rebalances and mean holdings across end-of-day observations",
+    "inference": "Phase 1 approximate empirical-mean-centered paired circular bootstrap; percentile 95% intervals; no multiplicity adjustment"
+  },
+  "environment": {
+    "python": "3.12.13",
+    "os": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "beautifulsoup4": "4.15.0",
+      "certifi": "2026.10.23",
+      "cffi": "2.1.1",
+      "charset-normalizer": "3.5.2",
+      "cloudpickle": "3.1.2",
+      "contourpy": "1.4.0",
+      "curl_cffi": "0.17.0",
+      "cycler": "0.12.1",
+      "fonttools": "4.68.0",
+      "formulaic": "1.2.2",
+      "idna": "3.20",
+      "interface_meta": "2.0.1",
+      "joblib": "1.6.0",
+      "kiwisolver": "1.5.1",
+      "lxml": "6.1.3",
+      "matplotlib": "3.11.2",
+      "multitasking": "0.0.13",
+      "narwhals": "2.28.0",
+      "numpy": "2.5.4",
+      "packaging": "26.3",
+      "pandas": "3.1.0",
+      "pandas-datareader": "0.11.1",
+      "patsy": "1.0.3",
+      "peewee": "4.5.3",
+      "pillow": "13.0.0",
+      "platformdirs": "4.14.0",
+      "protobuf": "7.36.2",
+      "pycparser": "3.12",
+      "pyparsing": "3.3.3",
+      "python-dateutil": "3.0.0",
+      "pytz": "2026.6",
+      "PyYAML": "6.0.3",
+      "requests": "2.34.2",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "setuptools": "84.2.1",
+      "six": "1.17.0",
+      "soupsieve": "3.0.4",
+      "statsmodels": "0.15.0",
+      "threadpoolctl": "3.7.0",
+      "typing_extensions": "4.16.0",
+      "tzdata": "2026.6",
+      "urllib3": "2.8.0",
+      "websockets": "17.4",
+      "wrapt": "2.5.2",
+      "yfinance": "1.7.0"
+    }
+  },
+  "output_sha256": {
+    "phase2_concentration_sensitivity.csv": "6ab57de7de3979c98cc67fe341ec93e27283e7e4abdfa3f1ddc38b257458b314",
+    "phase2_daily_returns.csv": "fcb24f46bee31cdeb59421a0ed7c21db85d5f388ec84ad05caebc38e8be83ee6",
+    "phase2_statistical_comparisons.csv": "00facbd1ecd91164f92b7dd9278d6d2884696c41628e802c86ac1427a1cbd63c",
+    "phase2_strategy_summary.csv": "3a55fa49536a0cdc61e08683e6cfb1bd91463561a45a6a9a9587e179ba9ab9db",
+    "phase2_trading_decisions.csv": "3901e1d175e5746004d14769982dce2eabb20f4deaf451c65bd4109069c4cbf9",
+    "phase2_transaction_cost_sensitivity.csv": "67774b0fa5f8c84f68b6bb0caa80fb276556e5acb35362dba20efd38bcfa3a73"
+  }
+}

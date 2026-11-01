@@ -1,0 +1,409 @@
+{
+  "run_id": "a32caca2-4ba1-47c2-a2cf-81510220d4e7",
+  "completed_at_utc": "2026-10-31T15:54:08.769253+00:00",
+  "executed_source_commit": "69112e3abc1997df04387e916e04285cb6cbf87d",
+  "git_dirty": false,
+  "git_status_scope": "captured before creating new publication outputs",
+  "base_phase2_commit": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1",
+  "phase1_evidence_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d",
+  "source_sha256": {
+    "scripts/phase3_final_results.py": "5b230719e09b5e78ba8c121d200637384d39c494158ed315ba9eca70c80e41e4",
+    "scripts/phase3_figures.py": "e716d6f027332eb687991bc62228efe57795cfe5c02000a54682a41bd93eefae",
+    "requirements-phase1-lock.txt": "3ef056fb000f318fc8bc1afdca808b433a9b27dc3b671c21dff4930a47592ccd"
+  },
+  "source_runs": {
+    "Phase 1": "693ec4b2-0e95-4367-afef-904dbac8f9c3",
+    "Phase 2": "ff8cacdc-95f8-458e-8d71-d12efbd9a9f9"
+  },
+  "inputs": {
+    "docs/phase1/RUN_MANIFEST.json": {
+      "sha256": "83abdf1512bbd5397aaac1334316e5048ca3517122a54dd77517ac971a352839",
+      "canonical_lf_sha256": "ee0cc385a52223db6c7b124ce5d59ddc38638367e02abbe7db06b02de1012edc",
+      "pinned_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d"
+    },
+    "results/phase2_results/PHASE2_RUN_MANIFEST.json": {
+      "sha256": "6f0b676972d8319e6320cfec1bf42620752958916523ac6fb607a2f82e4260d4",
+      "canonical_lf_sha256": "9709b30b929f60389d8d1dd5c512f49393acb34d8c7ff3e5338aabd289fa8f04",
+      "pinned_commit": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1"
+    },
+    "results/generated/phase2/PHASE2_RUN_MANIFEST.json": {
+      "sha256": "6f0b676972d8319e6320cfec1bf42620752958916523ac6fb607a2f82e4260d4",
+      "canonical_lf_sha256": "9709b30b929f60389d8d1dd5c512f49393acb34d8c7ff3e5338aabd289fa8f04",
+      "pinned_commit": null
+    },
+    "results/phase2_results/phase2_strategy_summary.csv": {
+      "sha256": "3a55fa49536a0cdc61e08683e6cfb1bd91463561a45a6a9a9587e179ba9ab9db",
+      "canonical_lf_sha256": "094a169bedd0e3b53d320e009a366c7ee1a1f206d21d15feb1aff96d03038abe",
+      "pinned_commit": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1"
+    },
+    "results/phase2_results/phase2_concentration_sensitivity.csv": {
+      "sha256": "6ab57de7de3979c98cc67fe341ec93e27283e7e4abdfa3f1ddc38b257458b314",
+      "canonical_lf_sha256": "cb88f3016af16ec71771ce14a40d82967e2d8beb1d94c5b35a2aebb16768256e",
+      "pinned_commit": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1"
+    },
+    "results/phase2_results/phase2_transaction_cost_sensitivity.csv": {
+      "sha256": "67774b0fa5f8c84f68b6bb0caa80fb276556e5acb35362dba20efd38bcfa3a73",
+      "canonical_lf_sha256": "9c96cbe517e21bb318cc1b2f16ec189045aea13db39aa339022c755ff5f348c2",
+      "pinned_commit": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1"
+    },
+    "results/phase2_results/phase2_statistical_comparisons.csv": {
+      "sha256": "00facbd1ecd91164f92b7dd9278d6d2884696c41628e802c86ac1427a1cbd63c",
+      "canonical_lf_sha256": "b5e4c8d38745610589b0333c656347fd78f2e7a6ed69b94f5c1f261496ea6818",
+      "pinned_commit": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1"
+    },
+    "docs/phase1/dataset_manifest.csv": {
+      "sha256": "f0cf281d5ea534614c344efb6cd654c83b528a1cc60e5047c97c9fe844c34a06",
+      "canonical_lf_sha256": "6c776e572557e2a4cac407c48b0b795a7c150052117eff43b2abb010e9b6a5fb",
+      "pinned_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d"
+    },
+    "docs/phase1/crisis_summary.csv": {
+      "sha256": "0043b6afcbce7a0ae25d42813a8d424b0a0a7b3cb077e7e914e68807c935f334",
+      "canonical_lf_sha256": "3e0e7719ebf381256f1941c43ec97e03d1c19194cbafdbceddcc09c4023635af",
+      "pinned_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d"
+    },
+    "docs/phase1/factor_regression_us.csv": {
+      "sha256": "ea6aacac217ff8b9ff51881a2be81a7ae891341139ea9a8b36d05df09af37414",
+      "canonical_lf_sha256": "f09ca1cebac27c05b001d6215e744dc8b2c469d00fa67e135314e13d5059cd91",
+      "pinned_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d"
+    },
+    "docs/phase1/tau_sensitivity.csv": {
+      "sha256": "1cf1a5984366fa5980ee44a688310aec71bbbfef12b31a6ba6c1a7dcb4112d5d",
+      "canonical_lf_sha256": "8068fc559fd7ec4ed343dfd7272432c956847b7246485f6ab60d1aba1160137c",
+      "pinned_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d"
+    },
+    "results/generated/phase2/phase2_daily_returns.csv": {
+      "sha256": "fcb24f46bee31cdeb59421a0ed7c21db85d5f388ec84ad05caebc38e8be83ee6",
+      "canonical_lf_sha256": "9fdb34b1366f210491e7c8548eb361170ba7291234d9e90bc40c4eb42b3655cc",
+      "pinned_commit": null
+    },
+    "results/generated/phase2/phase2_trading_decisions.csv": {
+      "sha256": "3901e1d175e5746004d14769982dce2eabb20f4deaf451c65bd4109069c4cbf9",
+      "canonical_lf_sha256": "9a2cded2818ff094a38b5c193339fbe9e9f02ba04e8c902d4aba0ccab912f676",
+      "pinned_commit": null
+    },
+    "docs/REVIEWER_CORRECTIONS.md": {
+      "sha256": "de58727b5498218c72a2ee510d00f06d6a791b1ebce74a480dfa4ed071dfb2b4",
+      "canonical_lf_sha256": "e78bdf9c4dab9bde9beb15ed2901bc1c1c17ee8154d158386aaa4282bceeab47",
+      "pinned_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d"
+    },
+    "docs/MANUSCRIPT_REPRODUCTION_ASSESSMENT_2026-10-31.md": {
+      "sha256": "1d7c3aea843588ba5627e52ee9fce19f6f9bc3abe81d883e2254d7d0ca686d97",
+      "canonical_lf_sha256": "f3ca3dd7e1d6596b08c47b03ac87f3eb7c546f081ee4f33fc5b454e51bf95824",
+      "pinned_commit": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d"
+    }
+  },
+  "configuration": {
+    "Phase 2": {
+      "window_size": 252,
+      "rebalance_freq": 63,
+      "risk_aversion": 3.0,
+      "tau_low_vol": 0.05,
+      "tau_high_vol": 0.01,
+      "transaction_cost_rate": 0.001,
+      "view_blend": 0.1,
+      "view_uncertainty_scale": 10.0,
+      "min_weight": 0.0,
+      "max_weight": 1.0
+    },
+    "cost_bps": [
+      0,
+      5,
+      10,
+      20
+    ],
+    "bootstrap": {
+      "block_size": 20,
+      "iterations": 2000,
+      "seed": 42
+    },
+    "Phase 1 supplementary": {
+      "requested_start": "2010-01-01",
+      "requested_end": "2025-01-01",
+      "window_size": 252,
+      "rebalance_frequency": 63,
+      "risk_aversion": 3.0,
+      "tau_low_vol": 0.05,
+      "tau_high_vol": 0.01,
+      "transaction_cost_rate": 0.001,
+      "view_blend": 0.1,
+      "view_uncertainty_scale": 10.0,
+      "min_weight": 0.0,
+      "max_weight": 1.0,
+      "equilibrium_weight_default": "equal_weight_proxy",
+      "crisis_data_start": "2005-01-01",
+      "prefer_local_price_snapshot": true,
+      "tau_sensitivity_values": [
+        0.01,
+        0.05,
+        0.1,
+        0.15,
+        0.2
+      ]
+    }
+  },
+  "tables": {
+    "table_01_dataset_definitions.csv": {
+      "rows": 3,
+      "source_files": [
+        "docs/phase1/dataset_manifest.csv",
+        "results/phase2_results/phase2_strategy_summary.csv"
+      ],
+      "transforms": "explicit selection/renaming in build_tables; Table 3 additionally computes annual return delta x10000; Table 7 reshapes recorded coefficients/t/p; no estimation",
+      "phase": "Linked Phase 1 dataset / Phase 2 samples"
+    },
+    "table_02_principal_performance.csv": {
+      "rows": 9,
+      "source_files": [
+        "results/phase2_results/phase2_strategy_summary.csv"
+      ],
+      "transforms": "explicit selection/renaming in build_tables; Table 3 additionally computes annual return delta x10000; Table 7 reshapes recorded coefficients/t/p; no estimation",
+      "phase": "Phase 2"
+    },
+    "table_03_concentration_robustness.csv": {
+      "rows": 12,
+      "source_files": [
+        "results/phase2_results/phase2_concentration_sensitivity.csv"
+      ],
+      "transforms": "explicit selection/renaming in build_tables; Table 3 additionally computes annual return delta x10000; Table 7 reshapes recorded coefficients/t/p; no estimation",
+      "phase": "Phase 2"
+    },
+    "table_04_transaction_cost_sensitivity.csv": {
+      "rows": 60,
+      "source_files": [
+        "results/phase2_results/phase2_transaction_cost_sensitivity.csv"
+      ],
+      "transforms": "explicit selection/renaming in build_tables; Table 3 additionally computes annual return delta x10000; Table 7 reshapes recorded coefficients/t/p; no estimation",
+      "phase": "Phase 2"
+    },
+    "table_05_statistical_comparisons.csv": {
+      "rows": 12,
+      "source_files": [
+        "results/phase2_results/phase2_statistical_comparisons.csv"
+      ],
+      "transforms": "explicit selection/renaming in build_tables; Table 3 additionally computes annual return delta x10000; Table 7 reshapes recorded coefficients/t/p; no estimation",
+      "phase": "Phase 2"
+    },
+    "table_06_crisis_stress_tests.csv": {
+      "rows": 6,
+      "source_files": [
+        "docs/phase1/crisis_summary.csv"
+      ],
+      "transforms": "explicit selection/renaming in build_tables; Table 3 additionally computes annual return delta x10000; Table 7 reshapes recorded coefficients/t/p; no estimation",
+      "phase": "Phase 1 supplementary"
+    },
+    "table_07_us_factor_exposures.csv": {
+      "rows": 10,
+      "source_files": [
+        "docs/phase1/factor_regression_us.csv"
+      ],
+      "transforms": "explicit selection/renaming in build_tables; Table 3 additionally computes annual return delta x10000; Table 7 reshapes recorded coefficients/t/p; no estimation",
+      "phase": "Phase 1 supplementary"
+    },
+    "table_08_tau_sensitivity.csv": {
+      "rows": 5,
+      "source_files": [
+        "docs/phase1/tau_sensitivity.csv"
+      ],
+      "transforms": "explicit selection/renaming in build_tables; Table 3 additionally computes annual return delta x10000; Table 7 reshapes recorded coefficients/t/p; no estimation",
+      "phase": "Phase 1 supplementary"
+    }
+  },
+  "figures": {
+    "01_cumulative_wealth": {
+      "files": [
+        "01_cumulative_wealth.png",
+        "01_cumulative_wealth.svg"
+      ],
+      "payload_sha256": "b1f7cb8211ed1b96687f49673dba9d7074de27beaa6cf5f90524e49f77fe9407",
+      "source_files": [
+        "results/generated/phase2/phase2_daily_returns.csv"
+      ],
+      "phase": "Phase 2",
+      "caption": "Compounded daily net simple returns; 100% target cap. NAV 1 immediately before the first OOS return is anchored at the first plotted date. Panel windows differ; BL and 1/N nearly overlap.",
+      "annotations": []
+    },
+    "02_allocation_stability": {
+      "files": [
+        "02_allocation_stability.png",
+        "02_allocation_stability.svg"
+      ],
+      "payload_sha256": "2ab7ccdf0903e7fd8f149deb65b9f0544943388c47f8c566338104ab83edda61",
+      "source_files": [
+        "results/generated/phase2/phase2_trading_decisions.csv"
+      ],
+      "phase": "Phase 2",
+      "caption": "ASI derived from actual consecutive 100%-cap rebalance target vectors; first undefined difference excluded. Values agree with Table 2 at displayed precision. Each market uses its own Table 1 OOS window; target ASI is not traded turnover.",
+      "annotations": [
+        "0.0094",
+        "0.0015",
+        "0.0023",
+        "0.8051",
+        "0.7124",
+        "0.5853"
+      ]
+    },
+    "03_trading_turnover": {
+      "files": [
+        "03_trading_turnover.png",
+        "03_trading_turnover.svg"
+      ],
+      "payload_sha256": "1d7217a1c76e3beea1345d40c5de85d0709790d210c4b943758ed993f44264e2",
+      "source_files": [
+        "results/phase2_results/phase2_strategy_summary.csv"
+      ],
+      "phase": "Phase 2",
+      "caption": "100%-cap primary strategies, common 63-session schedule within each market. L1 target minus drifted pretrade holdings. Initial cash deployment (L1=1) excluded from this mean and reported separately in Table 2. Market-specific windows are given in Table 1.",
+      "annotations": [
+        "2.87%",
+        "3.58%",
+        "1.72%",
+        "80.29%",
+        "70.73%",
+        "58.34%",
+        "2.61%",
+        "3.58%",
+        "1.76%"
+      ]
+    },
+    "04_matched_concentration": {
+      "files": [
+        "04_matched_concentration.png",
+        "04_matched_concentration.svg"
+      ],
+      "payload_sha256": "302de1199b66bde66fd4e7f8d83a6adade1241bfd8741ce5c150d3e989640e99",
+      "source_files": [
+        "results/phase2_results/phase2_concentration_sensitivity.csv"
+      ],
+      "phase": "Phase 2",
+      "caption": "BL and Markowitz use the same maximum target bound at each point. The 40% constraint is imposed at rebalance, not continuously on drifting holdings. BL's constraint is inactive. Unequal market samples are listed in Table 1; each line is a same-market matched comparison.",
+      "annotations": []
+    },
+    "05_transaction_costs": {
+      "files": [
+        "05_transaction_costs.png",
+        "05_transaction_costs.svg"
+      ],
+      "payload_sha256": "f2170b8a7c7623fd2c0c3ebd162a02039fdc16059dc8cea46cc7067275cf3924",
+      "source_files": [
+        "results/phase2_results/phase2_transaction_cost_sensitivity.csv"
+      ],
+      "phase": "Phase 2",
+      "caption": "100%-cap principal strategies, all four predefined cost rates. Same gross path and trading decisions across rates. Terminal wealth is distinct from arithmetic annual return in Table 4. Each panel uses its own Table 1 OOS span and y scale; no cross-market common-horizon ranking is implied.",
+      "annotations": []
+    },
+    "06_statistical_uncertainty": {
+      "files": [
+        "06_statistical_uncertainty.png",
+        "06_statistical_uncertainty.svg"
+      ],
+      "payload_sha256": "b8fc09d541e7646fce687d7edfa37dcc4a74b444c3bf0f149b897fca17c85a81",
+      "source_files": [
+        "results/phase2_results/phase2_statistical_comparisons.csv"
+      ],
+      "phase": "Phase 2",
+      "caption": "Net 10 bps. Paired 20-session circular blocks, 2,000 iterations, seed 42; percentile 95% intervals, approximate empirical-mean-centered two-sided p-values, unadjusted. Windows/paired counts are those in Tables 1/5. All intervals include zero. Duplicate inactive-cap BL/1N rows are omitted; they remain in Table 5.",
+      "annotations": [
+        "p = 0.5370",
+        "p = 0.1725",
+        "p = 0.8905",
+        "p = 0.6915",
+        "p = 0.9835",
+        "p = 0.8725",
+        "p = 0.2735",
+        "p = 0.5070",
+        "p = 0.1110"
+      ]
+    },
+    "08_us_factor_exposures": {
+      "files": [
+        "08_us_factor_exposures.png",
+        "08_us_factor_exposures.svg"
+      ],
+      "payload_sha256": "59783b5e7f4943190e597bb5be1b46b2ec5492947b13698dba7a7cec9f57d478",
+      "source_files": [
+        "docs/phase1/factor_regression_us.csv"
+      ],
+      "phase": "Phase 1",
+      "caption": "OLS betas for Phase 1 US net strategies, 2011-01-04\u20132024-12-31 (3,521 sessions). HAC/Newey\u2013West t statistics and p-values with maxlags 5 are in Table 7. Not a refit of Phase 2 capped/1N paths and not evidence of China/India factor exposure.",
+      "annotations": [
+        "1.0635",
+        "0.0738",
+        "0.0311",
+        "0.0040",
+        "1.1482",
+        "-0.0472",
+        "-0.0216",
+        "0.2241"
+      ]
+    },
+    "09_us_tau_sensitivity": {
+      "files": [
+        "09_us_tau_sensitivity.png",
+        "09_us_tau_sensitivity.svg"
+      ],
+      "payload_sha256": "cd463fefbedc049ded7144bdee310b25ff4692fb287af4b20ffb196c3a5724cd",
+      "source_files": [
+        "docs/phase1/tau_sensitivity.csv"
+      ],
+      "phase": "Phase 1",
+      "caption": "Five verified fixed-tau US runs, 2011-01-04\u20132024-12-31 (3,521 sessions), net 10 bps. Omega independent of tau. Each point is the source value; no refit/tuning in Phase 3. These are not the adaptive-main-strategy return series.",
+      "annotations": [
+        "0.807438",
+        "0.806660",
+        "0.805679",
+        "0.804723",
+        "0.803797"
+      ]
+    }
+  },
+  "blocked_figures": {
+    "07_crisis_drawdown_paths": "CRISIS_DAILY_PATH_UNAVAILABLE"
+  },
+  "evidence_notes": {
+    "crisis": "Only primary buy-hold summary fields; legacy weighted-log data excluded",
+    "factors": "Phase 1 US regression; not a refit to Phase 2 returns",
+    "tau": "Phase 1 fixed-tau scenarios; distinct from adaptive main strategy",
+    "new_market_downloads": false,
+    "new_optimization_runs": 0,
+    "new_bootstrap_runs": 0,
+    "PDF_verification": "Original manuscript PDF absent; correction register uses existing documentary evidence"
+  },
+  "environment": {
+    "python": "3.12.13",
+    "os": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.5.4",
+      "pandas": "3.1.0",
+      "matplotlib": "3.11.2"
+    }
+  },
+  "outputs": {
+    "figures/01_cumulative_wealth.png": "15b51a1a3d03a1fceb69b90587d4719a6dfd8330a32b977057a43e7572a5dc8e",
+    "figures/01_cumulative_wealth.svg": "f965956f8e437c836850a275373c7e9753561276e4b8c549d5f153eeaaa7e9e7",
+    "figures/02_allocation_stability.png": "c08228840878105a63251d5c3079cef79fb643ac795310591c49d410a1e07f11",
+    "figures/02_allocation_stability.svg": "7918f2efdd0f9fe075e317989c3109f76e5ac30eb936e07de372449f1d143d0c",
+    "figures/03_trading_turnover.png": "e3afe76380f9be207bb92f0879278d5050a583e15be2ea77d9a6797bfe8409db",
+    "figures/03_trading_turnover.svg": "eb2898c1030b529ed40df71a17b23e49031ae2cbeb3db15523afea581aa5b796",
+    "figures/04_matched_concentration.png": "29506010e7cbbd8d0cd717e2ffff53ae333c43a7a7a865b111d91b160d7d8919",
+    "figures/04_matched_concentration.svg": "5a4ca7a6bca6d79e5b36f238cac4c9a54526a4ad225e1b540933f019c74053f3",
+    "figures/05_transaction_costs.png": "04b501a4e2375fea9d106104e95ef93ba54bdd3c9c7ccd9af788772a452b4553",
+    "figures/05_transaction_costs.svg": "163cd5bb6df28fb3b602fb639c6113b715c765cb01b729ca7c72c9f6735cbbe7",
+    "figures/06_statistical_uncertainty.png": "14fd814d8e45c373fca1c464d1f5855ed41213d55d32869bb33b6e431d6a05df",
+    "figures/06_statistical_uncertainty.svg": "42c48a1406b708d22105c5ceeaf065e875ff35d7dde6ad57a80c95067500daae",
+    "figures/08_us_factor_exposures.png": "8bf34708d79e77db1d25b16663413c28e4a9b36a87f7dcd9c7e7d6a96a1554b3",
+    "figures/08_us_factor_exposures.svg": "e34749c435e6da8aacd43eb031e109ffabebec8708f3a1b67bed7479ba6ca99c",
+    "figures/09_us_tau_sensitivity.png": "a09a64db5e61da592fed28a5b4d0029a500ffb1107b932a19fd7ee41929a23ed",
+    "figures/09_us_tau_sensitivity.svg": "965f2e8d0ff56de5091380a2a991363066daa88bfea7b0acfb149ceae50ab078",
+    "FINAL_EMPIRICAL_FINDINGS.md": "ed55665362bf92668859a7b1e5bbc7fafde3492e7052fb62da697ff7c53c4d5e",
+    "FINAL_RESEARCH_TABLES.md": "50e0379fbdf2a943424d3c8f261c6763593948d48a891616970774b2e6e9856c",
+    "MANUSCRIPT_CHANGE_REGISTER.md": "9197cadfa8fdcf48f0aeabb4d2d9c0952a5589ab5ee0a4fb2809e9b61b829688",
+    "table_01_dataset_definitions.csv": "1c5c34f01480155238afedbf6031c156e16f88b2105316499ad15e2447e5ce4e",
+    "table_02_principal_performance.csv": "bcffbd33f4313bfee0a5e32f21de0d0b2e5462b2f55d2af991516a07f5accd32",
+    "table_03_concentration_robustness.csv": "3ea27c3fa460ea954c5f8059a51159dbabc534b4d4a609fe697aedf0d304572c",
+    "table_04_transaction_cost_sensitivity.csv": "7c4e837e8c362420d6705cbd7437ae42273c0b2cb00eaea911b67c4759b1c8aa",
+    "table_05_statistical_comparisons.csv": "af01e4103dc324ae671e0398b4f7036e93897875429786a5ba8f796b0bf05805",
+    "table_06_crisis_stress_tests.csv": "281d15dff46a504574ca0707198992d896e1ce7602620e2357a6fb2bec11bd5b",
+    "table_07_us_factor_exposures.csv": "aeae18a6177d533597bf23d86e6668f7204972a347511b6c83db879306976678",
+    "table_08_tau_sensitivity.csv": "79d23a32935cbe13b9f514b9bd32d8fb5a3ef79c3b8a5a9516cea781f0a1a06b"
+  }
+}

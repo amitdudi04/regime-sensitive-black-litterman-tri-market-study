@@ -1,0 +1,24 @@
+{
+  "paper_results_edited": false,
+  "historical_reproduction": "NOT_ESTABLISHED",
+  "scope": "paper Table 2 arithmetic implications, not original sample reconstruction",
+  "cost_per_unit_l1_turnover_bps": 10.0,
+  "assumed_rebalances_per_year": 4.0,
+  "paper_us_markowitz_conditional_annual_cost_bps": 0.632,
+  "paper_us_bl_conditional_annual_cost_bps": 0.08,
+  "paper_us_markowitz_minus_bl_annual_cost_bps": 0.552,
+  "paper_15_to_30bps_cost_drag_is_supported_by_displayed_turnover": false,
+  "paper_figure1_sharpes_us_china_india": {
+    "US": 1.208,
+    "China": 0.669,
+    "India": 1.075
+  },
+  "paper_table2_bl_sharpes_us_china_india": {
+    "US": 0.65,
+    "China": 0.042,
+    "India": 0.356
+  },
+  "figure1_terminal_wealth_eyeballed": true,
+  "figure1_cumulative_wealth_vs_table2": "Figure 1's rough final wealth multiples greatly exceed the Jensen upper bounds under the stated annual-arithmetic-simple-return interpretation. Resolve source/normalization/return convention before using the figure.",
+  "warning": "The original paper does not retain enough input metadata to establish the turnover periodicity, gross/net definitions or plotted wealth normalization. These are conditional inconsistencies, not fabricated corrected paper data."
+}

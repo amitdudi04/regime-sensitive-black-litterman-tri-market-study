@@ -1,0 +1,79 @@
+{
+  "market": "US",
+  "source": "Yahoo Finance via yfinance",
+  "price_field": "Adj Close (auto_adjust=False)",
+  "corporate_actions": "provider adjusted for dividends and splits; USD-listed ETF exposure",
+  "alignment": {
+    "SPY": {
+      "first_observed": "2005-01-03",
+      "last_observed": "2024-12-31",
+      "observed_count": 5033,
+      "missing_rows_before_common_alignment": 0
+    },
+    "QQQ": {
+      "first_observed": "2005-01-03",
+      "last_observed": "2024-12-31",
+      "observed_count": 5033,
+      "missing_rows_before_common_alignment": 0
+    },
+    "IWM": {
+      "first_observed": "2005-01-03",
+      "last_observed": "2024-12-31",
+      "observed_count": 5033,
+      "missing_rows_before_common_alignment": 0
+    },
+    "XLF": {
+      "first_observed": "2005-01-03",
+      "last_observed": "2024-12-31",
+      "observed_count": 5033,
+      "missing_rows_before_common_alignment": 0
+    },
+    "XLK": {
+      "first_observed": "2005-01-03",
+      "last_observed": "2024-12-31",
+      "observed_count": 5033,
+      "missing_rows_before_common_alignment": 0
+    }
+  },
+  "per_ticker": {
+    "SPY": {
+      "first_common_date": "2005-01-03",
+      "last_common_date": "2024-12-31",
+      "common_observations": 5033
+    },
+    "QQQ": {
+      "first_common_date": "2005-01-03",
+      "last_common_date": "2024-12-31",
+      "common_observations": 5033
+    },
+    "IWM": {
+      "first_common_date": "2005-01-03",
+      "last_common_date": "2024-12-31",
+      "common_observations": 5033
+    },
+    "XLF": {
+      "first_common_date": "2005-01-03",
+      "last_common_date": "2024-12-31",
+      "common_observations": 5033
+    },
+    "XLK": {
+      "first_common_date": "2005-01-03",
+      "last_common_date": "2024-12-31",
+      "common_observations": 5033
+    }
+  },
+  "requested_start": "2005-01-01",
+  "requested_end_exclusive": "2025-01-01",
+  "tickers": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "XLF",
+    "XLK"
+  ],
+  "effective_start": "2005-01-03",
+  "effective_end": "2024-12-31",
+  "observations": 5033,
+  "sha256": "835a01e377ce0c50c1cdeb7b5ad8653680f83ee4c7c5b6158fcc2f8d0c0fdfc9",
+  "downloaded_at_utc": "2026-10-31T14:32:51.400745+00:00"
+}

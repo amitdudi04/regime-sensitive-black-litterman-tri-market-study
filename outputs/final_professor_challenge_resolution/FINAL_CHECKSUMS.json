@@ -1,0 +1,137 @@
+{
+  "status": "RESEARCH_READY_WITH_LIMITATIONS",
+  "base_commit": "f9015d2430f0b910ece5ad8963c9f41c1464b604",
+  "stage_a_commit": "e9cdefd",
+  "stage_b_commit": "6716205",
+  "stage_c_commit": "5480fdc",
+  "self_excluded": true,
+  "files": {
+    "FINAL_MANUSCRIPT.docx": {
+      "sha256": "3f8ae812711c572e0882108fe6b7a0efbfd6e0217411eba615092b3f312c6c66",
+      "bytes": 1054420
+    },
+    "FINAL_MANUSCRIPT.pdf": {
+      "sha256": "2f4086f0d0854f8fbad667e579be10cc67e52f908da82306797403318dcc0add",
+      "bytes": 1271313
+    },
+    "FINAL_RESEARCH_FINDINGS.md": {
+      "sha256": "c0ffde3e77d1c1f0e2088856bee7cddf2ab405ce72e550cb35c10b950d08bf89",
+      "bytes": 3026
+    },
+    "FINAL_TRACEABILITY.csv": {
+      "sha256": "35a55801a618042b77595a4ae5f411f071fa3c899c6ec3b58a1f47deccb78f8e",
+      "bytes": 358984
+    },
+    "FINAL_VALIDATION.md": {
+      "sha256": "c172cf70e0a3a1dd6c3e26238f7b11536aa5f45dd40ffe98725d9393c54faf99",
+      "bytes": 2235
+    },
+    "GIT_BASELINES.json": {
+      "sha256": "31b0e1de2ad41355a23265dba0c2e5af57a94ef58051f7ad239f3a38c371e0ee",
+      "bytes": 1363
+    },
+    "MANUSCRIPT_EDITS.json": {
+      "sha256": "79d99d0faea675533812b0c2e6e2ab04824d2fac2e53ee1b619036360fcb3e7f",
+      "bytes": 13412
+    },
+    "PROFESSOR_CHALLENGE_RESOLUTION_REGISTER.md": {
+      "sha256": "20aa8ae366cb9befc9723cd94bae83375968c507a8ba7ffbc4efa151b6a5d02e",
+      "bytes": 4266
+    },
+    "stage_a_active_weights.csv": {
+      "sha256": "6c82a84402075bac74725a1f86e5e0e684f5694ffa715dba4125446c69ecff8f",
+      "bytes": 2230
+    },
+    "stage_a_cap_effects.csv": {
+      "sha256": "657ad989cdb1b9987765baf1e32673ebd494a60c64ee14a1a17c5eb14759b71a",
+      "bytes": 3568
+    },
+    "stage_a_diagnostics.csv": {
+      "sha256": "ac7b45045bffb25a81c9c3fdb066c5b1016c208dde50af1c18956460b822e180",
+      "bytes": 1124
+    },
+    "STAGE_A_IDENTIFICATION.md": {
+      "sha256": "210a9113986cfc95d2633d4e920e2305fd9cccfe4fb7fcf7e71b6f231bd6150a",
+      "bytes": 3619
+    },
+    "STAGE_A_MANIFEST.json": {
+      "sha256": "578d40251f60a26a19d01e27d44b6a45505dffbd12b444201ab6d9fafc736bbe",
+      "bytes": 1337
+    },
+    "stage_a_posterior_diagnostics.csv": {
+      "sha256": "1f54bfff970b6f32086bb9a936ce9c7c399894eca5d89acbced57827096333bc",
+      "bytes": 76628
+    },
+    "STAGE_B_ANALYSIS_SPECIFICATION.md": {
+      "sha256": "7aff5b90e2fc66aab2dbfd2210a45992df2ffacb8f8a5d4a82b484296a5fd216",
+      "bytes": 1460
+    },
+    "stage_b_crisis_paths.csv": {
+      "sha256": "71a60db1e9663b110eb78aa057f79afe44fbe99d0d3584b70266566db7109167",
+      "bytes": 901400
+    },
+    "stage_b_crisis_reconciliation.csv": {
+      "sha256": "9df16bf6e56dd889e12fde015c00a405336789c2fe56aaa2cffcebb350da7dcb",
+      "bytes": 1056
+    },
+    "stage_b_decision_uncertainty.csv": {
+      "sha256": "b78ae8b8cb4c5489a61d540db8744772619de89c0615a97fb13e61b9f6b1d82b",
+      "bytes": 2834
+    },
+    "stage_b_factor_audit.csv": {
+      "sha256": "899367ab0f438d0ffb0ec991c815275f094aef1362b91011f7c27b1cae018478",
+      "bytes": 2647
+    },
+    "STAGE_B_MANIFEST.json": {
+      "sha256": "376bdfbb1eed376ea78f58b8e0b495606bb452508295cc46ca91de428fd70e27",
+      "bytes": 516
+    },
+    "stage_b_sharpe_blocks.csv": {
+      "sha256": "f033c5a85a1d1c03c050635be3c3e2a33423f95dfe25c7e5956065f9d9172751",
+      "bytes": 4203
+    },
+    "STAGE_B_STATISTICAL_RISK_VALIDATION.md": {
+      "sha256": "7642bf0fbecffe9c07fe0086197ac8782299d9f79ae5722381ed60ebe3937e4e",
+      "bytes": 4633
+    },
+    "stage_c_common_period.csv": {
+      "sha256": "3a37f59b8cd1f9b0a2d5a7722c4b76a4d263cf4546f0cbaa41daea4f20e2a988",
+      "bytes": 2639
+    },
+    "STAGE_C_COMPARABILITY_REPRODUCIBILITY.md": {
+      "sha256": "49d22819ae0c38496a537e435dec69d844f5327389d495f9598e59d303953226",
+      "bytes": 3707
+    },
+    "stage_c_input_availability.csv": {
+      "sha256": "bbc61cf2f64798b50e746d602f5d615c570787e4395207777766427ee322edc1",
+      "bytes": 1014
+    },
+    "STAGE_C_MANIFEST.json": {
+      "sha256": "26adee14f5fc5ea5a28e8dc401ea82a0d158dcd9b7c8563ed5fd10adb36ddc6f",
+      "bytes": 208
+    }
+  },
+  "source_scripts": {
+    "scripts\\final_audit\\finalize_package.py": "4215b624477b69f5404a2692cfc96d216a4562da61d513824073c207c60b7e08",
+    "scripts\\final_audit\\stage_a.py": "a0c871dc95675f854b7ff4ca020c5b2ea6e0d2c5d81ba651b5a8674f34098359",
+    "scripts\\final_audit\\stage_b.py": "c2c4cf2a3611bfecc6ebc055a8540890730a97e644f8f286b727cc0e24faf8ff",
+    "scripts\\final_audit\\stage_c.py": "1bd467b35c0e80ca4790b72d042535866d629739ce437fde086998af8481b111",
+    "scripts\\final_audit\\stage_d.py": "1872ab5462d14d8dcb721c5f1347faf160341c7ee0736e8d139285a5e43decf3"
+  },
+  "protected_heads": {
+    "audit/main-defensibility-cleanup": "ddbbe168b2b53136bba41629ccf111a7647af4bc",
+    "audit/paper-v1-reconciliation": "8185f277a023494efc4d95c1d7b4c962b6a78f30",
+    "audit/reconcile-crisis-and-tau-pipeline": "77f77d8c6e4fe90d9e81091309fe55d9ce0978ae",
+    "cleanup/human-research-readme": "832fc708a74ddc78fde28f3237e50bf3b890f59c",
+    "historical/pre-defensibility-cleanup-2026-10-03": "0ebceb3708b8489577a38493f05f0b78a4a4ee1f",
+    "main": "1a82c7599029eb305e60b355b90ac7b80966126f",
+    "research/paper-code-alignment-2026-10-13": "12f8777fe519c40ce49977a871f70f944a9ecf68",
+    "research/revised-paper-phase1-validation": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d",
+    "research/revised-paper-phase2-experiments": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1",
+    "research/revised-paper-phase3-final-results": "da5d40acfc0e71cac51f0fd8bc288606c6c7aa71",
+    "research/revised-paper-phase4-manuscript": "74674ec8e6e9cfd33dbcd666ff5e7bdab813b626",
+    "research/revised-paper-phase5-submission-review": "d8ae7f0bdedebb5871b6936f743d2ba4d689471f",
+    "research/revised-paper-phase6-final-clearance": "8acbd1218adafe974415557a9338300268e973c7",
+    "research/revised-paper-phase7-academic-finalization": "f9015d2430f0b910ece5ad8963c9f41c1464b604"
+  }
+}

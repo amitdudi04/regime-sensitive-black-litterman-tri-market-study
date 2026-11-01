@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\amitk\Documents\Codex\2026-10-31\repository-amitdudi04-regime-sensitive-black-litterman\work\repository\scripts\validate_generated_outputs.py", line 113, in <module>
+    report = validate_outputs(args.generated_dir)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\amitk\Documents\Codex\2026-10-31\repository-amitdudi04-regime-sensitive-black-litterman\work\repository\scripts\validate_generated_outputs.py", line 90, in validate_outputs
+    raise ValueError("Missing aligned Kenneth French factor-data fingerprint")
+ValueError: Missing aligned Kenneth French factor-data fingerprint

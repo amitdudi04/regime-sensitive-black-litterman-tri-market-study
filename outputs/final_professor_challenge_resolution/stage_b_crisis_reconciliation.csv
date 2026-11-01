@@ -1,0 +1,7 @@
+Crisis,Model,MDD,Trough,Recovery,Duration,WeightDateEvidence
+2008_US_GFC,Black-Litterman,-0.5212038657750617,2009-03-09,2010-04-14,277,Frozen JSON archived in crisis summary; original pre-event optimizer history not retained
+2008_US_GFC,Markowitz,-0.4699021498742738,2008-11-20,2009-12-22,273,Frozen JSON archived in crisis summary; original pre-event optimizer history not retained
+2015_China_Crash,Black-Litterman,-0.3696422913038737,2016-01-28,2017-07-26,376,Frozen JSON archived in crisis summary; original pre-event optimizer history not retained
+2015_China_Crash,Markowitz,-0.4976310965788203,2016-01-28,2020-11-04,1202,Frozen JSON archived in crisis summary; original pre-event optimizer history not retained
+2020_India_Covid,Black-Litterman,-0.42559172903676845,2020-03-23,2020-11-06,160,Frozen JSON archived in crisis summary; original pre-event optimizer history not retained
+2020_India_Covid,Markowitz,-0.4171247821103753,2020-03-23,2020-11-09,161,Frozen JSON archived in crisis summary; original pre-event optimizer history not retained

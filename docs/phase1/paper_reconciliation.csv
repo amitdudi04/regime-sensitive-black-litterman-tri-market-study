@@ -1,0 +1,72 @@
+table,key,metric,paper_value,generated_value,difference,status
+tri_market,US | Black-Litterman,Annualized Return,0.1299,0.15414844151471951,0.024248441514719526,MISMATCH
+tri_market,US | Black-Litterman,Annualized Volatility,0.2,0.1910227308780609,-0.008977269121939108,MISMATCH
+tri_market,US | Black-Litterman,Sharpe Ratio,0.65,0.8069638665836055,0.1569638665836055,MISMATCH
+tri_market,US | Black-Litterman,Turnover,0.002,0.028734781602086198,0.0267347816020862,MISMATCH
+tri_market,US | Black-Litterman,ASI,0.001632,0.009409459161606626,0.007777459161606626,MISMATCH
+tri_market,US | Black-Litterman,Max Drawdown,-0.3804,-0.35069343371461936,0.029706566285380653,MISMATCH
+tri_market,US | Markowitz,Annualized Return,0.1324,0.1588955761282788,0.026495576128278797,MISMATCH
+tri_market,US | Markowitz,Annualized Volatility,0.2157,0.2134546206444822,-0.0022453793555178014,MISMATCH
+tri_market,US | Markowitz,Sharpe Ratio,0.614,0.7443997963057739,0.13039979630577392,MISMATCH
+tri_market,US | Markowitz,Turnover,0.0158,0.8028681870462677,0.7870681870462677,MISMATCH
+tri_market,US | Markowitz,ASI,0.015365,0.8050604773850809,0.789695477385081,MISMATCH
+tri_market,US | Markowitz,Max Drawdown,-0.3395,-0.3115323300565922,0.027967669943407825,MISMATCH
+tri_market,US | Benchmark,Annualized Return,0.1319,,,INCOMPARABLE_BENCHMARK
+tri_market,US | Benchmark,Annualized Volatility,0.1983,,,INCOMPARABLE_BENCHMARK
+tri_market,US | Benchmark,Sharpe Ratio,0.665,,,INCOMPARABLE_BENCHMARK
+tri_market,US | Benchmark,Max Drawdown,-0.3787,,,INCOMPARABLE_BENCHMARK
+tri_market,China | Black-Litterman,Annualized Return,0.012,0.05819332084692079,0.04619332084692079,MISMATCH
+tri_market,China | Black-Litterman,Annualized Volatility,0.2845,0.2875490770008045,0.0030490770008045343,MISMATCH
+tri_market,China | Black-Litterman,Sharpe Ratio,0.042,0.20237700448872586,0.16037700448872586,MISMATCH
+tri_market,China | Black-Litterman,Turnover,0.0008,0.03575135030309036,0.03495135030309036,MISMATCH
+tri_market,China | Black-Litterman,ASI,0.000391,0.0014786884316248326,0.0010876884316248325,MISMATCH
+tri_market,China | Black-Litterman,Max Drawdown,-0.6807,-0.642505726558344,0.038194273441655935,MISMATCH
+tri_market,China | Markowitz,Annualized Return,0.0264,0.04527565964658502,0.018875659646585018,MISMATCH
+tri_market,China | Markowitz,Annualized Volatility,0.3019,0.30282153490302516,0.0009215349030251563,MISMATCH
+tri_market,China | Markowitz,Sharpe Ratio,0.088,0.1495126813259301,0.0615126813259301,MISMATCH
+tri_market,China | Markowitz,Turnover,0.0112,0.7072898624449563,0.6960898624449563,MISMATCH
+tri_market,China | Markowitz,ASI,0.010772,0.7124074106295174,0.7016354106295174,MISMATCH
+tri_market,China | Markowitz,Max Drawdown,-0.6858,-0.6526391497415523,0.033160850258447616,MISMATCH
+tri_market,China | Benchmark,Annualized Return,0.012,,,INCOMPARABLE_BENCHMARK
+tri_market,China | Benchmark,Annualized Volatility,0.2874,,,INCOMPARABLE_BENCHMARK
+tri_market,China | Benchmark,Sharpe Ratio,0.042,,,INCOMPARABLE_BENCHMARK
+tri_market,China | Benchmark,Max Drawdown,-0.6866,,,INCOMPARABLE_BENCHMARK
+tri_market,India | Black-Litterman,Annualized Return,0.076,0.10871972526936427,0.03271972526936427,MISMATCH
+tri_market,India | Black-Litterman,Annualized Volatility,0.2134,0.21586686588384188,0.0024668658838418733,MISMATCH
+tri_market,India | Black-Litterman,Sharpe Ratio,0.356,0.5036424873461888,0.1476424873461888,MISMATCH
+tri_market,India | Black-Litterman,Turnover,0.0007,0.01724881810074286,0.016548818100742862,MISMATCH
+tri_market,India | Black-Litterman,ASI,0.000322,0.00234645514330768,0.0020244551433076796,MISMATCH
+tri_market,India | Black-Litterman,Max Drawdown,-0.5367,-0.4973816361429937,0.03931836385700627,MISMATCH
+tri_market,India | Markowitz,Annualized Return,0.0976,0.13207181960585276,0.03447181960585276,MISMATCH
+tri_market,India | Markowitz,Annualized Volatility,0.2218,0.22625322268423625,0.004453222684236258,MISMATCH
+tri_market,India | Markowitz,Sharpe Ratio,0.44,0.583734534425505,0.14373453442550504,MISMATCH
+tri_market,India | Markowitz,Turnover,0.0082,0.5834106835395039,0.5752106835395039,MISMATCH
+tri_market,India | Markowitz,ASI,0.007822,0.5852589122357978,0.5774369122357979,MISMATCH
+tri_market,India | Markowitz,Max Drawdown,-0.5007,-0.47587051101128675,0.02482948898871329,MISMATCH
+tri_market,India | Benchmark,Annualized Return,0.0754,,,INCOMPARABLE_BENCHMARK
+tri_market,India | Benchmark,Annualized Volatility,0.2133,,,INCOMPARABLE_BENCHMARK
+tri_market,India | Benchmark,Sharpe Ratio,0.353,,,INCOMPARABLE_BENCHMARK
+tri_market,India | Benchmark,Max Drawdown,-0.5378,,,INCOMPARABLE_BENCHMARK
+crisis,2008 US GFC | US | Black-Litterman,Max Drawdown,-0.6257,-0.5346738741340789,0.09102612586592118,MISMATCH
+crisis,2008 US GFC | US | Black-Litterman,Volatility Spike,1.94,2.3954400386870756,0.4554400386870756,MISMATCH
+crisis,2008 US GFC | US | Black-Litterman,Recovery Trading Days,1093.0,277.0,-816.0,MISMATCH
+crisis,2008 US GFC | US | Markowitz,Max Drawdown,-0.6218,-0.46990214987427437,0.15189785012572565,MISMATCH
+crisis,2008 US GFC | US | Markowitz,Volatility Spike,1.93,2.012428758684084,0.08242875868408395,MISMATCH
+crisis,2008 US GFC | US | Markowitz,Recovery Trading Days,1056.0,272.0,-784.0,MISMATCH
+crisis,2015 China crash | China | Black-Litterman,Max Drawdown,-0.4342,-0.37437561055227997,0.059824389447720006,MISMATCH
+crisis,2015 China crash | China | Black-Litterman,Volatility Spike,1.92,1.5787989837707836,-0.3412010162292163,MISMATCH
+crisis,2015 China crash | China | Black-Litterman,Recovery Trading Days,458.0,402.0,-56.0,MISMATCH
+crisis,2015 China crash | China | Markowitz,Max Drawdown,-0.4382,-0.4976310965788203,-0.05943109657882034,MISMATCH
+crisis,2015 China crash | China | Markowitz,Volatility Spike,1.95,1.5145881806393335,-0.4354118193606664,MISMATCH
+crisis,2015 China crash | China | Markowitz,Recovery Trading Days,459.0,1220.0,761.0,MISMATCH
+crisis,2020 India COVID | India | Black-Litterman,Max Drawdown,-0.4744,-0.4257116024962333,0.04868839750376669,MISMATCH
+crisis,2020 India COVID | India | Black-Litterman,Volatility Spike,3.39,4.469086145779458,1.0790861457794576,MISMATCH
+crisis,2020 India COVID | India | Black-Litterman,Recovery Trading Days,176.0,140.0,-36.0,MISMATCH
+crisis,2020 India COVID | India | Markowitz,Max Drawdown,-0.4748,-0.4168192984952692,0.05798070150473078,MISMATCH
+crisis,2020 India COVID | India | Markowitz,Volatility Spike,3.4,4.301619472921891,0.9016194729218907,MISMATCH
+crisis,2020 India COVID | India | Markowitz,Recovery Trading Days,176.0,161.0,-15.0,MISMATCH
+tau,0.01,Reported Black-Litterman Sharpe,0.3993,0.8074375153030754,0.4081375153030754,MISMATCH
+tau,0.05,Reported Black-Litterman Sharpe,0.3983,0.8066604996421918,0.4083604996421918,MISMATCH
+tau,0.1,Reported Black-Litterman Sharpe,0.3949,0.8056791065576285,0.41077910655762856,MISMATCH
+tau,0.15,Reported Black-Litterman Sharpe,0.3929,0.8047231259981017,0.41182312599810167,MISMATCH
+tau,0.2,Reported Black-Litterman Sharpe,0.3926,0.8037973531824498,0.4111973531824498,MISMATCH
