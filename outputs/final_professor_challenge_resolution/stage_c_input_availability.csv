@@ -1,0 +1,5 @@
+Identifier,Provider,Retrieval,SHA256,Available,Redistribution
+results\generated\price_data\us_adjusted_close.csv,Yahoo Finance via yfinance,2026-10-31T14:32:51.400745+00:00,835a01e377ce0c50c1cdeb7b5ad8653680f83ee4c7c5b6158fcc2f8d0c0fdfc9,True,Not authorized; private snapshot excluded
+results\generated\price_data\china_adjusted_close.csv,Yahoo Finance via yfinance,2026-10-31T14:33:06.346995+00:00,9db82332709b7fd366b96461b32d474ecd509383121edb9ed8f3ad677dd3b4a1,True,Not authorized; private snapshot excluded
+results\generated\price_data\india_adjusted_close.csv,Yahoo Finance via yfinance,2026-10-31T14:33:10.732222+00:00,655f98c5bfae2a37da7809a51e80249f4853beaac5db2ac5ffe8f1c1a8af5bb2,True,Not authorized; private snapshot excluded
+results\generated\factor_data\us_daily_2011-01-04_2024-12-31.csv,"Kenneth French US daily FF3 and momentum, HTTPS",2026-10-31T14:29:32.838486+00:00,341cc4e8fb216821c5eaacded9fdf4cca33f124cdba4d0eda9ff17251ffcf641,True,Permission not established; private snapshot excluded
