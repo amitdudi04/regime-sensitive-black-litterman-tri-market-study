@@ -2,7 +2,7 @@
 
 *An empirical comparison of portfolio construction methods using US-listed ETFs representing US, China and India equity exposures.*
 
-**Amit Kumar Dudi** · [Research manuscript (author-review version)](outputs/final_professor_challenge_resolution/FINAL_MANUSCRIPT.pdf) · [Methodology](docs/METHODOLOGY.md) · [Complete results](docs/RESULTS.md) · [Reproducibility](docs/REPRODUCIBILITY.md)
+**Amit Kumar Dudi** · [SSRN working paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6479462) · [Methodology](docs/METHODOLOGY.md) · [Complete results](docs/RESULTS.md) · [Reproducibility](docs/REPRODUCIBILITY.md)
 
 ## Research in brief
 
@@ -100,7 +100,7 @@ These commands validate available public evidence and the synthetic test suite; 
 
 ## Paper and version status
 
-The [SSRN working paper (Abstract ID 6479462)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6479462) is the **historical March 2026 version**. The current [revised author-review manuscript](outputs/final_professor_challenge_resolution/FINAL_MANUSCRIPT.pdf) reports later, separately validated findings and **has not been uploaded to SSRN**. Author review and SSRN AI-policy clearance remain outstanding.
+The [SSRN working paper (Abstract ID 6479462)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6479462) is the currently posted historical version. Repository results reflect subsequent research revisions that have **not yet been uploaded to SSRN**. Author review and SSRN AI-policy clearance remain outstanding.
 
 **Suggested citation:** Dudi, Amit Kumar (2026). *Black–Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets*. Revised research repository.
 
