@@ -8,6 +8,12 @@ def validate(private=False):
  O=R/'outputs/final_professor_challenge_resolution';m=json.loads((O/'FINAL_CHECKSUMS.json').read_text());sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
  for n,v in m['files'].items():assert sha(O/n)==v['sha256'],n
  for n,v in m['source_scripts'].items():assert sha(R/n.replace('\\','/'))==v,n
+ frozen=R/'results/phase3_final'
+ fm=json.loads((frozen/'PHASE3_RUN_MANIFEST.json').read_text())
+ for n,h in fm['outputs'].items():assert sha(frozen/n)==h,n
+ for n,h in fm['source_sha256'].items():
+  data=(R/n).read_bytes().replace(b'\r\n',b'\n')
+  assert h in {hashlib.sha256(data).hexdigest(),hashlib.sha256(data.replace(b'\n',b'\r\n')).hexdigest()},n
  principal=pd.read_csv(R/'results/phase3_final/table_02_principal_performance.csv');assert len(principal)==9
  assert np.allclose(principal['Sharpe Ratio'],principal['Net Annualized Return']/principal['Annualized Volatility'])
  blocks=pd.read_csv(O/'stage_b_sharpe_blocks.csv');assert set(blocks.Block)=={10,20,40};assert (blocks.Lower<=0).all() and (blocks.Upper>=0).all();assert blocks.P.min()>=.05

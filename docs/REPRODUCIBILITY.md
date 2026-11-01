@@ -4,7 +4,7 @@ Python 3.12 and requirements-phase1-lock.txt record the executed numerical envir
 
 ## Public checks
 
-From repository root, install the lock and run the commands in README. `python -m scripts.validate_publication` checks public evidence hashes, labels and principal-value checkpoints. `python -m scripts.phase3_final_results --validate-only` validates the frozen tables/figures using committed source records. Unit tests use synthetic fixtures and mocks; they do not reproduce the historical manuscript.
+From repository root, install the lock and run the commands in README. `python -m scripts.validate_publication` checks public evidence hashes, labels and principal-value checkpoints. The public validator checks all archived table/figure hashes and executed-source fingerprints. The deeper `python -m scripts.phase3_final_results --validate-only` check additionally requires the retained ignored Phase 2 daily-return, trading-decision and run-manifest cache; it was run locally, but is not advertised as a fresh-checkout public command. Unit tests use synthetic fixtures and mocks; they do not reproduce the historical manuscript.
 
 ## Frozen inputs and restricted reproduction
 
@@ -14,6 +14,6 @@ The original revised-study execution entry point is `python -m pipelines.phase2_
 
 ## Tables and figures without research reruns
 
-`python -m scripts.phase3_final_results --output-dir results/generated/publication-rebuild` rebuilds publication CSVs and figures from committed evidence; it does not download prices or optimize portfolios. Choose a new directory on subsequent runs. The current authoritative files remain in results/phase3_final to preserve manifest references. Final professor diagnostics remain in outputs/final_professor_challenge_resolution with source scripts under scripts/final_audit. These scripts are archival stage entry points with sequential assumptions, not a single idempotent public build command; do not rerun them merely to confirm a reported value.
+`python -m scripts.phase3_final_results --output-dir results/generated/publication-rebuild` requires the retained derived Phase 2 cache under results/generated/phase2 and rebuilds publication CSVs and figures from that cache plus committed evidence; it does not download prices or optimize portfolios. Choose a new directory on subsequent runs. A public checkout lacks those derived cache files as well as raw vendor snapshots; without them, validate published hashes rather than claim complete figure regeneration. The current authoritative files remain in results/phase3_final to preserve manifest references. Final professor diagnostics remain in outputs/final_professor_challenge_resolution with source scripts under scripts/final_audit. These scripts are archival stage entry points with sequential assumptions, not a single idempotent public build command; do not rerun them merely to confirm a reported value.
 
 The verified baseline is e666afabe596e88973a67b3bbf7ff2be3c938af4. Phase 3 manifests identify source commits, Phase 1/2 run IDs and output fingerprints. Internal frozen-input reproduction, independently acquired later data, and exact reproduction of the original March working paper are three different claims. Missing original March priors, vintages and ownership inputs prevent the last claim. [Research history](RESEARCH_HISTORY.md).
