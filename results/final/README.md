@@ -7,3 +7,5 @@ The numerical files retain established paths to preserve imports, manifest refer
 - [Interpretation](../../docs/RESULTS.md).
 
 All older manuscript versions are historical; use FINAL_MANUSCRIPT for the current author-review candidate.
+
+- The current author-review manuscript is `outputs/final_professor_challenge_resolution/FINAL_MANUSCRIPT.pdf`. Earlier PDFs in `outputs/phase*_*/` are retained for provenance only and are **not** alternate current releases. [Research history](../../docs/RESEARCH_HISTORY.md).
