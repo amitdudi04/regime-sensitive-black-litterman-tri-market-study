@@ -1,0 +1,19 @@
+{
+  "base": "f9015d2430f0b910ece5ad8963c9f41c1464b604",
+  "protected_remote_heads": {
+    "audit/main-defensibility-cleanup": "ddbbe168b2b53136bba41629ccf111a7647af4bc",
+    "audit/paper-v1-reconciliation": "8185f277a023494efc4d95c1d7b4c962b6a78f30",
+    "audit/reconcile-crisis-and-tau-pipeline": "77f77d8c6e4fe90d9e81091309fe55d9ce0978ae",
+    "cleanup/human-research-readme": "832fc708a74ddc78fde28f3237e50bf3b890f59c",
+    "historical/pre-defensibility-cleanup-2026-10-03": "0ebceb3708b8489577a38493f05f0b78a4a4ee1f",
+    "main": "1a82c7599029eb305e60b355b90ac7b80966126f",
+    "research/paper-code-alignment-2026-10-13": "12f8777fe519c40ce49977a871f70f944a9ecf68",
+    "research/revised-paper-phase1-validation": "598fe0d3c0a7cd7ebaf5709ae62b7c6735b92a0d",
+    "research/revised-paper-phase2-experiments": "7553cf8bff59a4f3d8bad7d15b779707fc533fa1",
+    "research/revised-paper-phase3-final-results": "da5d40acfc0e71cac51f0fd8bc288606c6c7aa71",
+    "research/revised-paper-phase4-manuscript": "74674ec8e6e9cfd33dbcd666ff5e7bdab813b626",
+    "research/revised-paper-phase5-submission-review": "d8ae7f0bdedebb5871b6936f743d2ba4d689471f",
+    "research/revised-paper-phase6-final-clearance": "8acbd1218adafe974415557a9338300268e973c7",
+    "research/revised-paper-phase7-academic-finalization": "f9015d2430f0b910ece5ad8963c9f41c1464b604"
+  }
+}
