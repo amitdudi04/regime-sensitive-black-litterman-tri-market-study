@@ -2,9 +2,9 @@
 
 This register is for the March 2026 manuscript, *Black–Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets*. It distinguishes corrected code from historically published figures. It does **not** constitute a rewritten manuscript, a data release, or a claim of numerical replication.
 
-## A. Computational corrections on the audit branch
+## A. Computational corrections
 
-| Issue | Current branch treatment | Validation | Implication |
+| Issue | Implementation and interpretation | Validation | Implication |
 |---|---|---|---|
 | Daily holding-period accounting | Daily simple-return buy-and-hold performance now uses naturally drifting weights, rather than a constant target allocation at each day's close | Synthetic deterministic wealth test and CI | Older 2026-10-13 diagnostics are stale |
 | Initial investment and rebalance friction | Initial deployment is charged; costs reduce available wealth multiplicatively before the next return; non-initial turnover uses drift-adjusted holdings | Unit tests and CI | Net returns and Sharpe must be recomputed |
