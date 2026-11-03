@@ -49,4 +49,4 @@ Yahoo Finance ETF prices (record retrieval metadata and SHA-256)
 
 `results/paper_results/` contains historical **transcriptions of the manuscript's tables**, not verified outputs of the revised pipeline. `results/generated/` contains regenerated outputs and is excluded from version control. Raw provider data snapshots are also excluded: their recorded hashes identify a particular run but do not guarantee later fresh downloads yield the same data.
 
-For the verified October 30 snapshot and its still-unresolved differences from the manuscript, see [corrected-pipeline results](EMPIRICAL_AUDIT_2026-10-30.md).
+For the revised calculations and remaining differences from the March 2026 manuscript, see the [consolidated research results](RESULTS.md), [research history](RESEARCH_HISTORY.md), and [reproducibility boundaries](REPRODUCIBILITY.md).
