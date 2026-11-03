@@ -16,7 +16,7 @@ Principal values: [frozen CSV](../results/phase3_final/table_02_principal_perfor
 
 ## Supplementary findings
 
-Status: RESEARCH_READY_WITH_LIMITATIONS. Author and SSRN/AI-policy clearance remain pending.
+These revised findings are supported by the stated evidence and remain subject to the limitations below. Author verification and any required SSRN/AI-policy review have not been completed.
 
 1. BL remains extremely close to rebalanced 1/N because of the equal-weight reverse-optimized prior, mild historically generated views and large Omega. Mean absolute active ETF weights are .001828 US, .000426 China and .000558 India; marginal Omega/prior ratios are 200–1,000. No incremental Bayesian alpha is established.
 2. Matched 40% target constraints reduce Markowitz concentration and turnover. The specification was introduced in Phase 2 before its recorded execution, without evidence of preregistration. Historical values are unchanged.
@@ -29,12 +29,12 @@ Status: RESEARCH_READY_WITH_LIMITATIONS. Author and SSRN/AI-policy clearance rem
 9. L1 rebalance turnover is twice half-L1, so the same fee requires twice the coefficient under half-L1. Initial deployment remains purchased weight one. Direct fees differ from terminal-wealth impact.
 10. All four private input snapshots match archived hashes. Raw inputs are excluded because redistribution authorization is unestablished. Revised specification, exact frozen-run reproduction and March-paper reproduction are distinct claims.
 
-No historical table or figure value was corrected in this audit; new diagnostics are explicitly supplementary. No full backtests or new market-price downloads were run. The manuscript preserves eight logical tables, eight figure assets and 15 editable equations. Remaining limitations are documented in the issue register, not labeled fully resolved.
+The supplementary diagnostics reported here do not overwrite the historical paper tables or figures. No full backtests or new market-price downloads were run. The manuscript preserves eight logical tables, eight figure assets and 15 editable equations. Remaining limitations are documented in the issue register, not labeled fully resolved.
 
 
 [All publication tables and figures](../results/phase3_final/). [Final supplementary evidence](../outputs/final_professor_challenge_resolution/). Historical summaries elsewhere are version records, not competing current results.
 
-## Faculty-review resolution status
+## Interpretation and remaining limitations
 
 The following items are deliberate research boundaries, not outstanding arithmetic defects:
 
@@ -49,6 +49,6 @@ The following items are deliberate research boundaries, not outstanding arithmet
 | Cross-market interpretation | [Common-calendar check](../outputs/final_professor_challenge_resolution/stage_c_common_period.csv) shares 2,553 dates | ETF universes, composition and USD exposures differ; no national-market causal identification |
 | Modelled fees | [L1 accounting explanation](METHODOLOGY.md) distinguishes fee rate, half-L1 notional, deployment and terminal NAV | Not a realistic estimate of market impact or institution-specific trading expenses |
 | Public reproduction | [Reproducibility guidance](REPRODUCIBILITY.md) distinguishes public artifact tests from private data checks | Frozen raw vendor snapshots and derived daily caches are not distributed |
-| Publication status | [Current candidate](../outputs/final_professor_challenge_resolution/FINAL_MANUSCRIPT.pdf) is clearly identified | Author verification and SSRN/AI-policy clearance remain pending |
+| Publication status | [Current candidate](../outputs/phase7_academic_finalization/Black_Litterman_Academic_Revision_Final.pdf) is clearly identified | Author verification and SSRN/AI-policy clearance remain pending |
 
 **Release interpretation:** Public CI validates synthetic unit tests and committed artifact hashes, not a complete vendor-data reconstruction. A valid research finding may remain inconclusive: no model retuning, numerical fabrication, or removal of negative results is warranted.
