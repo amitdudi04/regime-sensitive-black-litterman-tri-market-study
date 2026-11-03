@@ -9,3 +9,7 @@ Current empirical tables and figures are in results/phase3_final; final suppleme
 Archives: archive/pre-revision-main-2026 and archive/march-2026-working-paper preserve original main 1a82c7599029eb305e60b355b90ac7b80966126f; research/revised-study-2026 preserves verified baseline e666afabe596e88973a67b3bbf7ff2be3c938af4. A verified complete-history Git bundle is retained outside the repository before branch cleanup. Existing tags are never force-moved. Original historical results are not represented as reproduced by revised code.
 
 Material AI involvement remains disclosed. Author declarations, independent human review and SSRN/AI-policy clearance remain pending. GitHub publication does not certify manuscript acceptance or university endorsement.
+
+## Historical verification records
+
+Earlier dated diagnostics, preliminary reconciliation tables, phase validation notes and file inventories document the development of the revised study. These superseded records are preserved in [the repository's Git history](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/tree/0ae1512f6c16e482a4e65db6a8456c34a9825d09/docs); they are not part of the current research-results presentation. The revised outcomes and eight empirical tables are collected in [Results](RESULTS.md). The historical March manuscript and its `results/paper_results/` transcription remain distinct and have not been independently reproduced by the later code.
