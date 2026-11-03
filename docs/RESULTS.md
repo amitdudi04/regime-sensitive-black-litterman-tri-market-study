@@ -38,7 +38,7 @@ Table 1, benchmark definitions:
 | India | Markowitz | 13.2072% | 22.6253% | 0.583735 | -47.5871% | 58.3411% | 0.585259 | 3.530754 |
 | India | Equal-weight | 10.8700% | 21.5862% | 0.503564 | -49.7414% | 1.7618% | 0.000000 | 2.749585 |
 
-Principal revised study; net 10 bps per L1 turnover; 100% target cap; arithmetic annual mean, sample volatility, Sharpe RF=0. Wealth starts at 1 and compounds simple net returns. Rebalance turnover excludes initial cash deployment, which is separately 1 / 10 bps.
+Revised study: net 10 bps per L1 turnover; 100% target cap; arithmetic annual mean, sample volatility, Sharpe RF=0. Wealth starts at 1 and compounds simple net returns. Rebalance turnover excludes initial cash deployment, which is separately 1 / 10 bps.
 
 ## Table 3 — Concentration Robustness
 
@@ -57,7 +57,7 @@ Principal revised study; net 10 bps per L1 turnover; 100% target cap; arithmetic
 | India | Black-Litterman | 40.0000% | 10.8720% | 0.503642 | 1.7249% | 0.250003 | 0.000000 |
 | India | Markowitz | 40.0000% | 12.1747% | 0.555011 | 26.9045% | 0.358635 | -103.244321 |
 
-Principal revised study; matched BL/MV target bounds, 10 bps. Return change is capped minus the same strategy's 100% result, in annualized arithmetic basis points. The bound applies at rebalances, not continuously to drifting holdings.
+Revised study: matched BL/MV target bounds, 10 bps. Return change is capped minus the same strategy's 100% result, in annualized arithmetic basis points. The bound applies at rebalances, not continuously to drifting holdings.
 
 ## Table 4 — Transaction Cost Sensitivity
 
@@ -124,7 +124,7 @@ Principal revised study; matched BL/MV target bounds, 10 bps. Return change is c
 | India | Equal-weight | 100.0000% | 10 | 10.8854% | 10.8700% | 2.749585 |
 | India | Equal-weight | 100.0000% | 20 | 10.8854% | 10.8546% | 2.744559 |
 
-Principal revised study; all four cost assumptions and both optimized caps. Arithmetic annual return and compounded terminal wealth are distinct metrics. Gross paths and trading decisions are reused across costs. Full cost expenditure and turnover are retained in CSV.
+Revised study: all four cost assumptions and both optimized caps. Arithmetic annual return and compounded terminal wealth are distinct metrics. Gross paths and trading decisions are reused across costs. Full cost expenditure and turnover are retained in CSV.
 
 ## Table 5 — Statistical Comparisons
 
@@ -143,7 +143,7 @@ Principal revised study; all four cost assumptions and both optimized caps. Arit
 | India | 40.0000% | Markowitz | -0.051369 | -0.113396 | 0.013004 | 0.1110 | 2991 |
 | India | 40.0000% | Equal-weight | 0.000079 | -0.000176 | 0.000304 | 0.5070 | 2991 |
 
-Principal revised study; BL minus comparator at net 10 bps, paired 20-session circular bootstrap, 2,000 iterations, seed 42. Same-date block indices preserve pairing. Approximate empirical-mean-centered null; two-sided p-values, percentile 95% intervals, no multiplicity adjustment. Capped BL/1N duplicates inactive-cap comparisons.
+Revised study: BL minus comparator at net 10 bps, paired 20-session circular bootstrap, 2,000 iterations, seed 42. Same-date block indices preserve pairing. Approximate empirical-mean-centered null; two-sided p-values, percentile 95% intervals, no multiplicity adjustment. Capped BL/1N duplicates inactive-cap comparisons.
 
 ## Table 6 — Crisis Stress Tests
 
@@ -156,7 +156,7 @@ Principal revised study; BL minus comparator at net 10 bps, paired 20-session ci
 | India | Black-Litterman | 2020-02-15 | 2020-05-01 | -42.5592% | 2020-03-23 | 2020-11-06 | 160 |
 | India | Markowitz | 2020-02-15 | 2020-05-01 | -41.7125% | 2020-03-23 | 2020-11-09 | 161 |
 
-Supplementary earlier-study standalone gross stress test; last target strictly before event, purchased before first event return, no further trades through recovery. Recovery target is crisis-start NAV 1, duration is trading-index positions from crisis-window maximum-drawdown trough to first subsequent recovery. This is neither recovery to the previous peak nor time from crisis start. Missing recovery is censored. Legacy weighted-log metrics are excluded.
+Supplementary crisis stress analysis (gross returns); last target strictly before event, purchased before first event return, no further trades through recovery. Recovery target is crisis-start NAV 1, duration is trading-index positions from crisis-window maximum-drawdown trough to first subsequent recovery. This is neither recovery to the previous peak nor time from crisis start. Missing recovery is censored. Legacy weighted-log metrics are excluded.
 
 ## Table 7 — Us Factor Exposures
 
@@ -173,7 +173,7 @@ Supplementary earlier-study standalone gross stress test; last target strictly b
 | Markowitz | HML | -0.021556 | -0.783129 | 0.4336 | — | 3521 | 5 |
 | Markowitz | MOM | 0.224115 | 16.181575 | <0.0001 | — | 3521 | 5 |
 
-Supplementary earlier-study US-only daily Rp−RF on US FF3+momentum, source percentages divided by 100, intercept OLS with Newey–West/HAC maxlags 5. Sample 2011-01-04–2024-12-31, 3,521 observations. Coefficient alpha is daily; the annual alpha column multiplies by 252. Blank annual alpha for beta rows is not missing estimation evidence. These are not refitted Revised-study capped/1N regressions.
+Supplementary US-only daily Rp−RF on US FF3+momentum, source percentages divided by 100, intercept OLS with Newey–West/HAC maxlags 5. Sample 2011-01-04–2024-12-31, 3,521 observations. Coefficient alpha is daily; the annual alpha column multiplies by 252. Blank annual alpha for beta rows is not missing estimation evidence. These are not refitted regressions for the revised concentration-constrained or equal-weight comparisons.
 
 ## Table 8 — Tau Sensitivity
 
@@ -185,7 +185,7 @@ Supplementary earlier-study US-only daily Rp−RF on US FF3+momentum, source per
 | US | 0.150000 | 0.804723 | 2011-01-04 | 2024-12-31 | 3521 |
 | US | 0.200000 | 0.803797 | 2011-01-04 | 2024-12-31 | 3521 |
 
-Supplementary earlier-study US fixed-tau net 10 bps runs, same universe/window/constraints/cost convention. Omega independent of tau. Distinct from the main strategy's ex-ante trailing-volatility tau selection; no tuning or new optimization in Phase 3.
+Supplementary US fixed-tau net 10 bps runs, same universe/window/constraints/cost convention. Omega independent of tau. Distinct from the main strategy's ex-ante trailing-volatility tau selection; no additional model tuning or optimization for the consolidated tables.
 
 
 ## Supplementary findings
@@ -193,7 +193,7 @@ Supplementary earlier-study US fixed-tau net 10 bps runs, same universe/window/c
 These revised findings are supported by the stated evidence and remain subject to the limitations below. Author verification and any required SSRN/AI-policy review have not been completed.
 
 1. BL remains extremely close to rebalanced 1/N because of the equal-weight reverse-optimized prior, mild historically generated views and large Omega. Mean absolute active ETF weights are .001828 US, .000426 China and .000558 India; marginal Omega/prior ratios are 200–1,000. No incremental Bayesian alpha is established.
-2. Matched 40% target constraints reduce Markowitz concentration and turnover. The specification was introduced in Phase 2 before its recorded execution, without evidence of preregistration. Historical values are unchanged.
+2. Matched 40% target constraints reduce Markowitz concentration and turnover. The specification was introduced in the revised analysis before the documented experiment, without evidence of preregistration. Historical values are unchanged.
 3. New exploratory paired decision-block ASI/turnover intervals are negative for BL-minus-Markowitz under both caps. Small decision samples and serial dependence limit inference; unadjusted Monte Carlo p=0 means zero exceedances in finite draws, not a true probability of zero. BL has nonzero ASI versus constant targets, and comparison with 1/N does not establish general turnover superiority.
 4. All Sharpe intervals include zero at daily block lengths 10,20,40; minimum approximate p=.102. Failure to reject is not equivalence.
 5. Six conditional crisis paths reconcile existing investment summaries. The original archived weight vectors exist, but missing crisis target-selection timelines prevent full independent reproduction of pre-event selection. US crisis evidence remains unfavorable to BL; no missing vectors invented.
