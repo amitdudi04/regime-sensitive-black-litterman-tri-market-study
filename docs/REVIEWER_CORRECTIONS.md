@@ -29,7 +29,7 @@ This register is for the March 2026 manuscript, *Black–Litterman vs. Markowitz
 
 ## C. Outputs and decision criteria
 
-The current benchmark comparator now identifies 12 historical rows as **incomparable** with the updated ETF proxy rows—not absent outputs. The most recent financial-invariant and empirical CI run is [October 30](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40942721530): 35 tests passed; 59 mismatches, 12 incomparable benchmarks, zero exact matches. The dated historical diagnostic in [RESULTS_RECONCILIATION.md](RESULTS_RECONCILIATION.md) predates these code changes.
+The current benchmark comparator now identifies 12 historical rows as **incomparable** with the updated ETF proxy rows—not absent outputs. The most recent financial-invariant and empirical CI run is [October 30](https://github.com/amitdudi04/regime-sensitive-black-litterman-tri-market-study/actions/runs/40942721530): 35 tests passed; 59 mismatches, 12 incomparable benchmarks, zero exact matches. The preliminary historical comparison predates those implementation changes and is retained in the [repository history](RESEARCH_HISTORY.md), not as a current empirical result.
 
 After running `python -m pipelines.run_tri_market_pipeline`, run:
 
