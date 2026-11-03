@@ -26,7 +26,7 @@ Net performance at **10 basis points per unit of L1 traded-weight turnover**. An
 | India | Markowitz | 13.21% | 0.584 | −47.59% | 58.34% | 0.585259 |
 | India | Rebalanced 1/N | 10.87% | 0.504 | −49.74% | 1.76% | 0 |
 
-[Full-precision principal table](results/phase3_final/table_02_principal_performance.csv) · [Eight publication tables](results/phase3_final/FINAL_RESEARCH_TABLES.md) · [Supplementary research findings](outputs/final_professor_challenge_resolution/FINAL_RESEARCH_FINDINGS.md)
+[Complete empirical results and all eight research tables](docs/RESULTS.md) · [Machine-readable source tables](results/phase3_final/) · [Supplementary research findings](outputs/final_professor_challenge_resolution/FINAL_RESEARCH_FINDINGS.md)
 
 **Interpretation.** BL's small active deviations from 1/N are consistent with its equal-weight equilibrium proxy, mild historical-return views and high view uncertainty. A matched **40% individual-ETF target cap** substantially reduces Markowitz concentration and turnover. Risk-adjusted rankings remain market-dependent; the paired Sharpe bootstrap comparisons are not significant across tested block lengths. These are empirical findings under the stated investment rules, not claims of general strategy superiority.
 
