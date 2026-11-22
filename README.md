@@ -8,7 +8,7 @@
 
 Historical-mean Markowitz optimization can produce concentrated portfolios and unstable target weights. This study evaluates whether an equilibrium-anchored Black–Litterman (BL) allocation reduces those implementation problems—and whether the improvement persists when compared with **rebalanced equal weighting (1/N)** and **Markowitz under matched concentration constraints**.
 
-**Principal finding:** BL produces substantially more stable target allocations and lower modeled turnover than unrestricted Markowitz. Yet BL performs almost identically to periodically rebalanced 1/N, and the tested Sharpe-ratio differences do not establish significant superiority. The evidence supports a portfolio-stabilization interpretation, **not incremental Bayesian alpha**.
+**Principal finding:** BL produces substantially more stable target allocations and lower modeled turnover than unrestricted Markowitz. Yet BL performs almost identically to periodically rebalanced 1/N, and the tested Sharpe-ratio differences do not establish significant superiority. The evidence supports more stable allocations. It leaves the incremental value of the Bayesian views unestablished.
 
 ## Principal out-of-sample results
 
@@ -83,7 +83,7 @@ All instruments are **US-listed, USD-denominated ETFs**. These portfolios measur
 | [Research results](docs/RESULTS.md) | Detailed findings, supplementary comparisons and research limitations |
 | [Reproducibility](docs/REPRODUCIBILITY.md) | Environment, public checks, frozen-data boundaries and execution paths |
 | [Research history](docs/RESEARCH_HISTORY.md) | March working-paper record, later revisions and archive provenance |
-| [Final results index](results/final/README.md) | Authoritative tables, figures, supplementary diagnostics and current manuscript |
+| [Final results index](results/final/README.md) | Revised tables, figures and supplementary analyses |
 | [Source models](models/) · [Backtests](backtesting/) · [Tests](tests/) | Financial implementation and independently checkable numerical identities |
 
 ### Verify the published evidence
