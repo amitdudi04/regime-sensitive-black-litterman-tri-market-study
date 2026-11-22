@@ -16,6 +16,6 @@ Other manuscript findings (factor exposure in Table 5, SOE/private results in Ta
 
 The historical tables are intentionally retained unchanged. The current local diagnostic run writes to results/generated/ and produces materially different performance, crisis and tau-sensitivity values. Do not copy generated values over these reference files or present them as paper results until the methodology and numerical differences are reconciled.
 
-The unresolved differences include the equilibrium prior (market-capitalization-implied in the manuscript versus equal-weight by default in the current implementation), simple versus continuously compounded return conventions, benchmark definitions, turnover/ASI calculations, effective market sample dates and crisis outputs. See [the results reconciliation](../../docs/RESULTS_RECONCILIATION.md) for the comparison and status of each issue.
+The unresolved differences include the equilibrium prior (market-capitalization-implied in the manuscript versus equal-weight by default in the current implementation), simple versus continuously compounded return conventions, benchmark definitions, turnover/ASI calculations, effective market sample dates and crisis outputs. See [Research history](../../docs/RESEARCH_HISTORY.md) for the comparison and status of each issue.
 
 

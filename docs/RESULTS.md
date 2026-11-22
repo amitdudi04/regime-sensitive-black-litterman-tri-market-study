@@ -223,6 +223,6 @@ The following items are deliberate research boundaries, not outstanding arithmet
 | Cross-market interpretation | [Common-calendar check](../outputs/final_professor_challenge_resolution/stage_c_common_period.csv) shares 2,553 dates | ETF universes, composition and USD exposures differ; no national-market causal identification |
 | Modelled fees | [L1 accounting explanation](METHODOLOGY.md) distinguishes fee rate, half-L1 notional, deployment and terminal NAV | Not a realistic estimate of market impact or institution-specific trading expenses |
 | Public reproduction | [Reproducibility guidance](REPRODUCIBILITY.md) distinguishes public artifact tests from private data checks | Frozen raw vendor snapshots and derived daily caches are not distributed |
-| Publication status | [Current candidate](../outputs/phase7_academic_finalization/Black_Litterman_Academic_Revision_Final.pdf) is clearly identified | Author verification and SSRN/AI-policy clearance remain pending |
+| Manuscript status | The revised tables and diagnostics are available here. The posted SSRN paper reports the earlier study. | The manuscript revision remains under author review. See [Research history](RESEARCH_HISTORY.md). |
 
 **Release interpretation:** Public CI validates synthetic unit tests and committed artifact hashes, not a complete vendor-data reconstruction. A valid research finding may remain inconclusive: no model retuning, numerical fabrication, or removal of negative results is warranted.

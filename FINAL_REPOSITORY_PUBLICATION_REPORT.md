@@ -1,4 +1,6 @@
-# Repository publication review
+# Historical repository publication review
+
+This report records the consolidation candidate at the time of review. For the current evidence and manuscript status, see [Research history](docs/RESEARCH_HISTORY.md) and [Research results](docs/RESULTS.md).
 
 Release source: e666afabe596e88973a67b3bbf7ff2be3c938af4. Original main: 1a82c7599029eb305e60b355b90ac7b80966126f. Publication candidate is prepared on publication/final-repository-consolidation; final GitHub merge and branch-cleanup receipt is delivered separately after GitHub confirmation.
 
