@@ -6,7 +6,7 @@
 
 ## Research in brief
 
-Historical-mean Markowitz optimization can produce concentrated portfolios and unstable target weights. This study evaluates whether an equilibrium-anchored Black–Litterman (BL) allocation reduces those implementation problems—and whether the improvement persists when compared with **rebalanced equal weighting (1/N)** and **Markowitz under matched concentration constraints**.
+Historical-mean Markowitz optimization can produce concentrated portfolios and unstable target weights. This study compares Black–Litterman (BL) with rebalanced equal weighting and with Markowitz under both unrestricted and matched concentration limits.
 
 **Principal finding:** BL produces substantially more stable target allocations and lower modeled turnover than unrestricted Markowitz. Yet BL performs almost identically to periodically rebalanced 1/N, and the tested Sharpe-ratio differences do not establish significant superiority. The evidence supports more stable allocations. It leaves the incremental value of the Bayesian views unestablished.
 
@@ -28,7 +28,7 @@ Net performance at **10 basis points per unit of L1 traded-weight turnover**. An
 
 [Complete empirical results and all eight research tables](docs/RESULTS.md) · [Machine-readable source tables](results/phase3_final/) · [Supplementary research findings](outputs/final_professor_challenge_resolution/FINAL_RESEARCH_FINDINGS.md)
 
-**Interpretation.** BL's small active deviations from 1/N are consistent with its equal-weight equilibrium proxy, mild historical-return views and high view uncertainty. A matched **40% individual-ETF target cap** substantially reduces Markowitz concentration and turnover. Risk-adjusted rankings remain market-dependent; the paired Sharpe bootstrap comparisons are not significant across tested block lengths. These are empirical findings under the stated investment rules, not claims of general strategy superiority.
+BL's weights stay close to rebalanced equal weights. That result is consistent with its equal-weight prior, small historical-return views and high view uncertainty. A common 40% cap reduces Markowitz concentration and turnover. Sharpe rankings vary across ETF baskets, and the paired bootstrap comparisons leave those differences statistically unresolved.
 
 ## Study design
 
@@ -70,7 +70,7 @@ All instruments are **US-listed, USD-denominated ETFs**. These portfolios measur
 | Sharpe inference | [10/20/40-session block comparison](outputs/final_professor_challenge_resolution/stage_b_sharpe_blocks.csv) | No tested difference rejects the null at 5%; failure to reject is not equivalence |
 | Decision-level inference | [ASI/turnover comparisons](outputs/final_professor_challenge_resolution/stage_b_decision_uncertainty.csv) | Few dependent observations, unadjusted tests; zero recorded Monte Carlo exceedances do not mean a true probability of zero |
 | Common-calendar comparison | [2,553-session overlap](outputs/final_professor_challenge_resolution/stage_c_common_period.csv) | Reduces calendar differences, but does not equalize ETF exposures |
-| Historical crisis stresses | [Conditional wealth-path reconciliation](outputs/final_professor_challenge_resolution/stage_b_crisis_reconciliation.csv) | Six outcomes reconcile conditional on archived weights; **original pre-event weight-selection timelines remain unavailable** |
+| Historical crisis stresses | [Conditional wealth-path reconciliation](outputs/final_professor_challenge_resolution/stage_b_crisis_reconciliation.csv) | Six outcomes reconcile conditional on archived weights; the original weight-selection dates remain unverified |
 | US factor regression and tau | [US OLS/HAC check](outputs/final_professor_challenge_resolution/stage_b_factor_audit.csv) · [Tau table](results/phase3_final/table_08_tau_sensitivity.csv) | Factor exposures and limited parameter sensitivity; neither establishes causality or predictive alpha |
 
 **Data boundary.** Four frozen vendor-derived input files were hash-checked locally, but the raw snapshots and some derived caches are not in the public repository; redistribution rights are not assumed. Public CI tests synthetic financial identities and verifies committed evidence, **not a fresh full-market-data reproduction**. The revised results also do not reproduce the original March paper's exact historical data/model specification. [Evidence and reproducibility details](docs/REPRODUCIBILITY.md).
@@ -100,7 +100,7 @@ These commands validate available public evidence and the synthetic test suite; 
 
 ## Paper and version status
 
-The [SSRN working paper (Abstract ID 6479462)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6479462) is the currently posted historical version. Repository results reflect subsequent research revisions that have **not yet been uploaded to SSRN**. Author review and SSRN AI-policy clearance remain outstanding.
+The [March 2026 working paper (Abstract ID 6479462)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6479462) is the currently posted historical version. Repository results reflect subsequent research revisions that have **not yet been uploaded to SSRN**. Author review and SSRN AI-policy clearance remain outstanding.
 
 **Suggested citation:** Dudi, Amit Kumar (2026). *Black–Litterman vs. Markowitz: Stability, Turnover, and Crisis Dynamics Across Global Markets*. Revised research repository.
 
