@@ -156,7 +156,7 @@ Revised study: BL minus comparator at net 10 bps, paired 20-session circular boo
 | India | Black-Litterman | 2020-02-15 | 2020-05-01 | -42.5592% | 2020-03-23 | 2020-11-06 | 160 |
 | India | Markowitz | 2020-02-15 | 2020-05-01 | -41.7125% | 2020-03-23 | 2020-11-09 | 161 |
 
-Supplementary crisis stress analysis (gross returns); last target strictly before event, purchased before first event return, no further trades through recovery. Recovery target is crisis-start NAV 1, duration is trading-index positions from crisis-window maximum-drawdown trough to first subsequent recovery. This is neither recovery to the previous peak nor time from crisis start. Missing recovery is censored. Legacy weighted-log metrics are excluded.
+The table lists requested event dates. The wealth paths begin on each event’s first observed trading session. For India, the request begins on 15 February 2020 and the first session is 18 February 2020. The simulations hold the archived weights throughout each event and through recovery. The reconstructed paths reconcile with all six reported outcomes. The original weight-selection dates remain unverified. Recovery is measured from the drawdown trough to the first return to the starting net asset value of 1.
 
 ## Table 7 — Us Factor Exposures
 
@@ -194,7 +194,7 @@ These revised findings are supported by the stated evidence and remain subject t
 
 1. BL remains extremely close to rebalanced 1/N because of the equal-weight reverse-optimized prior, mild historically generated views and large Omega. Mean absolute active ETF weights are .001828 US, .000426 China and .000558 India; marginal Omega/prior ratios are 200–1,000. No incremental Bayesian alpha is established.
 2. Matched 40% target constraints reduce Markowitz concentration and turnover. The specification was introduced in the revised analysis before the documented experiment, without evidence of preregistration. Historical values are unchanged.
-3. New exploratory paired decision-block ASI/turnover intervals are negative for BL-minus-Markowitz under both caps. Small decision samples and serial dependence limit inference; unadjusted Monte Carlo p=0 means zero exceedances in finite draws, not a true probability of zero. BL has nonzero ASI versus constant targets, and comparison with 1/N does not establish general turnover superiority.
+3. New exploratory paired decision-block ASI/turnover intervals are negative for BL-minus-Markowitz under both caps. Small decision samples and serial dependence limit inference; no draw among the 5,000 simulations was at least as extreme as the observed statistic. BL has nonzero ASI versus constant targets, and comparison with 1/N does not establish general turnover superiority.
 4. All Sharpe intervals include zero at daily block lengths 10,20,40; minimum approximate p=.102. Failure to reject is not equivalence.
 5. Six conditional crisis paths reconcile existing investment summaries. The original archived weight vectors exist, but missing crisis target-selection timelines prevent full independent reproduction of pre-event selection. US crisis evidence remains unfavorable to BL; no missing vectors invented.
 6. Independent US OLS/Bartlett HAC calculations reproduce archived coefficients, t-statistics and R2. BL's high fit and market t-value are reproduced, with positive residual variance; same-sample 1/N is a new supplementary diagnostic. No China/India factor conclusions follow.
@@ -203,7 +203,7 @@ These revised findings are supported by the stated evidence and remain subject t
 9. L1 rebalance turnover is twice half-L1, so the same fee requires twice the coefficient under half-L1. Initial deployment remains purchased weight one. Direct fees differ from terminal-wealth impact.
 10. All four private input snapshots match archived hashes. Raw inputs are excluded because redistribution authorization is unestablished. Revised specification, exact frozen-run reproduction and March-paper reproduction are distinct claims.
 
-The supplementary diagnostics reported here do not overwrite the historical paper tables or figures. No full backtests or new market-price downloads were run. The manuscript preserves eight logical tables, eight figure assets and 15 editable equations. Remaining limitations are documented in the issue register, not labeled fully resolved.
+The supplementary diagnostics use archived returns, decisions and input snapshots. The revised study tables, figures and supporting calculations are linked below.
 
 
 [All publication tables and figures](../results/phase3_final/). [Final supplementary evidence](../outputs/final_professor_challenge_resolution/). Historical summaries elsewhere are version records, not competing current results.
@@ -212,12 +212,12 @@ The supplementary diagnostics reported here do not overwrite the historical pape
 
 The following items are deliberate research boundaries, not outstanding arithmetic defects:
 
-| Challenge | Evidence-backed conclusion | Residual limitation |
+| Research question | Finding | Limitation |
 |---|---|---|
 | Incremental BL value over 1/N | [Active-weight/posterior diagnostics](../outputs/final_professor_challenge_resolution/STAGE_A_IDENTIFICATION.md) show strong anchoring; improvement over 1/N was not established | Bayesian alpha is not identified |
 | Unrestricted Markowitz comparator | [Matched 40% bounds](../results/phase3_final/table_03_concentration_robustness.csv) substantially reduce concentration and turnover | One fixed cap does not characterize every feasible investment mandate |
 | Crisis selection history | [Reconstructed conditional paths](../outputs/final_professor_challenge_resolution/stage_b_crisis_reconciliation.csv) reconcile six summaries | Original pre-event weight-selection timestamps are missing; ex-ante construction cannot be independently certified |
-| Decision-level uncertainty | [Paired estimates](../outputs/final_professor_challenge_resolution/stage_b_decision_uncertainty.csv) use limited dependent rebalance observations | Unadjusted exploratory inference; apparent zero Monte Carlo p-values are finite zero-exceedance counts |
+| Decision-level uncertainty | [Paired estimates](../outputs/final_professor_challenge_resolution/stage_b_decision_uncertainty.csv) use limited dependent rebalance observations | Unadjusted exploratory inference; reported extreme-draw counts have finite simulation resolution |
 | Sharpe uncertainty | [10/20/40-session block sensitivity](../outputs/final_professor_challenge_resolution/stage_b_sharpe_blocks.csv) does not reject zero Sharpe differences | Non-rejection does not establish equivalence; chosen bootstrap procedures remain approximate |
 | Factor fit | [Independent US OLS/HAC calculation](../outputs/final_professor_challenge_resolution/stage_b_factor_audit.csv) reproduces coefficients and high R-squared | Regression fit is not a causal explanation or proof of predictive alpha |
 | Cross-market interpretation | [Common-calendar check](../outputs/final_professor_challenge_resolution/stage_c_common_period.csv) shares 2,553 dates | ETF universes, composition and USD exposures differ; no national-market causal identification |
@@ -225,4 +225,4 @@ The following items are deliberate research boundaries, not outstanding arithmet
 | Public reproduction | [Reproducibility guidance](REPRODUCIBILITY.md) distinguishes public artifact tests from private data checks | Frozen raw vendor snapshots and derived daily caches are not distributed |
 | Manuscript status | The revised tables and diagnostics are available here. The posted SSRN paper reports the earlier study. | The manuscript revision remains under author review. See [Research history](RESEARCH_HISTORY.md). |
 
-**Release interpretation:** Public CI validates synthetic unit tests and committed artifact hashes, not a complete vendor-data reconstruction. A valid research finding may remain inconclusive: no model retuning, numerical fabrication, or removal of negative results is warranted.
+Public CI runs synthetic tests and checks the integrity of the committed evidence. Historical data reproduction requires the inputs listed in the [reproducibility guide](REPRODUCIBILITY.md).

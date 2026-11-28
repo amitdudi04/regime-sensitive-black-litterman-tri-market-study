@@ -20,4 +20,4 @@ Historical source versions and output fingerprints are recorded in the retained 
 
 ## Public verification boundary
 
-GitHub Actions passing on `main` proves that the committed public checks and synthetic tests ran successfully. It does **not** certify recovery of original 2008/2015/2020 weight-selection timestamps, redistribution rights for Yahoo Finance/Kenneth French inputs, fresh-download equality with archived data, or author/publisher approval. The verified crisis *wealth* paths are conditional on archived weights; the provenance of the original weight *selection* remains unestablished. See [research results and limitations](RESULTS.md).
+GitHub Actions runs the public checks and synthetic tests. A historical rerun requires the corresponding vendor snapshots and the original model inputs. The crisis results verify the wealth paths conditional on the archived weights. The original weight-selection dates remain unverified. See the [research results and limitations](RESULTS.md).
